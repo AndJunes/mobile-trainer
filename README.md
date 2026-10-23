@@ -8,6 +8,8 @@ Dentro de la app se llama **Modo Defensa**. Cada tema es una misión de tres pas
 2. **Desafío**: tres preguntas reales de la guía de defensa. Escribís tu respuesta antes de mirar la de la guía (la versión para la Meet, la respuesta completa y la repregunta probable).
 3. **Conexión con el TP**: dónde se ve el tema en el código de la app y si está implementado, en parte o no.
 
+![Recorrido por Modo Defensa: se abre un tema desde el menú lateral, se recorren las secciones de la teoría, se responde el desafío, se busca en el banco de preguntas y se cambia al tema claro](docs/demo.gif)
+
 ## Qué incluye
 
 - **7 unidades y 66 temas**, con unas 21.000 palabras de teoría tomadas de las clases y del material.
