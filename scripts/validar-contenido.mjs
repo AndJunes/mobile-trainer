@@ -57,6 +57,16 @@ for (const u of unidades) {
 }
 
 for (const [id, temas] of usoDesafio) if (temas.length > 1) avisos.push(`La pregunta ${id} es desafío en ${temas.length} temas: ${temas.join(', ')}`)
+// El repo es público: el contenido no nombra al docente, a compañeros ni sus usuarios de GitHub.
+const NOMBRES_PROHIBIDOS = ['Franco', 'Germán', 'Sergio', 'Kevin', 'Juan Manuel', 'Luciano', 'Lucián', 'Leandro', 'Andrés', 'ferm11n']
+const archivosData = ['preguntas.json', 'glosario.json', 'unidades.json', ...archivos.map((f) => `temas/${f}`)]
+for (const f of archivosData) {
+  const texto = readFileSync(join(dir, f), 'utf8')
+  for (const nombre of NOMBRES_PROHIBIDOS) {
+    if (new RegExp(`(?<![\\p{L}])${nombre}(?![\\p{L}])`, 'u').test(texto)) err(`${f}: aparece el nombre real "${nombre}"`)
+  }
+}
+
 const terminos = new Set()
 for (const g of glosario) {
   if (terminos.has(g.termino)) err(`Término repetido en el glosario: ${g.termino}`)

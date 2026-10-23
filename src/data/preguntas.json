@@ -26,7 +26,7 @@
   {
    "id": "3",
    "titulo": "Bloque 3 — Cómo se hizo el TP",
-   "intro": "Preguntas sobre el proceso: cómo se arrancó, cómo se organizó el código, qué muestra el historial git, qué problemas aparecieron y cómo se resolvieron. Regla de este bloque: solo se afirma un motivo si figura en un commit, en un comentario del código o en el README. Cuando no consta, la respuesta lo dice y propone una justificación razonable marcada como propuesta. El historial tiene un único autor (`ferm11n`) y casi todo entró en un commit, así que no se puede reconstruir quién hizo qué: cada integrante explica su parte desde el código.",
+   "intro": "Preguntas sobre el proceso: cómo se arrancó, cómo se organizó el código, qué muestra el historial git, qué problemas aparecieron y cómo se resolvieron. Regla de este bloque: solo se afirma un motivo si figura en un commit, en un comentario del código o en el README. Cuando no consta, la respuesta lo dice y propone una justificación razonable marcada como propuesta. El historial tiene un único autor (un integrante del grupo) y casi todo entró en un commit, así que no se puede reconstruir quién hizo qué: cada integrante explica su parte desde el código.",
    "grupos": []
   },
   {
@@ -313,7 +313,7 @@
     "repregunta": "¿Qué hacés si subiste una clave o un token al repositorio?",
     "respuestaRepregunta": "Borrarla en otro commit no la saca del historial: el único arreglo real es rotar la clave (invalidarla y generar otra), y después agregar el archivo a `.gitignore` y sacarlo con `git rm --cached`. Por eso el `.gitignore` de Expo ignora `.env*.local`, `node_modules/`, `.expo/` y las carpetas nativas generadas.",
     "fundamento": "Rama como puntero, fast-forward vs three-way, conflictos \\[02 GIT p.11-13\\]; `revert` seguro vs `reset --hard` peligroso \\[02 GIT p.16\\]; `reflog` y rotar la clave \\[02 GIT p.17-18\\]; flujo del integrador con PR y \"repartir el trabajo por pantalla, no por archivo compartido\" \\[02 GIT p.26-27\\]; `.gitignore` \\[02 GIT p.28\\]. En clase: \"Git es la tecnología. GitHub es como el producto arriba\" \\[U01-V2 51:53\\]; Git \"para este proyecto en particular es super importante, si no es imposible trabajar\" \\[U01-V1 24:11\\].",
-    "aplicacion": "Remoto `github.com/ferm11n/Reservas-Deportivas-TPI`, solo rama `main`, 8 commits; el commit `215b7f2` agrega 75 archivos y la mayor parte de la app (notas de código §12). No afirmes quién hizo qué a partir del historial. El `.gitignore` de plantilla excluye `node_modules` y carpetas nativas, como pide la cátedra.",
+    "aplicacion": "Remoto `Reservas-Deportivas-TPI` (repo del grupo), solo rama `main`, 8 commits; el commit `215b7f2` agrega 75 archivos y la mayor parte de la app (notas de código §12). No afirmes quién hizo qué a partir del historial. El `.gitignore` de plantilla excluye `node_modules` y carpetas nativas, como pide la cátedra.",
     "origen": "Concepto teórico \\[02 GIT p.26\\] e Inferencia: el profesor puede mirar el historial del repo entregado, y la consigna pide trabajo por integrante \\[U02-V2 9:17\\].",
     "prioridadTexto": "Media — Git no es el centro de la defensa, pero el historial del TP es un punto débil visible y conviene tener la respuesta honesta preparada."
    },
@@ -1770,12 +1770,12 @@
    "grupo": null,
    "pregunta": "¿Qué muestra el historial de git sobre cómo trabajaron?",
    "campos": {
-    "respuestaModelo": "El repositorio tiene ocho commits en `main`, todos del mismo autor, `ferm11n`. El primero, `70ea2cf`, es el README vacío. Seis horas después, `215b7f2` trae casi toda la app junta: 75 archivos y unas 14.875 líneas, de las que unas 8.800 son del `package-lock.json`. Ahí entran rutas, componentes, contextos, base de datos, servicios, mocks, tipos y la plantilla de Expo. Los siguientes son ajustes puntuales: `c292f48`, barra de pestañas con safe area e ícono de vóley; `d3b28f5`, el README propio; `c630fe8`, el `metro.config.js` para SQLite en web y versiones defensivas de `sqlite.ts` y `kvStore.ts`; `cd9f061`, ajustes del escáner, háptica y notificaciones; `77f66e1`, el mapa con Leaflet y WebView; y `aca59f9`, la reescritura del panel de admin. Hay que ser honestos: no se usaron ramas ni pull requests, y los commits no son chicos y frecuentes como recomienda la cátedra. Por eso el historial no sirve para mostrar quién hizo cada parte.",
+    "respuestaModelo": "El repositorio tiene ocho commits en `main`, todos del mismo autor, un integrante del grupo. El primero, `70ea2cf`, es el README vacío. Seis horas después, `215b7f2` trae casi toda la app junta: 75 archivos y unas 14.875 líneas, de las que unas 8.800 son del `package-lock.json`. Ahí entran rutas, componentes, contextos, base de datos, servicios, mocks, tipos y la plantilla de Expo. Los siguientes son ajustes puntuales: `c292f48`, barra de pestañas con safe area e ícono de vóley; `d3b28f5`, el README propio; `c630fe8`, el `metro.config.js` para SQLite en web y versiones defensivas de `sqlite.ts` y `kvStore.ts`; `cd9f061`, ajustes del escáner, háptica y notificaciones; `77f66e1`, el mapa con Leaflet y WebView; y `aca59f9`, la reescritura del panel de admin. Hay que ser honestos: no se usaron ramas ni pull requests, y los commits no son chicos y frecuentes como recomienda la cátedra. Por eso el historial no sirve para mostrar quién hizo cada parte.",
     "respuestaBreve": "Hay ocho commits en `main`, todos del mismo usuario. Casi toda la app entró en el segundo, `215b7f2`, con 75 archivos; los demás son ajustes: la barra de pestañas, el README, SQLite en web, el escáner y las notificaciones, el mapa con Leaflet y el panel de admin. Reconozco que no trabajamos con ramas ni pull requests y que los commits no fueron chicos y frecuentes. Por eso, para mostrar mi parte, la explico desde el código.",
     "repregunta": "Si cada uno hizo una parte, ¿por qué hay un solo autor?",
     "respuestaRepregunta": "El repositorio no lo explica: solo muestra que todos los commits los subió el mismo usuario. No inventes una explicación; contá cómo trabajaron realmente. Lo que sí podés decir es cómo debería haber sido: cada integrante en su rama (`git switch -c mi-tarea`), commits chicos con mensajes que digan qué hace el cambio, y un pull request para integrar a `main`, repartiendo el trabajo por pantalla. Y que la defensa justamente sirve para mostrar, con el código, que cada uno entiende su parte. Ojo: los cambios sin commitear en `app.json`, `package.json` y `package-lock.json` son de hoy, de la instalación de dependencias, y no forman parte del trabajo del grupo.",
     "fundamento": "Mensajes de commit \"en presente, describiendo qué hace el cambio, no qué archivos tocaste\" \\[Git p.9\\]; \"En el trabajo integrador cada integrante trabaja en su rama y se integra a main\" \\[Git p.11\\]; flujo del integrador: actualizar, ramificar, commits chicos y frecuentes, pull request; \"repartir el trabajo por pantalla, no por archivo compartido\" \\[Git p.26-27\\]. El profesor: Git \"para este proyecto en particular es super importante, si no es imposible trabajar\" \\[U01-V1 24:11\\]. Defensa: \"Cada integrante explica la parte que desarrolló\" \\[TFI p.2\\].",
-    "aplicacion": "`git log`: `70ea2cf` (2026-09-11 08:22), `215b7f2` (2026-09-11 14:47), `c292f48` (2026-09-11 15:08), `d3b28f5` (2026-09-18), `c630fe8` (2026-09-24), `cd9f061` (2026-10-02 09:52), `77f66e1` (2026-10-02 12:09), `aca59f9` (2026-10-02 12:19); remoto `github.com/ferm11n/Reservas-Deportivas-TPI`. Los mensajes mezclan idiomas (`feat: add SQLite and KV storage`).",
+    "aplicacion": "`git log`: `70ea2cf` (2026-09-11 08:22), `215b7f2` (2026-09-11 14:47), `c292f48` (2026-09-11 15:08), `d3b28f5` (2026-09-18), `c630fe8` (2026-09-24), `cd9f061` (2026-10-02 09:52), `77f66e1` (2026-10-02 12:09), `aca59f9` (2026-10-02 12:19); remoto `Reservas-Deportivas-TPI` (repo del grupo). Los mensajes mezclan idiomas (`feat: add SQLite and KV storage`).",
     "origen": "Concepto teórico \\[Git p.26-27\\] + Elemento del TP \\[historial git\\] + Inferencia (la consigna evalúa la parte de cada integrante).",
     "prioridadTexto": "Alta — el historial es lo primero que puede abrir el profesor para ver cómo trabajó el grupo, y la respuesta tiene que ser honesta y sin inventar."
    },
@@ -1907,7 +1907,7 @@
    "grupo": null,
    "pregunta": "El README dice cosas que el código no hace. ¿Qué pasó?",
    "campos": {
-    "respuestaModelo": "El README propio entró el 18 de septiembre (`d3b28f5`), antes de varios cambios, y después no se actualizó. El caso más claro es el mapa: el README dice `react-native-maps` (`README.md:24` y `:47`), pero el 2 de octubre el commit `77f66e1` lo reemplazó por Leaflet en un WebView y la dependencia quedó en `package.json` sin usarse. También declara cosas que no están en el código: audioguías con `expo-audio`, persistencia de archivos con `File` y `Directory`, preferencias en `kv-store`, recordatorio 2 horas antes, marcar ausentes, rechazar QR vencidos o de otra cancha, aviso a los usuarios afectados por un bloqueo y reingreso biométrico al abrir la app. Hay detalles menores: muestra la estructura con `app/` en la raíz cuando es `src/app/`, la URL de clonado dice `usuario` en vez de `ferm11n`, y dice que el ícono es PNG cuando `assets/icon.png` es en realidad un JPEG. En la defensa lo mejor es decirlo antes de que lo encuentre el profesor y mostrar qué sí funciona.",
+    "respuestaModelo": "El README propio entró el 18 de septiembre (`d3b28f5`), antes de varios cambios, y después no se actualizó. El caso más claro es el mapa: el README dice `react-native-maps` (`README.md:24` y `:47`), pero el 2 de octubre el commit `77f66e1` lo reemplazó por Leaflet en un WebView y la dependencia quedó en `package.json` sin usarse. También declara cosas que no están en el código: audioguías con `expo-audio`, persistencia de archivos con `File` y `Directory`, preferencias en `kv-store`, recordatorio 2 horas antes, marcar ausentes, rechazar QR vencidos o de otra cancha, aviso a los usuarios afectados por un bloqueo y reingreso biométrico al abrir la app. Hay detalles menores: muestra la estructura con `app/` en la raíz cuando es `src/app/`, la URL de clonado dice `usuario` en vez del usuario real del repo, y dice que el ícono es PNG cuando `assets/icon.png` es en realidad un JPEG. En la defensa lo mejor es decirlo antes de que lo encuentre el profesor y mostrar qué sí funciona.",
     "respuestaBreve": "El README se escribió antes de varios cambios y no se actualizó. El ejemplo más claro es el mapa: dice `react-native-maps`, pero después se cambió a Leaflet. Además declara funciones que no están, como las audioguías, guardar archivos, el recordatorio 2 horas antes o marcar ausentes. Prefiero decirlo yo: el README describe lo planificado, y lo que vale es lo que se ve funcionando y en el código.",
     "repregunta": "¿Por qué se cambió el mapa a Leaflet?",
     "respuestaRepregunta": "El código no documenta por qué; preparate una justificación. El mensaje del commit dice qué se hizo (\"añadir pantalla de mapa interactivo usando Leaflet y react-native-webview\") pero no el motivo. Una justificación razonable, marcada como propuesta: tener mosaicos en modo oscuro coherentes con el resto de la app y no depender de la clave de Google Maps para el build. Aun así, reconocé que contradice la consigna y lo que dijo el profesor en clase, y que la corrección es volver a `react-native-maps`.",
@@ -3973,7 +3973,7 @@
    "grupo": "7-d-surgidas-de-ejemplos-ejercicios-o-discusiones",
    "pregunta": "¿Qué falla si en el código pedimos un permiso que olvidamos declarar?",
    "campos": {
-    "preguntaOriginal": "\"¿Cuál sería la dificultad o la falla… si entre los permisos que declaramos… nos olvidamos uno… pero después en el código… sí ponemos que pida permiso?\" (pregunta de Sergio) \\[U04-V4 8:46\\]",
+    "preguntaOriginal": "\"¿Cuál sería la dificultad o la falla… si entre los permisos que declaramos… nos olvidamos uno… pero después en el código… sí ponemos que pida permiso?\" (pregunta de un compañero) \\[U04-V4 8:46\\]",
     "tema": "consecuencias de no declarar un permiso.",
     "respuestaModelo": "El profesor respondió: \"la aplicación rompe, crashea\". Ante otra consulta precisó que en iOS \"sobre todo rompe cuando compila\" y en Android \"te pone como un mensaje genérico, pero después te lo patean del store\" \\[U04-V4 10:52\\]. En iOS el texto de uso es obligatorio y no puede ser genérico, y el texto del cartel sale de lo declarado.",
     "repregunta": "¿Todos los permisos que pedís están declarados?",
@@ -3988,7 +3988,7 @@
    "grupo": "7-d-surgidas-de-ejemplos-ejercicios-o-discusiones",
    "pregunta": "Si el mapa se ve negro, ¿hay que configurar una API o un proveedor aparte?",
    "campos": {
-    "preguntaOriginal": "\"¿Debo configurar una API aparte o proveedor de mapa adicional?\" (pregunta de Kevin sobre el mapa en negro) \\[U04-V4 9:50\\]",
+    "preguntaOriginal": "\"¿Debo configurar una API aparte o proveedor de mapa adicional?\" (pregunta de un compañero sobre el mapa en negro) \\[U04-V4 9:50\\]",
     "tema": "diagnóstico de un mapa que no se ve.",
     "respuestaModelo": "No es un problema del permiso de ubicación: ese permiso sirve para saber dónde está el usuario, no para ver el mapa. El profesor sugirió revisar qué librería se usa (Expo Maps o React Native Maps) y el estilo: el contenedor con `flex: 1` y el mapa con ancho y alto completos. En desarrollo no hace falta API key de Google; solo en producción. \"Sigan la documentación\" \\[U04-V4 1:36:27\\].",
     "repregunta": "¿Qué podría hacer que tu mapa no cargue?",
@@ -4003,7 +4003,7 @@
    "grupo": "7-d-surgidas-de-ejemplos-ejercicios-o-discusiones",
    "pregunta": "¿La agenda puede ser una sola entidad para jugador, encargado y administrador?",
    "campos": {
-    "preguntaOriginal": "consulta de Juan Manuel, del grupo de Reservas Deportivas, sobre si la agenda es \"una sola entidad y la mostramos de acuerdo a… quién la vea\"; el profesor respondió \"Sí, bien… Si pueden\" \\[U04-V4 1:36:27–1:38:38\\]",
+    "preguntaOriginal": "consulta de un integrante del grupo de Reservas Deportivas, sobre si la agenda es \"una sola entidad y la mostramos de acuerdo a… quién la vea\"; el profesor respondió \"Sí, bien… Si pueden\" \\[U04-V4 1:36:27–1:38:38\\]",
     "tema": "reutilizar datos y pantallas según el rol.",
     "respuestaModelo": "Sí: los turnos y reservas son los mismos datos, y lo que cambia por rol es qué se muestra y qué acciones se permiten. El jugador ve disponibilidad y reserva; el encargado valida ingresos; el administrador ve la agenda completa y la modifica (bloqueos, fijas, tarifas). Reutilizar la misma lógica evita duplicar reglas. El profesor también dijo en otra clase que \"la idea es tratar de reutilizar con roles o permisos\" \\[U03-V4 1:54:29\\].",
     "repregunta": "¿Reutilizaron la grilla entre roles?",
@@ -4048,7 +4048,7 @@
    "grupo": "7-d-surgidas-de-ejemplos-ejercicios-o-discusiones",
    "pregunta": "¿Cuál es el recorrido de la imagen después de sacarla?",
    "campos": {
-    "preguntaOriginal": "\"la imagen… se la copia en otro lado, se la almacena en una memoria caché… ¿Cómo es el recorrido?\" (pregunta de Sergio) \\[U04-V4 34:08–37:18\\]",
+    "preguntaOriginal": "\"la imagen… se la copia en otro lado, se la almacena en una memoria caché… ¿Cómo es el recorrido?\" (pregunta de un compañero) \\[U04-V4 34:08–37:18\\]",
     "tema": "ciclo de vida de una imagen capturada.",
     "respuestaModelo": "La imagen queda en la caché de la app y se obtiene como URI (o como base64 si se pide). Para un escenario sin señal, conviene copiarla al sistema de archivos, a una carpeta propia, y subirla cuando vuelve la conexión. Para subirla, el patrón recomendado es mandar el archivo a un storage (bucket), recibir un ID y enviar ese ID a la API: \"Son dos llamadas, pero tu API… se sobrecarga menos\" \\[U04-V4 1:22:07\\]. El resize lo puede hacer el servidor.",
     "repregunta": "Si la API de la cátedra recibiera fotos, ¿cómo subirías la foto del estado de la cancha?",
@@ -4108,7 +4108,7 @@
    "grupo": "7-d-surgidas-de-ejemplos-ejercicios-o-discusiones",
    "pregunta": "¿Todos los proyectos tienen que tener un login como mínimo?",
    "campos": {
-    "preguntaOriginal": "\"¿tendríamos que tener todos los proyectos armados un login como mínimo?\" (pregunta de Luciano) \\[U04-V4 1:39:38\\]",
+    "preguntaOriginal": "\"¿tendríamos que tener todos los proyectos armados un login como mínimo?\" (pregunta de un compañero) \\[U04-V4 1:39:38\\]",
     "tema": "autenticación como requisito mínimo.",
     "respuestaModelo": "El profesor respondió que sí (\"Sí. Bien.\"). En la consigna, la autenticación incluye ingresar, mantener la sesión con un token guardado y reingresar con huella o rostro; el registro se puede incluir aunque no sea lo central \\[U02-V2 11:26; U03-V4 21:15\\].",
     "repregunta": "¿Cómo es tu login de punta a punta?",
