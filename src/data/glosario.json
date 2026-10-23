@@ -1,0 +1,523 @@
+[
+  {
+    "termino": "PWA",
+    "definicion": "Una aplicación web que puede instalarse y ofrecer algunas funciones como una app, por ejemplo abrirse desde un ícono y guardar recursos para usarlos sin conexión. Sigue siendo tecnología web.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "nativo",
+    "definicion": "Desarrollo específico para un sistema operativo, usando sus herramientas y componentes (por ejemplo Swift en iOS o Kotlin en Android)."
+  },
+  {
+    "termino": "híbrido",
+    "definicion": "Enfoque que combina tecnologías o una base de código compartida para crear una aplicación móvil. Según la herramienta, la interfaz puede mostrarse en una WebView o usar componentes nativos."
+  },
+  {
+    "termino": "WebView",
+    "definicion": "Un navegador pequeño incrustado dentro de una aplicación. Muestra una página web sin salir de la app."
+  },
+  {
+    "termino": "React Native",
+    "definicion": "Framework para crear aplicaciones móviles con React. La interfaz usa componentes nativos del teléfono, aunque se programa principalmente con JavaScript o TypeScript."
+  },
+  {
+    "termino": "Expo",
+    "definicion": "Conjunto de herramientas que facilita crear, probar y publicar apps React Native.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "Expo Go",
+    "definicion": "Aplicación de prueba que permite ejecutar proyectos Expo con las funciones que ya trae incluidas."
+  },
+  {
+    "termino": "development build",
+    "definicion": "Una versión de desarrollo de la app que incorpora las librerías nativas que necesita el proyecto. Sirve para probar funciones que Expo Go no incluye."
+  },
+  {
+    "termino": "EAS Build",
+    "definicion": "Servicio de Expo que compila la aplicación en la nube y genera instaladores para Android o iOS."
+  },
+  {
+    "termino": "APK",
+    "definicion": "Archivo instalable de Android. Se puede compartir e instalar directamente en un dispositivo compatible.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "AAB",
+    "definicion": "Paquete de Android pensado para subir a Google Play; la tienda genera los APK adecuados para cada dispositivo.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "Metro",
+    "definicion": "Herramienta que prepara y sirve el código JavaScript de React Native durante el desarrollo.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "Git",
+    "definicion": "Sistema de control de versiones: registra cambios y permite volver a estados anteriores y colaborar.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "commit",
+    "definicion": "Registro de un conjunto de cambios en Git, con un mensaje que explica qué se modificó.",
+    "resaltar": false
+  },
+  {
+    "termino": "rama",
+    "definicion": "Línea de trabajo separada en Git. Permite desarrollar una función sin modificar directamente la rama principal.",
+    "resaltar": false
+  },
+  {
+    "termino": "pull request",
+    "definicion": "Propuesta para integrar cambios de una rama en otra, que permite revisarlos antes de incorporarlos."
+  },
+  {
+    "termino": "TypeScript",
+    "definicion": "Lenguaje basado en JavaScript que agrega tipos para detectar ciertos errores mientras se programa."
+  },
+  {
+    "termino": "interfaz",
+    "definicion": "En TypeScript, una descripción de qué propiedades y tipos debe tener un objeto.",
+    "resaltar": false
+  },
+  {
+    "termino": "unión discriminada",
+    "definicion": "Tipo que reúne varias posibilidades y usa un campo distintivo para saber cuál está activa. Así el código puede tratar cada caso con seguridad."
+  },
+  {
+    "termino": "genérico",
+    "definicion": "Una forma de escribir una función o tipo que puede trabajar con distintos tipos de datos sin perder información de sus tipos.",
+    "resaltar": false
+  },
+  {
+    "termino": "any",
+    "definicion": "Tipo de TypeScript que desactiva gran parte de la comprobación de tipos para ese valor. Usarlo demasiado hace más fácil que se escapen errores."
+  },
+  {
+    "termino": "props",
+    "definicion": "Datos que un componente recibe desde su componente padre. Se leen, pero el componente hijo no debería modificarlos directamente."
+  },
+  {
+    "termino": "estado",
+    "definicion": "Dato que una pantalla o componente conserva y que puede cambiar con el tiempo. En React, actualizarlo puede volver a dibujar la interfaz.",
+    "resaltar": false
+  },
+  {
+    "termino": "useState",
+    "definicion": "Hook de React para guardar estado dentro de un componente funcional."
+  },
+  {
+    "termino": "useEffect",
+    "definicion": "Hook de React para sincronizar un componente con algo externo, como una suscripción o una petición. No es necesario para todo cálculo."
+  },
+  {
+    "termino": "useMemo",
+    "definicion": "Hook que conserva el resultado de un cálculo entre renderizados mientras sus dependencias no cambien."
+  },
+  {
+    "termino": "useCallback",
+    "definicion": "Hook que conserva una referencia a una función entre renderizados mientras sus dependencias no cambien."
+  },
+  {
+    "termino": "useRef",
+    "definicion": "Hook que guarda una referencia mutable que persiste entre renderizados y que, al cambiar, no vuelve a renderizar por sí sola."
+  },
+  {
+    "termino": "useFocusEffect",
+    "definicion": "Hook de Expo Router/React Navigation para ejecutar un efecto cuando una pantalla obtiene el foco."
+  },
+  {
+    "termino": "AppState",
+    "definicion": "API que informa si la aplicación está activa, en segundo plano o inactiva."
+  },
+  {
+    "termino": "Flexbox",
+    "definicion": "Sistema de diseño que distribuye elementos en filas o columnas y permite ajustar alineación y espacio."
+  },
+  {
+    "termino": "Safe area",
+    "definicion": "Zona segura de la pantalla que evita que el contenido quede debajo de la cámara, notch o indicadores del sistema.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "ScrollView",
+    "definicion": "Contenedor que permite desplazar contenido. Suele renderizar todos sus elementos a la vez."
+  },
+  {
+    "termino": "FlatList",
+    "definicion": "Lista de React Native que renderiza elementos de forma eficiente, especialmente cuando hay muchos."
+  },
+  {
+    "termino": "react-hook-form",
+    "definicion": "Librería que ayuda a manejar campos, valores y errores de formularios en React."
+  },
+  {
+    "termino": "Zod",
+    "definicion": "Librería para definir esquemas y validar que los datos tengan la forma y el contenido esperados.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "Expo Router",
+    "definicion": "Sistema de navegación de Expo donde la estructura de archivos y carpetas representa las rutas de la app."
+  },
+  {
+    "termino": "layout",
+    "definicion": "Archivo o componente que define una estructura compartida alrededor de varias pantallas, por ejemplo navegación o proveedores.",
+    "resaltar": false
+  },
+  {
+    "termino": "Stack",
+    "definicion": "Navegación donde las pantallas se apilan; al avanzar se agrega una y al volver se retira la actual.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "Tabs",
+    "definicion": "Navegación con pestañas para cambiar entre secciones principales de la aplicación.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "Context",
+    "definicion": "Mecanismo de React para compartir datos entre componentes sin pasarlos manualmente por cada nivel.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "Provider",
+    "definicion": "Componente que entrega un valor de Context a los componentes que están dentro de él.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "CNG",
+    "definicion": "Continuous Native Generation: Expo genera los proyectos nativos a partir de la configuración y los plugins, en lugar de mantenerlos editados manualmente.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "prebuild",
+    "definicion": "Comando de Expo que genera los proyectos nativos Android/iOS a partir de la configuración del proyecto."
+  },
+  {
+    "termino": "config plugin",
+    "definicion": "Código que modifica la configuración nativa durante el prebuild, por ejemplo para registrar permisos o ajustar una librería."
+  },
+  {
+    "termino": "permiso",
+    "definicion": "Autorización que el sistema operativo pide al usuario para que una app acceda a una función o dato protegido, como cámara o ubicación.",
+    "resaltar": false
+  },
+  {
+    "termino": "QR",
+    "definicion": "Código visual que representa información y puede leerse con la cámara. En el proyecto se usa para identificar o mostrar una reserva.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "API",
+    "definicion": "Interfaz definida para que dos programas se comuniquen y acuerden cómo pedir o entregar datos.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "HTTP",
+    "definicion": "Protocolo usado para intercambiar solicitudes y respuestas entre clientes y servidores en la web.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "fetch",
+    "definicion": "Función del navegador o entorno JavaScript para realizar solicitudes de red y recibir respuestas."
+  },
+  {
+    "termino": "Axios",
+    "definicion": "Librería de JavaScript para hacer solicitudes HTTP; ofrece una interfaz propia para configurar y procesar respuestas."
+  },
+  {
+    "termino": "mock",
+    "definicion": "Versión simulada de una función, API o dato real, usada para poder probar sin depender del servicio verdadero."
+  },
+  {
+    "termino": "caché",
+    "definicion": "Copia temporal de datos que permite reutilizarlos sin volver a pedirlos inmediatamente.",
+    "resaltar": false
+  },
+  {
+    "termino": "TanStack Query",
+    "definicion": "Librería para gestionar datos que vienen del servidor: consultas, caché, estados de carga y actualización tras cambios."
+  },
+  {
+    "termino": "kv-store",
+    "definicion": "Almacenamiento simple de clave y valor. Es útil para preferencias pequeñas; no reemplaza un almacenamiento seguro de credenciales."
+  },
+  {
+    "termino": "SQLite",
+    "definicion": "Base de datos relacional que guarda datos en el dispositivo, en un archivo local."
+  },
+  {
+    "termino": "SQL",
+    "definicion": "Lenguaje para consultar y modificar datos en bases de datos relacionales.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "inyección SQL",
+    "definicion": "Ataque en el que texto ingresado se interpreta como parte de una consulta SQL. Las consultas parametrizadas ayudan a evitarlo."
+  },
+  {
+    "termino": "migración",
+    "definicion": "Cambio controlado en la estructura de una base de datos para pasar de una versión a otra sin perder los datos necesarios.",
+    "resaltar": false
+  },
+  {
+    "termino": "offline",
+    "definicion": "Situación en la que la app no puede comunicarse con internet o un servidor. Una app preparada puede mostrar datos guardados o funciones locales.",
+    "resaltar": false
+  },
+  {
+    "termino": "polling",
+    "definicion": "Técnica de consultar periódicamente si cambió un dato, en lugar de recibir una notificación inmediata del cambio."
+  },
+  {
+    "termino": "Zustand",
+    "definicion": "Librería de estado global para React. Permite que distintas pantallas compartan datos mediante un store."
+  },
+  {
+    "termino": "OWASP",
+    "definicion": "Organización que publica guías y listas de riesgos de seguridad para ayudar a identificar y prevenir vulnerabilidades.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "SecureStore",
+    "definicion": "Almacenamiento de Expo para valores sensibles, respaldado por mecanismos seguros del sistema operativo. En web puede tener otra protección y no equivale a Keychain/Keystore."
+  },
+  {
+    "termino": "token",
+    "definicion": "Cadena que representa una credencial o autorización. Si alguien la obtiene, puede llegar a actuar como el usuario, por eso debe protegerse.",
+    "resaltar": false
+  },
+  {
+    "termino": "biometría",
+    "definicion": "Verificación de identidad mediante una característica física, como huella o rostro, gestionada por el sistema del dispositivo."
+  },
+  {
+    "termino": "OAuth 2.0",
+    "definicion": "Protocolo para permitir que una aplicación obtenga acceso autorizado a recursos sin recibir directamente la contraseña del usuario."
+  },
+  {
+    "termino": "PKCE",
+    "definicion": "Extensión de OAuth que vincula el código de autorización con una prueba secreta temporal, dificultando que otro lo canjee si lo intercepta.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "client secret",
+    "definicion": "Credencial secreta de una aplicación. No debe incluirse en una app móvil distribuida porque alguien podría extraerla; se guarda en el servidor."
+  },
+  {
+    "termino": "XSS",
+    "definicion": "Vulnerabilidad en la que contenido no confiable logra ejecutar código en una página o WebView.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "SRI",
+    "definicion": "Subresource Integrity: mecanismo del navegador para comprobar que un recurso externo descargado coincide con un hash esperado.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "IoT",
+    "definicion": "Internet de las cosas: dispositivos físicos con sensores o actuadores que intercambian datos mediante una red.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "BLE",
+    "definicion": "Bluetooth Low Energy, tecnología Bluetooth de bajo consumo para comunicarse a corta distancia con dispositivos compatibles.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "splash",
+    "definicion": "Pantalla inicial de marca que aparece mientras la aplicación se está abriendo o cargando."
+  },
+  {
+    "termino": "bundleIdentifier",
+    "definicion": "Identificador único de la app en iOS. Se usa para reconocer el producto en el sistema y en su distribución."
+  },
+  {
+    "termino": "android.package",
+    "definicion": "Identificador único de la aplicación Android, normalmente escrito como un nombre de dominio invertido."
+  },
+  {
+    "termino": "React",
+    "definicion": "Librería de JavaScript para construir interfaces a partir de componentes que se actualizan cuando cambian sus datos.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "JavaScript",
+    "definicion": "Lenguaje de programación usado en la web y en React Native para definir el comportamiento de la aplicación."
+  },
+  {
+    "termino": "Kotlin",
+    "definicion": "Lenguaje de programación usado habitualmente para desarrollar aplicaciones Android nativas.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "Swift",
+    "definicion": "Lenguaje de programación de Apple usado para desarrollar aplicaciones iOS nativas.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "Leaflet",
+    "definicion": "Librería de JavaScript para mostrar mapas interactivos en páginas web."
+  },
+  {
+    "termino": "Hermes",
+    "definicion": "Motor de JavaScript optimizado para ejecutar código en aplicaciones React Native.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "SDK",
+    "definicion": "Kit de desarrollo: herramientas y librerías que permiten integrar funciones de una plataforma.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "npm",
+    "definicion": "Gestor de paquetes de JavaScript que instala dependencias y ejecuta scripts del proyecto."
+  },
+  {
+    "termino": "npm install",
+    "definicion": "Comando que instala paquetes según las dependencias declaradas en el proyecto."
+  },
+  {
+    "termino": "release",
+    "definicion": "Versión preparada para distribuir o instalar, no solo para desarrollo local.",
+    "resaltar": false
+  },
+  {
+    "termino": "push",
+    "definicion": "Notificación enviada desde un servidor o servicio hacia el dispositivo, incluso cuando la app no está abierta.",
+    "resaltar": false
+  },
+  {
+    "termino": "local",
+    "definicion": "Que se ejecuta o se guarda en el propio dispositivo, sin depender necesariamente de un servidor remoto.",
+    "resaltar": false
+  },
+  {
+    "termino": "hook",
+    "definicion": "Función especial de React que permite usar capacidades como estado o efectos dentro de componentes funcionales.",
+    "resaltar": false
+  },
+  {
+    "termino": "renderizado",
+    "definicion": "Proceso por el que React calcula y muestra la interfaz a partir de los datos y el estado actuales.",
+    "resaltar": false
+  },
+  {
+    "termino": "ciclo de vida",
+    "definicion": "Etapas por las que pasa un componente o pantalla, desde que aparece hasta que se elimina o deja de estar activa."
+  },
+  {
+    "termino": "Jest",
+    "definicion": "Herramienta de JavaScript para ejecutar pruebas automatizadas.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "JSON",
+    "definicion": "Formato de texto estructurado para representar datos mediante objetos, listas y valores.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "localStorage",
+    "definicion": "Almacenamiento sencillo del navegador que conserva valores entre visitas. No es adecuado para secretos."
+  },
+  {
+    "termino": "Keychain",
+    "definicion": "Almacén protegido de credenciales y otros datos sensibles en dispositivos Apple."
+  },
+  {
+    "termino": "Keystore",
+    "definicion": "Sistema Android que permite proteger claves criptográficas y usarlas sin exponerlas directamente."
+  },
+  {
+    "termino": "authorization",
+    "definicion": "Autorización: decidir qué acciones o recursos puede usar una persona ya identificada.",
+    "resaltar": false
+  },
+  {
+    "termino": "autenticación",
+    "definicion": "Proceso de comprobar quién es el usuario o dispositivo que intenta ingresar.",
+    "resaltar": false
+  },
+  {
+    "termino": "Bearer",
+    "definicion": "Esquema habitual de un encabezado HTTP que presenta un token como credencial de acceso."
+  },
+  {
+    "termino": "API REST",
+    "definicion": "API web que suele organizar recursos y operaciones mediante URLs y métodos HTTP.",
+    "distinguirMayusculas": true
+  },
+  {
+    "termino": "backend",
+    "definicion": "Parte del sistema que corre en el servidor y gestiona reglas, datos y operaciones compartidas.",
+    "resaltar": false
+  },
+  {
+    "termino": "frontend",
+    "definicion": "Parte de la aplicación con la que interactúa directamente la persona usuaria.",
+    "resaltar": false
+  },
+  {
+    "termino": "base de datos",
+    "definicion": "Sistema organizado para guardar, consultar y modificar información.",
+    "resaltar": false
+  },
+  {
+    "termino": "queryKey",
+    "definicion": "Clave que TanStack Query usa para identificar y organizar una consulta y su caché."
+  },
+  {
+    "termino": "useMutation",
+    "definicion": "Hook de TanStack Query para acciones que modifican datos, como crear o cancelar una reserva."
+  },
+  {
+    "termino": "invalidateQueries",
+    "definicion": "Acción de TanStack Query que marca consultas como desactualizadas para que se vuelvan a consultar cuando corresponda."
+  },
+  {
+    "termino": "notificación local",
+    "definicion": "Aviso que la propia aplicación programa en el dispositivo, sin que un servidor tenga que enviarlo en ese momento."
+  },
+  {
+    "termino": "push notification",
+    "definicion": "Notificación que un servicio remoto envía al dispositivo a través de la infraestructura de notificaciones."
+  },
+  {
+    "termino": "cámara",
+    "definicion": "Sensor del dispositivo que permite capturar imágenes o video, sujeto a permisos del sistema.",
+    "resaltar": false
+  },
+  {
+    "termino": "ubicación",
+    "definicion": "Dato sobre la posición geográfica del dispositivo, que puede obtenerse con servicios de localización y requiere permiso.",
+    "resaltar": false
+  },
+  {
+    "termino": "háptica",
+    "definicion": "Respuesta táctil o vibración breve que la app usa para dar una señal al usuario.",
+    "resaltar": false
+  },
+  {
+    "termino": "sensor",
+    "definicion": "Componente que mide una condición física, como movimiento, luz o temperatura.",
+    "resaltar": false
+  },
+  {
+    "termino": "filesystem",
+    "definicion": "Sistema de archivos: espacio y estructura donde una aplicación puede leer o guardar archivos."
+  },
+  {
+    "termino": "originWhitelist",
+    "definicion": "Configuración de WebView que limita qué orígenes o direcciones puede cargar."
+  },
+  {
+    "termino": "javaScriptEnabled",
+    "definicion": "Opción de WebView que permite o bloquea la ejecución de JavaScript dentro del contenido web."
+  },
+  {
+    "termino": "route",
+    "definicion": "Ruta o dirección que identifica una pantalla dentro de la navegación de la aplicación.",
+    "resaltar": false
+  }
+]
