@@ -2,6 +2,7 @@ import { useId, useRef, useState } from 'react'
 import { useProgreso } from '../hooks/useProgreso'
 import type { Pregunta } from '../types/contenido'
 import { useAviso } from './Aviso'
+import { ContextoPregunta } from './ContextoPregunta'
 import { InsigniaPrioridad, Respuesta } from './Respuesta'
 import { RichText } from './RichText'
 
@@ -40,6 +41,7 @@ export function Desafio({ preguntas, onTerminar }: { preguntas: Pregunta[]; onTe
         <span className="rounded-full border border-line px-2 py-0.5 font-bold tabular-nums">N.º {p.id}</span>
         <InsigniaPrioridad prioridad={p.prioridad} />
       </div>
+      <ContextoPregunta pregunta={p} />
       <p className="mt-3 text-xl font-extrabold leading-snug text-ink sm:text-2xl"><RichText texto={p.pregunta} glosario /></p>
 
       <label htmlFor={campoId} className="mt-5 block text-sm font-bold text-muted">Tu respuesta (como la dirías en la Meet)</label>

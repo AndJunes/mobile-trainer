@@ -1,5 +1,7 @@
-import { useDeferredValue, useMemo, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useState } from 'react'
+import { CLAVE_BUSQUEDA_BANCO, EVENTO_BUSQUEDA_BANCO } from '../components/ContextoPregunta'
 import { PreguntaItem } from '../components/PreguntaItem'
+import { escribir, leer } from '../lib/almacen'
 import { useCarga } from '../hooks/useCarga'
 import { useProgreso } from '../hooks/useProgreso'
 import { cargarBanco, cargarTodosLosTemas, temasPorPregunta } from '../lib/contenido'
@@ -13,7 +15,21 @@ export function BancoVista({ soloRepasar = false }: { soloRepasar?: boolean }) {
     return { banco, indice: temasPorPregunta(temas) }
   }, 'banco')
   const { estado } = useProgreso()
-  const [busqueda, setBusqueda] = useState('')
+  // Un enlace "Otra versión: N.º X" deja la búsqueda guardada antes de navegar hasta acá.
+  const [busqueda, setBusqueda] = useState(() => {
+    const pedida = leer<string>(CLAVE_BUSQUEDA_BANCO) ?? ''
+    if (pedida) escribir(CLAVE_BUSQUEDA_BANCO, '')
+    return pedida
+  })
+  useEffect(() => {
+    const alBuscar = (e: Event) => {
+      setBusqueda((e as CustomEvent<string>).detail)
+      escribir(CLAVE_BUSQUEDA_BANCO, '')
+      window.scrollTo({ top: 0 })
+    }
+    window.addEventListener(EVENTO_BUSQUEDA_BANCO, alBuscar)
+    return () => window.removeEventListener(EVENTO_BUSQUEDA_BANCO, alBuscar)
+  }, [])
   const [bloque, setBloque] = useState('')
   const [prioridad, setPrioridad] = useState('')
   const [marca, setMarca] = useState('')

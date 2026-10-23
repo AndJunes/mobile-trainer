@@ -2,7 +2,7 @@
 // la teoría de cada unidad y el banco de preguntas se cargan cuando se necesitan.
 import unidadesJson from '../data/unidades.json'
 import glosarioJson from '../data/glosario.json'
-import type { BancoPreguntas, EntradaGlosario, Pregunta, Tema, Unidad } from '../types/contenido'
+import type { BancoPreguntas, Bloque, EntradaGlosario, Pregunta, Tema, Unidad } from '../types/contenido'
 
 export const unidades = unidadesJson as Unidad[]
 export const glosario = glosarioJson as EntradaGlosario[]
@@ -33,14 +33,24 @@ export async function cargarTodosLosTemas(): Promise<Tema[]> {
 
 let cacheBanco: Promise<BancoPreguntas & { porId: Map<string, Pregunta> }> | null = null
 
+export type Grupo = Bloque['grupos'][number] & { bloque: string }
+/** Grupo de cada pregunta (ejemplo de clase, categoría o ronda). Se completa al cargar el banco. */
+const grupos = new Map<string, Grupo>()
+
 export function cargarBanco() {
   if (!cacheBanco) {
     cacheBanco = import('../data/preguntas.json').then((m) => {
       const banco = m.default as unknown as BancoPreguntas
+      for (const b of banco.bloques) for (const g of b.grupos) grupos.set(g.id, { ...g, bloque: b.id })
       return { ...banco, porId: new Map(banco.preguntas.map((p) => [p.id, p])) }
     })
   }
   return cacheBanco
+}
+
+/** Las preguntas siempre se muestran después de cargar el banco, así que el grupo ya está indexado. */
+export function grupoDe(p: Pregunta): Grupo | undefined {
+  return p.grupo ? grupos.get(p.grupo) : undefined
 }
 
 /** Índice inverso: id de pregunta → temas que la usan (desafío o relacionadas). */

@@ -74,6 +74,8 @@ export interface Pregunta {
   prioridad: Prioridad | null
   /** Contenido de la guía que no es un campo rotulado (tablas o párrafos sueltos). */
   extras?: string
+  /** Otras versiones de la misma pregunta en la guía (por ejemplo, la teórica y la textual del profe). */
+  variantes?: string[]
 }
 
 export interface Bloque {
@@ -96,3 +98,4 @@ export interface EntradaGlosario {
   /** true = solo se reconoce con las mismas mayúsculas (p. ej. "API"). */
   distinguirMayusculas?: boolean
 }
+

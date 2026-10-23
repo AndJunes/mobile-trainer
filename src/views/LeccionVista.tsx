@@ -43,7 +43,12 @@ export function LeccionVista({ temaId }: { temaId: string }) {
 
   const indice = unidad.temas.indexOf(tema.id)
   const desafio = tema.desafio.map((id) => dato.banco.porId.get(id)).filter((p) => p !== undefined)
-  const relacionadas = tema.preguntasRelacionadas.map((id) => dato.banco.porId.get(id)).filter((p) => p !== undefined)
+  // Si una pregunta del desafío tiene otra versión en la guía, esa versión no se repite en "Más preguntas".
+  const variantesDelDesafio = new Set(desafio.flatMap((p) => p.variantes ?? []))
+  const relacionadas = tema.preguntasRelacionadas
+    .filter((id) => !variantesDelDesafio.has(id))
+    .map((id) => dato.banco.porId.get(id))
+    .filter((p) => p !== undefined)
 
   const siguienteTema = () => {
     if (completarTema(tema.id)) aviso('+25 XP · Tema dominado')

@@ -3,6 +3,7 @@ import { hrefDe } from '../hooks/useRuta'
 import { useProgreso } from '../hooks/useProgreso'
 import type { Pregunta, Tema } from '../types/contenido'
 import { useAviso } from './Aviso'
+import { ContextoPregunta } from './ContextoPregunta'
 import { InsigniaPrioridad, Respuesta } from './Respuesta'
 import { RichText } from './RichText'
 
@@ -26,6 +27,7 @@ export function PreguntaItem({ pregunta, temas = [] }: { pregunta: Pregunta; tem
           </a>
         ))}
       </div>
+      <ContextoPregunta pregunta={pregunta} />
       <h3 className="mt-2 text-base font-extrabold leading-snug text-ink sm:text-lg"><RichText texto={pregunta.pregunta} /></h3>
       <div className="mt-3 flex flex-wrap gap-2">
         <button onClick={() => setAbierta((a) => !a)} aria-expanded={abierta}

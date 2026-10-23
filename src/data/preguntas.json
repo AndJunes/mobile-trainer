@@ -198,7 +198,10 @@
     "origen": "Pregunta hecha en clase \\[U03-V1 12:36\\], anunciada como posible pregunta teórica \\[U03-V1 11:34\\].",
     "prioridadTexto": "Alta — el profesor la marcó como pregunta de parcial y conecta directo con una decisión visible del TP (el mapa en WebView)."
    },
-   "prioridad": "alta"
+   "prioridad": "alta",
+   "variantes": [
+    "7.A8"
+   ]
   },
   {
    "id": "1A.3",
@@ -2529,7 +2532,10 @@
     "origen": "Pregunta hecha en clase (un alumno preguntó si servía Leaflet) \\[U04-V5 1:22:28\\] + requisito de la consigna \\[TFI p.2\\].",
     "prioridadTexto": "Alta — el profe se pronunció en contra en clase y es un requisito mínimo explícito."
    },
-   "prioridad": "alta"
+   "prioridad": "alta",
+   "variantes": [
+    "9.15"
+   ]
   },
   {
    "id": "5.6",
@@ -3635,7 +3641,10 @@
     "respuestaRepregunta": "Sí, el mapa: es una página con Leaflet dentro de `react-native-webview` (`src/app/(tabs)/mapa.tsx:159-167`), es decir, justo el enfoque que el profesor contrapuso a React Native. El resto de la interfaz son componentes nativos (`View`, `Text`, `FlatList`, `CameraView`).",
     "clasificacion": "A — el profesor dijo que el mapeo del View \"puede ser una… pregunta de parcial o teórica\"."
    },
-   "prioridad": null
+   "prioridad": null,
+   "variantes": [
+    "1A.2"
+   ]
   },
   {
    "id": "7.A9",
@@ -4681,7 +4690,10 @@
     "origen": "Pregunta hecha en clase sobre Leaflet \\[U04-V5 1:22:28; U04-V5 1:23:29\\] + requisito mínimo no cumplido \\[TFI p.3, requisito 5\\].",
     "prioridadTexto": "Alta — el profesor se pronunció explícitamente en contra en clase; es casi seguro que lo pregunte."
    },
-   "prioridad": "alta"
+   "prioridad": "alta",
+   "variantes": [
+    "5.5"
+   ]
   },
   {
    "id": "9.16",
