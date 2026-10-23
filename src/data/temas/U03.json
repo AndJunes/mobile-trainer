@@ -1,0 +1,2088 @@
+[
+  {
+    "id": "u03-componentes-base",
+    "unidad": "U03",
+    "titulo": "Componentes base",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "`View` es el contenedor (Flexbox en columna) y mapea a una vista nativa; `Text` es el único que acepta strings; `TextInput` es un componente controlado, con el valor en tu estado; `Pressable` hace tocable cualquier cosa y reemplaza a los viejos `Touchable*`, pero no da feedback visual por defecto.",
+    "explicacion": [
+      "React Native no tiene etiquetas HTML. La equivalencia que se dio en clase es `div` → `View`, `p` → `Text`, `input` → `TextInput`, `img` → `Image` y `button` → `Pressable`. La diferencia de fondo con Ionic es que cada componente **mapea a un componente nativo**: un `View` se convierte en `UIView` en iOS y en `android.view` en Android, mientras que Ionic muestra una web view y por eso \"nunca se siente tan natural\". El profe lo marcó como posible pregunta de parcial.",
+      "`View` es el contenedor: no tiene estilo propio, admite de cero a muchos hijos y ya trae **Flexbox en columna**. Un componente no puede devolver dos elementos raíz sueltos: hace falta un `View` o un fragmento que los agrupe. `Text` es el único que acepta strings y no se comporta como una caja, porque usa layout de texto. Por eso el error más común de quien viene de la web es dejar texto suelto dentro de un `View`: en React Native eso tira un error en tiempo de ejecución, cuando el navegador lo habría ignorado.",
+      "`TextInput` no pertenece a ningún formulario: es un **componente controlado**. El valor vive en un `useState`, vuelve al input por `value` y se actualiza con `onChangeText`. En la demo de clase, un `value=\"hola\"` fijo no dejaba escribir, y guardar lo tipeado en una variable común no servía porque cada render la vuelve a su valor inicial. Props como `keyboardType` o `secureTextEntry` cambian el teclado u ocultan lo escrito, pero no validan nada.",
+      "Todo se toca con el pulgar, así que el evento es `onPress`, no `onClick`. `Pressable` envuelve cualquier cosa y distingue toque corto, largo, inicio y fin, pero **no da feedback visual**: lo armás vos con `style={({ pressed }) => [...]}`. `TouchableOpacity` baja la opacidad al tocar sin código extra, y el material lo da como reemplazado por `Pressable`. En el TP todos los botones son `TouchableOpacity`, por ejemplo cada turno de `GrillaTurnos`."
+    ],
+    "definiciones": [
+      {
+        "termino": "View",
+        "definicion": "Contenedor base, equivalente a un `div`, con Flexbox en columna y sin estilo propio; mapea a `UIView` (iOS) y `android.view` (Android).",
+        "ref": "[U03-V1 9:25; 11:34-12:36]"
+      },
+      {
+        "termino": "Text",
+        "definicion": "Único componente que acepta strings; usa layout de texto, no Flexbox. Se puede anidar `Text` en `Text` para mezclar formatos.",
+        "ref": "[U03-V1 21:17-22:22]; [U03.T02 p.6]"
+      },
+      {
+        "termino": "Componente controlado",
+        "definicion": "Input cuyo valor vive en el estado del componente y se le devuelve por `value`; cada cambio pasa por `onChangeText`.",
+        "ref": "[U03-V1 34:10]; [U03.T02 p.7]"
+      },
+      {
+        "termino": "Pressable",
+        "definicion": "Envoltorio que vuelve tocable cualquier componente (`onPress`, `onLongPress`); `style` y `children` pueden ser funciones que reciben `{ pressed }`.",
+        "ref": "[U03.T02 p.8]; [U02-V1 1:39:50]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "De HTML a React Native",
+      "columnas": [
+        "Web",
+        "React Native",
+        "Lo que hay que saber"
+      ],
+      "filas": [
+        [
+          "`div`",
+          "`View`",
+          "Flexbox en columna; mapea a una vista nativa"
+        ],
+        [
+          "`p`, `span`",
+          "`Text`",
+          "Único que acepta strings; texto suelto fuera de `Text` es un error"
+        ],
+        [
+          "`input`",
+          "`TextInput`",
+          "Controlado: `value` + `onChangeText`; no hay `form`"
+        ],
+        [
+          "`img`",
+          "`Image`",
+          "Necesita ancho y alto (la cátedra recomienda `expo-image`)"
+        ],
+        [
+          "`button`",
+          "`Pressable`",
+          "Sin feedback por defecto; `TouchableOpacity` baja la opacidad"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Dejar texto suelto dentro de un `View`: React Native tira error en tiempo de ejecución.",
+        "ref": "[U03-V1 11:34]; [U03.T02 p.4]"
+      },
+      {
+        "texto": "Devolver dos elementos raíz sin un `View` o fragmento que los envuelva.",
+        "ref": "[U03-V1 18:59]; [U02-V1 1:13:18]"
+      },
+      {
+        "texto": "Poner `value` fijo o guardar lo escrito en una variable común: no se puede escribir o se pierde en el re-render.",
+        "ref": "[U03-V1 49:00-52:12]"
+      },
+      {
+        "texto": "Creer que `keyboardType=\"email-address\"` valida el email: solo cambia el teclado.",
+        "ref": "[U03-V1 40:24]"
+      },
+      {
+        "texto": "Esperar que `returnKeyType=\"next\"` pase solo al campo siguiente: hay que hacer `focus` del otro input (o usar `onSubmitEditing`).",
+        "ref": "[U03-V1 1:00:49-1:01:51]; [U03.T02 p.7]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "const [email, setEmail] = useState('');\n\n<TextInput\n  placeholder=\"Ingrese su email\"\n  keyboardType=\"email-address\"\n  autoCapitalize=\"none\"\n  value={email}\n  onChangeText={setEmail}\n/>\n<Text>Tu email es {email}</Text>",
+      "ref": "[U03-V1 35:13-57:37]",
+      "nota": "Armado con las líneas de la demo del login. `onChangeText={setEmail}` equivale a `(t) => setEmail(t)`."
+    },
+    "citasProfe": [
+      {
+        "texto": "esto puede ser una consulta, una pregunta de parcial o teórica. El contenedor View…",
+        "ref": "[U03-V1 11:34]"
+      },
+      {
+        "texto": "El error más común de los que vienen de la web es poder meterlo en cualquier lado.",
+        "ref": "[U03-V1 11:34]"
+      },
+      {
+        "texto": "Fíjense que en realidad el Pressable tiene un problema, que no te da un feedback.",
+        "ref": "[U03-V1 1:08:08]"
+      }
+    ],
+    "aclaraciones": [
+      "Sobre `Pressable` y `TouchableOpacity` las fuentes no dicen lo mismo: el material da los `Touchable*` como reemplazados por `Pressable` [U03.T02 p.4]; en U03-V1 el profe marcó que `Pressable` no da feedback y `TouchableOpacity` sí [U03-V1 1:08:08]; y en la práctica de U04 dijo que \"es lo mismo\" [U04-V5 20:50]. Una forma neutral de decirlo: los dos responden al toque y cambia quién arma el feedback.",
+      "En clase el profe dijo, con dudas, que el Flexbox del `View` tendría \"seis columnas\" y quedó en confirmarlo [U03-V1 9:25]. El material solo dice que el `View` viene con Flexbox en dirección columna [U03.T02 p.4, 25]: no hay una cantidad fija de columnas."
+    ],
+    "referencias": [
+      "[U03.T02 p.4-8]; [U03-V1 7:19-1:13:44]; [U02-V1 1:09:08-1:15:31]",
+      "[U03-V1 9:25-21:17]",
+      "[U03-V1 34:10-1:13:44]",
+      "[U02-V1 1:39:50]",
+      "[U04-V5 20:50]",
+      "[U03.T02 p.6-7]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "El login usa `TextInput` controlados (`value` + `onChangeText`), con `keyboardType=\"email-address\"` y `autoCapitalize=\"none\"` en el email y `secureTextEntry` en la clave (`login.tsx:52-67`). Todos los botones son `TouchableOpacity` (por ejemplo `GrillaTurnos.tsx:24`, `TarjetaEspacio.tsx:23`) y no hay ningún `Pressable` en `src/`: funciona y da feedback sin código extra, aunque el material recomienda `Pressable` (en clase el profe dijo que \"es lo mismo\" [U04-V5 20:50]). La estrella de favorito es un `TouchableOpacity` anidado dentro del de la tarjeta (`TarjetaEspacio.tsx:41-47`).",
+      "archivos": [
+        {
+          "ruta": "src/app/(auth)/login.tsx",
+          "lineas": "52-67",
+          "nota": "TextInput controlados de email y clave"
+        },
+        {
+          "ruta": "src/componentes/GrillaTurnos.tsx",
+          "lineas": "24-26",
+          "nota": "TouchableOpacity por turno, `disabled={!esLibre}`"
+        },
+        {
+          "ruta": "src/componentes/TarjetaEspacio.tsx",
+          "lineas": "23, 41-47",
+          "nota": "tarjeta tocable con la estrella anidada"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.19",
+      "6.2.1",
+      "7.A8"
+    ],
+    "preguntasRelacionadas": [
+      "1A.2",
+      "1A.20",
+      "1A.21",
+      "6.2.2",
+      "6.2.3",
+      "6.2.4",
+      "7.C6"
+    ],
+    "preguntasRapidas": [
+      "¿Qué es un componente controlado?",
+      "¿Por qué `TouchableOpacity` y no `Pressable`?",
+      "¿Qué pasa si ponés texto suelto dentro de un `View`?"
+    ]
+  },
+  {
+    "id": "u03-stylesheet-y-flexbox",
+    "unidad": "U03",
+    "titulo": "StyleSheet y Flexbox",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Un estilo es un objeto: `StyleSheet.create` fuera del componente, camelCase, números sin unidad (dp), Flexbox con `flexDirection: 'column'` por defecto, sin atajos ni cascada. En un arreglo de estilos gana el de la derecha. Los colores van en un tema común y lo repetido se vuelve componente.",
+    "explicacion": [
+      "En React Native no hay archivos `.css`: un estilo es un **objeto de JavaScript**. Se puede escribir en línea (`style={{ padding: 16 }}`), cómodo para un ajuste puntual pero que crea un objeto nuevo en cada render, o con `StyleSheet.create`, que se define una vez, fuera del componente, y además está tipado: detecta propiedades mal escritas. La cátedra recomienda que cada componente tenga sus estilos en su propio archivo.",
+      "Se parece a CSS, con diferencias que conviene saber de memoria. Las propiedades van en **camelCase** y los números no llevan unidad: son píxeles independientes de la densidad (dp), que el sistema escala, y los porcentajes van como texto (`'100%'`). Todo `View` ya es Flexbox con `flexDirection: 'column'`, al revés que en la web. No hay atajos como `border: 1px solid red`, y **no hay cascada ni herencia**: un `color` en un `View` no tiñe los `Text` de adentro; la única excepción es un `Text` anidado en otro `Text`.",
+      "Los estilos se combinan con un arreglo: `style={[e.chip, activo && e.chipActivo]}`. El arreglo se resuelve de izquierda a derecha, así que **el de la derecha pisa al de la izquierda**, y un `false` se ignora. Así se hacen los estilos condicionales sin `if`: con el mismo patrón se marca un chip activo o el estado de una fila. El profe lo mostró con el borde rojo del input inválido y lo repitió para que no se olvide.",
+      "Para no repetir código, la cátedra pide dos cosas. Si un mismo estilo aparece en muchos lugares, se crea un **componente reutilizable**, como un `AppButton` con props tipadas. Y los valores de marca van en un archivo común: se importan los colores, no los estilos. Para claro y oscuro, `useColorScheme()` dice en qué modo está el sistema, pero repetir esa lógica en cada pantalla no escala: el tema se comparte con un Context y un hook propio."
+    ],
+    "definiciones": [
+      {
+        "termino": "dp (density-independent pixels)",
+        "definicion": "Unidad de los números de estilo: el sistema los escala según la densidad de la pantalla. No existen `px` ni `rem`.",
+        "ref": "[U03.T02 p.25]; [U03-V1 42:32]"
+      },
+      {
+        "termino": "StyleSheet.create",
+        "definicion": "Crea el objeto de estilos una sola vez, fuera del componente; está tipado y detecta propiedades mal escritas.",
+        "ref": "[U03.T02 p.24]; [U03-V4 1:08:06]"
+      },
+      {
+        "termino": "Arreglo de estilos",
+        "definicion": "`style={[a, b]}`: se aplica de izquierda a derecha y lo de la derecha pisa lo de la izquierda; un `false` se ignora.",
+        "ref": "[U03.T02 p.26]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "CSS frente a StyleSheet",
+      "columnas": [
+        "Aspecto",
+        "CSS (web)",
+        "React Native"
+      ],
+      "filas": [
+        [
+          "Nombres",
+          "`background-color`",
+          "`backgroundColor` (camelCase)"
+        ],
+        [
+          "Unidades",
+          "`px`, `rem`, `%`",
+          "Números en dp; porcentajes como texto"
+        ],
+        [
+          "Layout por defecto",
+          "Flexbox en `row` (si se activa)",
+          "Flexbox siempre, en `column`"
+        ],
+        [
+          "Atajos",
+          "`margin: 0 auto`, `border: 1px solid red`",
+          "Propiedad por propiedad (`borderWidth`, `borderColor`)"
+        ],
+        [
+          "Cascada y herencia",
+          "Sí",
+          "No (salvo `Text` dentro de `Text`)"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Poner `color` en un `View` y esperar que lo hereden los `Text` hijos.",
+        "ref": "[U03.T02 p.25]"
+      },
+      {
+        "texto": "Usar estilos en línea dentro de filas de una lista larga: se crea un objeto nuevo en cada render.",
+        "ref": "[U03.T02 p.24]"
+      },
+      {
+        "texto": "Copiar el mismo estilo en varios componentes en vez de crear un componente.",
+        "ref": "[U02-V1 1:29:19]; [U03-V4 1:25:43]"
+      },
+      {
+        "texto": "Repetir `useColorScheme` y el objeto de temas en cada pantalla en vez de exponerlo con un Context.",
+        "ref": "[U03-V4 1:33:11]; [U03.T02 p.28]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "const styles = StyleSheet.create({\n  input: { borderWidth: 1, borderColor: 'black' },\n  inputRedondeado: { borderRadius: 8 },\n  inputError: { borderColor: 'red' },\n});\n\n<TextInput\n  style={[styles.input, styles.inputRedondeado, !isValid && isSubmitted && styles.inputError]}\n/>",
+      "ref": "[U03-V4 1:10:20-1:20:23]",
+      "nota": "El contenido de `inputError` se reconstruye de la demo (el borde rojo pisa al negro porque está a la derecha)."
+    },
+    "citasProfe": [
+      {
+        "texto": "El de la derecha tiene más precedencia que el de la izquierda, acuérdense de eso, el último",
+        "ref": "[U03-V4 1:19:19]"
+      },
+      {
+        "texto": "es 1000 veces mejor crear un componente botón antes que esté por todos lados",
+        "ref": "[U03-V4 1:25:43]"
+      },
+      {
+        "texto": "Repetir estas dos líneas en cada pantalla no escala.",
+        "ref": "[U03-V4 1:33:11]"
+      }
+    ],
+    "aclaraciones": [
+      "En U02-V1 el profe dijo que cada componente tiene su propio estilo y no una hoja centralizada [U02-V1 1:24:04]; en U03-V4 agregó que lo que sí se centraliza son los valores, como los colores de marca [U03-V4 1:26:50]. No se contradicen: estilos por componente y valores compartidos.",
+      "NativeWind y Unistyles son opcionales. En clase el profe desaconsejó Unistyles para la app final porque tiene código nativo y no corre en Expo Go [U03-V4 1:37:22]; el material lo presenta como opción válida con development build [U03.T02 p.30-31]."
+    ],
+    "referencias": [
+      "[U03.T02 p.24-26]; [U03-V4 1:07:04-1:22:28]; [U02-V1 1:23:00-1:29:19]",
+      "[U03.T02 p.28]",
+      "[U03-V4 1:22:28-1:34:12]",
+      "[U02-V1 1:24:04]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Hay `StyleSheet.create` al final de cada archivo (por ejemplo `GrillaTurnos.tsx:94`) y arreglos condicionales: cada turno combina `styles.itemRow` con `rowLibre`, `rowReservado`, `rowFijo`, `rowMantenimiento` y `rowSeleccionado` (`GrillaTurnos.tsx:27-34`), y el botón del login usa `[styles.botonSubmit, cargando && styles.botonDeshabilitado]` (`login.tsx:73`). Lo que falta: los colores hex se repiten en cada archivo (`#121212`, `#1E1E1E`, `#4CAF50`) sin un tema centralizado; `src/constants/theme.ts` es de la plantilla y no se usa; y el modo oscuro está forzado con `\"userInterfaceStyle\": \"dark\"` (`app.json:9`) en lugar de leer `useColorScheme`.",
+      "archivos": [
+        {
+          "ruta": "src/componentes/GrillaTurnos.tsx",
+          "lineas": "27-34",
+          "nota": "arreglo de estilos por estado del turno"
+        },
+        {
+          "ruta": "src/app/(auth)/login.tsx",
+          "lineas": "73",
+          "nota": "estilo condicional del botón"
+        },
+        {
+          "ruta": "app.json",
+          "lineas": "9",
+          "nota": "modo oscuro forzado"
+        },
+        {
+          "ruta": "src/constants/theme.ts",
+          "nota": "plantilla de Expo sin uso"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.22",
+      "2.22",
+      "3.16"
+    ],
+    "preguntasRelacionadas": [
+      "3.6",
+      "1A.21",
+      "8.7"
+    ],
+    "preguntasRapidas": [
+      "En `[a, b]`, ¿qué estilo gana?",
+      "¿Por qué no centralizaron colores en un tema?",
+      "¿Qué `flexDirection` trae un `View` por defecto?"
+    ]
+  },
+  {
+    "id": "u03-safe-area-y-edge-to-edge",
+    "unidad": "U03",
+    "titulo": "Safe area y edge-to-edge",
+    "prioridad": "media",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Desde Android 15 y SDK 54 la app dibuja debajo de las barras del sistema (edge-to-edge) y no se puede desactivar. Cada pantalla que toca un borde aplica la safe area con `SafeAreaView` o `useSafeAreaInsets` de `react-native-safe-area-context`; si el navegador dibuja el header, el borde de arriba ya está resuelto.",
+    "explicacion": [
+      "Desde **Android 15 y el SDK 54**, la app se dibuja de borde a borde: por debajo de la barra de estado (reloj, notch) y de la barra de navegación o de gestos. Esto se llama **edge-to-edge**, no se puede desactivar, y esos márgenes \"ya tenés que manejar vos con tu lógica\". En la primera demo de clase el texto quedaba tapado por la barra superior y hubo que bajarlo con `marginTop` hasta llegar a este tema.",
+      "La solución es `react-native-safe-area-context`, que ya viene con Expo Router. Hay dos formas: el componente `SafeAreaView`, que envuelve la pantalla y le aplica el margen (con `edges` elegís qué bordes), y el hook `useSafeAreaInsets`, que te da los números para usarlos donde haga falta. En el iPhone del profe daba 62 arriba y 34 abajo, que es la barrita inferior. Ojo con el import: el `SafeAreaView` de `react-native` solo funciona en iOS, \"no funciona muy bien\" y está en desuso.",
+      "¿Dónde va? En **cada pantalla que toque un borde**, no una sola vez en el layout principal, porque depende de cada pantalla si lo necesita. Si la pantalla tiene el header que dibuja el navegador, el borde de arriba ya está cubierto. Hace falta cuando apagás el header (`headerShown: false`), en un login a pantalla completa o con un header propio."
+    ],
+    "definiciones": [
+      {
+        "termino": "Edge-to-edge",
+        "definicion": "La app dibuja detrás de la barra de estado y de la de navegación; obligatorio desde Android 15 y SDK 54.",
+        "ref": "[U03.T02 p.9]; [U03-V1 1:16:50]"
+      },
+      {
+        "termino": "Insets",
+        "definicion": "Márgenes que ocupa el sistema en cada borde (`top`, `bottom`, `left`, `right`), que devuelve `useSafeAreaInsets`.",
+        "ref": "[U03-V1 1:18:56-1:23:09]; [U03.T02 p.10]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Componente o hook",
+      "columnas": [
+        "",
+        "`SafeAreaView`",
+        "`useSafeAreaInsets`"
+      ],
+      "filas": [
+        [
+          "Qué es",
+          "Componente que envuelve y aplica el margen",
+          "Hook que devuelve los números de cada borde"
+        ],
+        [
+          "Cuándo",
+          "La pantalla común: \"lo que vas a usar casi siempre\"",
+          "Cuando el margen no va en el contenedor (padding de una lista, altura de una barra, header propio)"
+        ],
+        [
+          "Ejemplo",
+          "`<SafeAreaView edges={['top','bottom']}>`",
+          "`contentContainerStyle={{ paddingBottom: insets.bottom }}`"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Importar `SafeAreaView` de `react-native` en vez de `react-native-safe-area-context`.",
+        "ref": "[U03.T02 p.10]; [U03-V1 1:18:56]"
+      },
+      {
+        "texto": "Aplicar la safe area solo en la pantalla raíz: hay que hacerlo en cada pantalla que toque un borde.",
+        "ref": "[U03.T02 p.9]"
+      },
+      {
+        "texto": "Apagar el header y no reponer lo que resolvía: la safe area de arriba, el botón de volver y el título.",
+        "ref": "[U03.T01 p.12]; [U03-V2 26:03]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';\n\n// Pantalla sin header: el componente aplica el margen\n<SafeAreaView edges={['top', 'bottom']}>…</SafeAreaView>\n\n// Header propio: el hook da los números\nconst insets = useSafeAreaInsets();\n<View style={{ paddingTop: insets.top }}>…</View>",
+      "ref": "[U03.T02 p.10]; [U03.T01 p.12]",
+      "nota": "Combina dos diapositivas."
+    },
+    "citasProfe": [
+      {
+        "texto": "Yo no se los recomendaría ponérselo en la pantalla completa… en el layout principal.",
+        "ref": "[U03-V1 1:20:01]"
+      },
+      {
+        "texto": "el safe area solamente si no tenemos un header para esa pantalla.",
+        "ref": "[U03-V3 55:38]"
+      }
+    ],
+    "aclaraciones": [
+      "En U03-V3 `SafeAreaProvider` y `SafeAreaView` se mostraron casi como dos alternativas [U03-V3 49:15-57:47]. En U03-V1 quedó más claro: el Provider es la pieza de arriba (sin Expo Router hay que agregarlo a mano) y el margen se sigue aplicando por pantalla [U03-V1 1:22:09]; el material marca como error usarlo solo en la raíz [U03.T02 p.9]."
+    ],
+    "referencias": [
+      "[U03.T02 p.9-10]; [U03-V1 1:16:50-1:23:09]; [U03-V3 55:38]",
+      "[U03-V1 22:22-29:58]",
+      "[U03-V2 26:03]",
+      "[U03-V3 49:15-57:47]",
+      "[U03.T01 p.11-12]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`SafeAreaProvider` envuelve toda la app (`_layout.tsx:16`). Ninguna pantalla usa `SafeAreaView`: todas tienen el header del Stack raíz o el de las Tabs, que cubre el borde de arriba. Abajo, la barra de pestañas usa `useSafeAreaInsets` con `bottomPadding = Math.max(insets.bottom, 14)` y `barHeight = 60 + bottomPadding` (`(tabs)/_layout.tsx:9-11`, commit `c292f48`): toma el inset real del teléfono y, si es menor a 14, deja 14 de mínimo. [POSIBLE] `BannerOffline` se monta en `_layout.tsx:20`, por encima del Stack y sin `insets.top`, así que en un teléfono con notch podría quedar bajo la barra de estado: hay que verificarlo en un dispositivo.",
+      "archivos": [
+        {
+          "ruta": "src/app/_layout.tsx",
+          "lineas": "16, 20",
+          "nota": "SafeAreaProvider y BannerOffline"
+        },
+        {
+          "ruta": "src/app/(tabs)/_layout.tsx",
+          "lineas": "9-11",
+          "nota": "insets en la barra de pestañas"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.23",
+      "2.23",
+      "7.B10"
+    ],
+    "preguntasRelacionadas": [
+      "3.10",
+      "8.7",
+      "10.1.3"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué `Math.max(insets.bottom, 14)`?",
+      "¿Hook o componente: cuál usás y cuándo?",
+      "¿Qué pasa en una pantalla sin header?"
+    ]
+  },
+  {
+    "id": "u03-scrollview-vs-flatlist",
+    "unidad": "U03",
+    "titulo": "ScrollView vs FlatList",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "`ScrollView` renderiza todos sus hijos de una: sirve para contenido variado y de cantidad conocida. `FlatList` virtualiza: renderiza lo visible y un poco más, y libera lo que queda atrás. Pide `data` y `renderItem`; se suman `keyExtractor` con id estable, `ListEmptyComponent` y `RefreshControl`. Es pregunta anunciada para la defensa.",
+    "explicacion": [
+      "Un `View` no se desplaza: lo que no entra queda cortado. `ScrollView` es la vista para scrollear (vertical, u `horizontal` para un carrusel), pero tiene un problema grande: **renderiza todos sus hijos de una**. Con un `.map` de 1000 ítems monta los 1000 aunque se vean diez, y \"se va a empezar a comer la memoria del celular\". El material lo da como el error de rendimiento más frecuente.",
+      "`FlatList` (y `SectionList`, su variante con encabezados de grupo) **virtualiza**: renderiza solo lo que está en pantalla y un par más, y a medida que scrolleás monta las filas nuevas y libera de memoria las que quedan atrás, en los dos sentidos. Lo mínimo que pide es `data` y `renderItem`, una función que recibe `item` e `index`. En clase se armó con una lista de películas: primero `ScrollView` con `.map`, después la misma lista como `FlatList`.",
+      "Las props que la cátedra pidió usar son cuatro. `keyExtractor` con un **id único**: el índice solo si no hay id (\"no es lo ideal\"), y las keys duplicadas son un warning que se arregla antes de producción. **`ListEmptyComponent`** muestra el estado vacío sin preguntar con un `if`. `refreshControl` con `<RefreshControl refreshing onRefresh>` da el pull-to-refresh, y `onEndReached` con `onEndReachedThreshold` pide más datos antes de llegar al final.",
+      "El criterio no es \"siempre FlatList\". `ScrollView` va bien con contenido variado y de cantidad conocida: una pantalla de detalle, un formulario largo o unas diez posiciones fijas. Una colección que puede crecer va en `FlatList`, y si tiene encabezados de grupo, en `SectionList`. Un error típico es meter una `FlatList` dentro de un `ScrollView` vertical: pierde la virtualización y React Native avisa por consola.",
+      "Si te preguntan cómo optimizarla, lo primero es **medir**, y en build release, nunca en debug. Después vienen la key estable, no anidarla en un `ScrollView`, `getItemLayout` si las filas tienen altura fija y, si hay imágenes, `expo-image` con `recyclingKey`."
+    ],
+    "definiciones": [
+      {
+        "termino": "Virtualización",
+        "definicion": "Renderizar solo las filas visibles y unas pocas más, montando y desmontando a medida que se scrollea.",
+        "ref": "[U03.T02 p.12]; [U03-V1 1:39:05]"
+      },
+      {
+        "termino": "keyExtractor",
+        "definicion": "Función que devuelve la key de cada ítem; tiene que ser estable y propia del dato (el id), no el índice.",
+        "ref": "[U03-V1 1:44:25]; [U02.T01 p.17]"
+      },
+      {
+        "termino": "ListEmptyComponent",
+        "definicion": "Lo que la lista muestra cuando `data` está vacío; evita el `if` a mano.",
+        "ref": "[U03-V1 1:47:36-1:48:38]"
+      },
+      {
+        "termino": "RefreshControl",
+        "definicion": "Componente que se pasa en `refreshControl` para el pull-to-refresh, con `refreshing` y `onRefresh`.",
+        "ref": "[U03.T02 p.12]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "ScrollView frente a FlatList",
+      "columnas": [
+        "",
+        "`ScrollView`",
+        "`FlatList`"
+      ],
+      "filas": [
+        [
+          "Qué renderiza",
+          "Todos los hijos de entrada",
+          "Lo visible y un poco más; libera lo que sale"
+        ],
+        [
+          "Memoria con muchos ítems",
+          "Crece con la lista",
+          "Se mantiene acotada"
+        ],
+        [
+          "Cuándo usarla",
+          "Contenido variado y cantidad conocida",
+          "Colección que puede crecer o viene de una API"
+        ],
+        [
+          "Props típicas",
+          "`horizontal`, `contentContainerStyle`",
+          "`data`, `renderItem`, `keyExtractor`, `ListEmptyComponent`, `refreshControl`, `onEndReached`"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Una lista larga con `.map` dentro de un `ScrollView`: se renderizan mil filas aunque se vean diez.",
+        "ref": "[U03.T02 p.12]; [U02.T04 p.20]"
+      },
+      {
+        "texto": "Una `FlatList` dentro de un `ScrollView` vertical: pierde la virtualización.",
+        "ref": "[U03.T02 p.12]"
+      },
+      {
+        "texto": "Usar como key el título o el índice: claves duplicadas, o el estado de una fila queda pegado a otra al borrar.",
+        "ref": "[U03-V1 1:38:05]; [U02.T01 p.17]"
+      },
+      {
+        "texto": "Resolver la lista vacía con un `if` en vez de `ListEmptyComponent`.",
+        "ref": "[U03-V1 1:48:38]"
+      },
+      {
+        "texto": "Optimizar sin medir, o medir en debug.",
+        "ref": "[U02.T04 p.4, 22]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "<FlatList\n  data={productos}\n  keyExtractor={item => item.id}\n  renderItem={({ item }) => <Tarjeta producto={item} />}\n  ListEmptyComponent={<Vacio />}\n  onEndReached={cargarMas}\n  refreshControl={<RefreshControl refreshing={cargando} onRefresh={recargar} />}\n/>",
+      "ref": "[U03.T02 p.12]"
+    },
+    "citasProfe": [
+      {
+        "texto": "Para renderizar cosas por favor usen la FlatList.",
+        "ref": "[U03-V1 1:39:05]"
+      },
+      {
+        "texto": "Esto es muy importante siempre: ListEmptyComponent.",
+        "ref": "[U03-V1 1:47:36]"
+      },
+      {
+        "texto": "¿qué pasa si usamos una FlatList vs un ScrollView?",
+        "ref": "[U02-V2 16:55]"
+      }
+    ],
+    "aclaraciones": [
+      "Cuántas filas de más renderiza la `FlatList` no lo precisó el profe (\"no te lo sé decir… es parte del motor\") [U03-V1 1:53:57]; el material dice \"lo visible y un poco más\" [U03.T02 p.12].",
+      "Algunas respuestas de la guía dicen que Mis Reservas tiene pull-to-refresh; en el código solo el catálogo tiene `RefreshControl`.",
+      "La cita sobre `ListEmptyComponent` aparece en la guía con dos minutos distintos; en las notas de clase está en [U03-V1 1:47:36]."
+    ],
+    "referencias": [
+      "[U03.T02 p.11-13]; [U03-V1 1:39:05-1:52:53]; [U02-V2 16:55]; [U04-V4 45:52-49:06]",
+      "[U03-V1 1:23:09-1:38:05]",
+      "[U03-V1 1:53:57]",
+      "[U02.T04 p.4, 20, 22]",
+      "[U02.T01 p.17]",
+      "[U03.T02 p.14]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "El catálogo es una `FlatList` con `keyExtractor={(item) => item.id}`, pull-to-refresh con `RefreshControl` y `ListEmptyComponent` (`(tabs)/index.tsx:173-197`); los chips de deportes y de complejos también son `FlatList` horizontales (`:107`, `:130`). Mis Reservas es una `FlatList` con `keyExtractor` y `ListEmptyComponent`, pero sin pull-to-refresh (`mis-reservas.tsx:122-188`). La grilla de turnos es un `.map` (`GrillaTurnos.tsx:19`) dentro de un `ScrollView` vertical que envuelve solo a la grilla (`disponibilidad.tsx:206-219`): son 16 turnos fijos por día, el caso de cantidad conocida donde `ScrollView` alcanza.",
+      "archivos": [
+        {
+          "ruta": "src/app/(tabs)/index.tsx",
+          "lineas": "173-197",
+          "nota": "FlatList del catálogo con RefreshControl (:190) y ListEmptyComponent (:192)"
+        },
+        {
+          "ruta": "src/app/(tabs)/mis-reservas.tsx",
+          "lineas": "122-188",
+          "nota": "FlatList sin pull-to-refresh"
+        },
+        {
+          "ruta": "src/app/(tabs)/disponibilidad.tsx",
+          "lineas": "206-219",
+          "nota": "ScrollView que envuelve solo a GrillaTurnos"
+        },
+        {
+          "ruta": "src/componentes/GrillaTurnos.tsx",
+          "lineas": "19",
+          "nota": "`turnos.map`"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.24",
+      "2.7",
+      "7.A3"
+    ],
+    "preguntasRelacionadas": [
+      "1A.25",
+      "7.A4",
+      "5.7",
+      "10.1.1",
+      "10.1.2",
+      "6.3.1",
+      "6.3.5",
+      "4.24"
+    ],
+    "preguntasRapidas": [
+      "¿Qué pasa si usás FlatList en vez de ScrollView?",
+      "¿Por qué la grilla está hecha con `.map`?",
+      "¿Cómo optimizarías una FlatList?"
+    ]
+  },
+  {
+    "id": "u03-formularios-react-hook-form-zod",
+    "unidad": "U03",
+    "titulo": "Formularios: react-hook-form + Zod",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "En React Native no hay `<form>`: hay campos controlados y una función que dispara el botón. A mano se valida con un objeto de errores, que no escala; con React Hook Form + Zod, el esquema define las reglas y `Controller` + `handleSubmit` las aplican. Validar el formato en el front es obligatorio.",
+    "explicacion": [
+      "En React Native no existe `<form>`, ni submit, ni `name`, ni `FormData`. Un formulario son `TextInput` controlados sueltos, cada uno con su estado, y un botón cuyo `onPress` llama a tu función. Con tres o cuatro campos, un `useState` por campo alcanza.",
+      "Para validar a mano se arma un **objeto de errores**: si el email no incluye `@`, `errores.email = 'Email inválido'`; si la clave tiene menos de 8 caracteres, otro mensaje; si `Object.keys(errores).length > 0`, se guarda con `setErrores` y se corta antes de enviar. El objeto se tipa con una `interface` (`email?: string`). Funciona, pero cada campo nuevo suma código: el profe lo resumió como tedioso para ser apenas un login.",
+      "La alternativa es la **validación por esquema**. **Zod** describe cómo tiene que ser el objeto (`z.object({ ... })`) y ya trae reglas como la de email. **React Hook Form** maneja el resto: estado del formulario, errores, cantidad de envíos y valores por defecto.",
+      "Las dos se conectan con un **resolver** (`zodResolver(esquema)`), que estandariza el validador para que el formulario lo use siempre igual. Zod solo valida un objeto, pero no te salva de manejar estados y errores a mano: para eso está la librería de formularios.",
+      "En la pantalla, cada `TextInput` va envuelto en un `Controller`, que es obligatorio y le pasa al `control` del formulario lo que se escribe mediante `field.value` y `field.onChange`. El botón llama a `handleSubmit(ingresar)`, que ejecuta tu función solo si el esquema pasa, y los errores salen de `formState.errors`. El esquema además tipa el formulario: si escribís `errors.emial`, TypeScript avisa.",
+      "¿Por qué validar en el front si la API ya verifica? Porque el front valida el **formato**, no que el usuario exista: si la API solo trabaja con emails, no tiene sentido mandarle cualquier cosa. Y cuando el teclado tapa los campos se usa `KeyboardAvoidingView`, con `behavior` `'padding'` en iOS y `'height'` en Android."
+    ],
+    "pasos": [
+      "Instalar `react-hook-form`, `@hookform/resolvers` y `zod`.",
+      "Definir el esquema con `z.object({ ... })` y sus mensajes de error.",
+      "Llamar a `useForm({ resolver: zodResolver(esquema), defaultValues })`.",
+      "Envolver cada `TextInput` en un `Controller` con `name`, `control` y `render`.",
+      "Mostrar `errors.campo.message` debajo de cada campo.",
+      "Conectar el botón con `onPress={handleSubmit(ingresar)}`."
+    ],
+    "definiciones": [
+      {
+        "termino": "Validación por esquema",
+        "definicion": "Se describe en un objeto cómo tienen que ser los datos y el formulario usa ese esquema para validar.",
+        "ref": "[U03-V4 26:36]"
+      },
+      {
+        "termino": "Resolver",
+        "definicion": "Adaptador (`zodResolver`) que estandariza el validador para que React Hook Form lo use siempre igual.",
+        "ref": "[U03-V4 42:37-43:38]"
+      },
+      {
+        "termino": "Controller",
+        "definicion": "Envuelve cada campo y conecta su `value` y `onChange` con el `control` del formulario.",
+        "ref": "[U03-V4 44:44-48:00]"
+      },
+      {
+        "termino": "handleSubmit",
+        "definicion": "Recibe tu función y la ejecuta solo cuando la validación pasó.",
+        "ref": "[U03-V4 49:00]"
+      },
+      {
+        "termino": "KeyboardAvoidingView",
+        "definicion": "Componente que corre el contenido para que el teclado no tape los inputs; `behavior` según `Platform.OS`.",
+        "ref": "[U03-V4 58:34]; [U03.T02 p.19]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Tres formas de validar",
+      "columnas": [
+        "",
+        "A mano",
+        "Zod solo",
+        "React Hook Form + Zod"
+      ],
+      "filas": [
+        [
+          "Reglas",
+          "Un `if` por campo",
+          "Esquema `z.object`",
+          "Esquema vía `zodResolver`"
+        ],
+        [
+          "Estado, errores y envíos",
+          "A mano (`useState`, `setErrores`)",
+          "A mano",
+          "`useForm` y `formState`"
+        ],
+        [
+          "Con ocho campos",
+          "Crecen los `if` y los estados",
+          "Crecen los estados",
+          "Solo crece el esquema"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Poner `disabled={!isValid}` en el botón: nunca se llegan a ver los mensajes de error del submit.",
+        "ref": "[U03-V4 53:14-54:16]"
+      },
+      {
+        "texto": "Mostrar el error con `!isValid` solo: `isValid` puede arrancar en `false` y el borde rojo aparece antes de escribir; en clase se usó `!isValid && isSubmitted`.",
+        "ref": "[U03-V4 1:13:38-1:20:23]"
+      },
+      {
+        "texto": "Poner los `defaultValues` en el esquema: van en `useForm`.",
+        "ref": "[U03-V4 35:12-36:12]"
+      },
+      {
+        "texto": "Armar un archivo propio de validaciones en lugar de usar una librería que ya lo resuelve.",
+        "ref": "[U03-V4 39:22-40:29]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "const esquema = z.object({\n  email: z.email({ error: 'Email inválido' }),\n  clave: z.string().min(8, { error: 'Mínimo 8 caracteres' }),\n});\nconst { control, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(esquema) });\n\n<Controller name=\"email\" control={control}\n  render={({ field: { value, onChange } }) => <TextInput value={value} onChangeText={onChange} />} />\n{errors.email && <Text>{errors.email.message}</Text>}\n<Pressable onPress={handleSubmit(ingresar)}><Text>Ingresar</Text></Pressable>",
+      "ref": "[U03.T02 p.18]"
+    },
+    "citasProfe": [
+      {
+        "texto": "Si vos sabés que tu API solamente funciona con emails, tenés que validar que sea un email antes de llegar a la API",
+        "ref": "[U03-V4 20:09]"
+      },
+      {
+        "texto": "¿Para qué van a estar reinventando la rueda…?",
+        "ref": "[U03-V4 40:29]"
+      },
+      {
+        "texto": "Eso les va a pasar y lo van a tener que usar siempre",
+        "ref": "[U03-V4 59:35]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase el esquema se escribió `z.string().email('Email no válido')` [U03-V4 27:41-57:29]; el material usa `z.email({ error: 'Email inválido' })` [U03.T02 p.18]. Son dos formas de escribir la regla de email en Zod.",
+      "Para usar Zod solo, en clase se mostró una llamada que \"te devuelve un booleano\" [U03-V4 27:41-57:29]; la API de Zod es `esquema.parse()` o `esquema.safeParse()`, que devuelve `{ success, data }` o `{ success, error }`.",
+      "En clase no se llegó a una solución limpia para que los errores no aparezcan antes del submit; React Hook Form tiene la opción `mode` (`onSubmit`, `onBlur`, `onChange`, `onTouched`, `all`) y `reValidateMode` [U03-V4 55:21; 1:13:38-1:20:23]."
+    ],
+    "referencias": [
+      "[U03.T02 p.16-19]; [U03-V4 11:38-57:29]; [U03-V4 20:09-21:15]",
+      "[U03-V4 58:34-1:00:39]",
+      "[U03.T02 p.19]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado. Login y registro validan solo \"no vacío\" con `useState` y un `Alert` (`login.tsx:25-28`, `register.tsx:25-28`): no se valida el formato del email ni del teléfono, y no hay `react-hook-form` ni `zod` en `package.json`. Además, el servicio de login ignora la contraseña porque es un mock (`auth.ts:14-17`), y no hay `KeyboardAvoidingView` en login ni en registro. Hipotético: con un esquema como el del material envuelto en `Controller` y el botón en `handleSubmit(handleLogin)`, `iniciarSesion` solo se llamaría con un email de formato válido.",
+      "archivos": [
+        {
+          "ruta": "src/app/(auth)/login.tsx",
+          "lineas": "24-40",
+          "nota": "`handleLogin`: solo chequea campos vacíos"
+        },
+        {
+          "ruta": "src/app/(auth)/register.tsx",
+          "lineas": "25-28",
+          "nota": "validación de vacío"
+        },
+        {
+          "ruta": "src/servicios/auth.ts",
+          "lineas": "14-17",
+          "nota": "la clave se ignora (mock)"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.26",
+      "6.5.3",
+      "7.D8"
+    ],
+    "preguntasRelacionadas": [
+      "6.5.1",
+      "6.5.2",
+      "6.5.4",
+      "6.5.5",
+      "6.2.5",
+      "9.8"
+    ],
+    "preguntasRapidas": [
+      "¿Cómo validan el formato del email?",
+      "¿Qué aporta Zod frente a un `if`?",
+      "¿Para qué sirve el `Controller`?"
+    ]
+  },
+  {
+    "id": "u03-imagenes-expo-image",
+    "unidad": "U03",
+    "titulo": "Imágenes: `expo-image`",
+    "prioridad": "complementaria",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "En móvil no hay `<img>`: se usa `Image` de `expo-image`, con caché en disco y memoria, `contentFit`, `transition` y `placeholder`. Toda imagen necesita ancho y alto o no aparece. La caché es volátil y no es almacenamiento offline.",
+    "explicacion": [
+      "Para imágenes la cátedra recomienda `Image` de **`expo-image`** (`npx expo install expo-image`) y no el `Image` de React Native. Carga una imagen local con `require(...)` o remota con `{ uri }`, y suma `contentFit` (`cover` llena y recorta, `contain` entra entera), `transition` para que aparezca suave, `placeholder` mientras carga, prioridad de descarga y `alt` para el lector de pantalla. También soporta WebP, AVIF y SVG.",
+      "La regla que el profe repitió es que **toda imagen necesita dimensiones**. React Native no reserva espacio, así que sin ancho y alto la imagen directamente no aparece.",
+      "La otra idea clave es que **caché no es offline**. La caché, en memoria, en disco o en ambas, evita volver a descargar una imagen que ya se mostró. Conviene para lo que se ve muchas veces y cambia poco, como un logo o la portada, y no para una lista dinámica de 200 fotos que capaz se ven una sola vez. Pero es volátil y dura un tiempo que no decidís vos; lo offline, en cambio, tiene que quedar guardado en el teléfono hasta que algo lo borre."
+    ],
+    "definiciones": [
+      {
+        "termino": "Caché",
+        "definicion": "Memoria intermedia, más rápida y volátil, que guarda algo por un tiempo y después desaparece.",
+        "ref": "[U03-V4 9:33-10:37]"
+      },
+      {
+        "termino": "contentFit",
+        "definicion": "Cómo se acomoda la imagen en su caja (`cover`, `contain`, `fill`, `none`, `scale-down`); equivale al `object-fit` de CSS.",
+        "ref": "[U03.T02 p.15]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Caché frente a almacenamiento offline",
+      "columnas": [
+        "",
+        "Caché de imágenes",
+        "Almacenamiento offline"
+      ],
+      "filas": [
+        [
+          "Para qué",
+          "No volver a descargar lo ya visto",
+          "Que el dato exista sin red"
+        ],
+        [
+          "Cuánto dura",
+          "Un tiempo; el sistema la puede borrar",
+          "Hasta que la app o el usuario lo borre"
+        ],
+        [
+          "Conviene para",
+          "Logo, portada, imágenes repetidas",
+          "Lo que el usuario necesita sin señal"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Una imagen sin ancho ni alto: no aparece.",
+        "ref": "[U03-V4 4:08]; [U03.T02 p.14]"
+      },
+      {
+        "texto": "Cachear listas dinámicas que vienen de la API.",
+        "ref": "[U03-V4 7:25-8:28]"
+      },
+      {
+        "texto": "Decir que una imagen cacheada \"funciona offline\".",
+        "ref": "[U03-V4 8:28-11:38]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "import { Image } from 'expo-image';\n\n<Image\n  source={{ uri }}\n  style={{ width: '100%', aspectRatio: 3 / 4 }}\n  contentFit=\"cover\"\n  transition={200}\n/>",
+      "ref": "[U04.T02 p.9]; [U03.T02 p.14]"
+    },
+    "citasProfe": [
+      {
+        "texto": "sí o sí necesitan tener… un tamaño a la imagen",
+        "ref": "[U03-V4 4:08]"
+      },
+      {
+        "texto": "No, caché no es memoria interna, no es lo mismo",
+        "ref": "[U03-V4 8:28]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase se dijo que cuánto dura la caché lo define el componente y no el programador [U03-V4 6:23-11:38]; el material muestra que sí se elige dónde cachear con `cachePolicy` (`none`, `disk`, `memory`, `memory-disk`) [U03.T02 p.15]. Se elige el lugar, no que sea permanente."
+    ],
+    "referencias": [
+      "[U03.T02 p.14-15]; [U04.T02 p.9]; [U03-V4 2:01-11:38]",
+      "[U03-V4 6:23-11:38]",
+      "[U03.T02 p.15]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Parcial: `TarjetaEspacio` usa el `Image` de `react-native` (`TarjetaEspacio.tsx:2, 29-34`) con la primera foto del espacio o una URL de Unsplash de respaldo, así que sin internet no se ven. Sí respeta las dimensiones: el contenedor mide 150 de alto y la imagen ocupa el 100% (`:110-117`). `expo-image` está en `package.json` (`~57.0.5`), pero ningún archivo lo importa. Hipotético: cambiar el import por `expo-image` daría caché en disco para las fotos ya vistas, `placeholder` y `transition`; igual no sería almacenamiento offline.",
+      "archivos": [
+        {
+          "ruta": "src/componentes/TarjetaEspacio.tsx",
+          "lineas": "2, 29-34, 110-117",
+          "nota": "Image de react-native con URL remota y tamaño definido"
+        },
+        {
+          "ruta": "package.json",
+          "lineas": "17",
+          "nota": "`expo-image` instalado sin uso"
+        }
+      ]
+    },
+    "desafio": [
+      "7.A10",
+      "1B.25",
+      "8.13"
+    ],
+    "preguntasRelacionadas": [
+      "1A.25",
+      "5.18",
+      "7.D6"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué `Image` de RN y no `expo-image`?",
+      "¿La caché de imágenes es lo mismo que guardarlas offline?",
+      "¿Qué se ve en el catálogo sin señal?"
+    ]
+  },
+  {
+    "id": "u03-accesibilidad",
+    "unidad": "U03",
+    "titulo": "Accesibilidad",
+    "prioridad": "media",
+    "enfasisClase": 1,
+    "fuenteTipo": "mixto",
+    "resumen": "El sistema operativo (TalkBack, VoiceOver) hace casi todo; la app le describe qué es cada cosa con `accessibilityLabel`, `role`, `accessibilityHint` y estados. El error más frecuente es el botón de solo ícono sin etiqueta. Hay que respetar la letra agrandada y probar en un teléfono real.",
+    "explicacion": [
+      "Accesibilidad es que la app se pueda usar sin mirar la pantalla, con un **lector de pantalla** (TalkBack en Android, VoiceOver en iOS), y también para quien agrandó la letra, invirtió colores o apagó animaciones. Como dice el material, el sistema operativo ya hace casi todo: lo que hace la app es **describirle qué es cada cosa**. Es parecido al `aria-label` y al `role` de la web, y conviene resolverlo mientras se arma la pantalla, porque agregarlo al final es un rediseño.",
+      "Las props que cubren casi todos los casos son `accessible` (esto es un solo elemento), `role=\"button\"` (qué es), `accessibilityLabel` (cómo se llama) y `accessibilityHint` (una pista de lo que pasa al tocarlo). Con eso el lector dice, por ejemplo, «Agregar al carrito, botón». Para controles con estado se suman `accessibilityState` (checked, disabled) o `accessibilityValue`.",
+      "El error más frecuente es el **botón de solo ícono sin etiqueta**: el lector anuncia «botón» y nada más. Otros son las imágenes decorativas que se leen, las áreas de toque chicas (mínimo 44 pt en iOS y 48 dp en Android, se agrandan con `hitSlop`) y el poco contraste. Con la letra grande, `allowFontScaling` viene en `true` y no hay que apagarlo; si rompe el diseño, se acota con `maxFontSizeMultiplier`. Se prueba en un teléfono real."
+    ],
+    "definiciones": [
+      {
+        "termino": "Lector de pantalla",
+        "definicion": "Función del sistema que lee en voz alta lo que hay en pantalla: TalkBack (Android) y VoiceOver (iOS).",
+        "ref": "[U03.T02 p.38]"
+      },
+      {
+        "termino": "accessibilityLabel",
+        "definicion": "Nombre que el lector dice para un elemento; imprescindible en botones de solo ícono.",
+        "ref": "[U03.T02 p.39, 41]"
+      },
+      {
+        "termino": "allowFontScaling",
+        "definicion": "Prop de `Text`, en `true` por defecto, que escala la fuente según la configuración del usuario.",
+        "ref": "[U03-V1 41:27-45:48]; [U03.T02 p.6]"
+      }
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Botón de solo ícono sin `accessibilityLabel`: se anuncia «botón» y nada más.",
+        "ref": "[U03.T02 p.41]"
+      },
+      {
+        "texto": "Imagen decorativa que el lector lee (va `aria-hidden`).",
+        "ref": "[U03.T02 p.41]"
+      },
+      {
+        "texto": "Área de toque diminuta o contraste por debajo de 4,5:1.",
+        "ref": "[U03.T02 p.41]"
+      },
+      {
+        "texto": "Envolver media pantalla en un `View` con `accessible`: se lee todo de corrido y no se puede entrar a los botones.",
+        "ref": "[U03.T02 p.41]"
+      },
+      {
+        "texto": "Poner `allowFontScaling={false}`: se ignora la letra grande que eligió el usuario.",
+        "ref": "[U03-V1 42:32-45:48]"
+      }
+    ],
+    "citasProfe": [
+      {
+        "texto": "si ustedes quieren hacer una aplicación buena y realmente inclusiva, es esto",
+        "ref": "[U03-V4 1:43:49]"
+      },
+      {
+        "texto": "hay que respetarlo, no se rompe",
+        "ref": "[U02-V2 40:18]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase se dijo que la accesibilidad no se puede probar en simulador ni emulador [U03-V4 1:44:55]; el material precisa que el emulador de Android no trae TalkBack de fábrica pero se puede usar una imagen con Play Store, y que VoiceOver no corre en el simulador de iOS, donde está el Accessibility Inspector de Xcode [U03.T02 p.42].",
+      "En clase se nombró `accessibilityRole` [U03-V4 1:42:49]; el material recomienda `role`, que hace lo mismo, es la forma nueva y tiene precedencia [U03.T02 p.39]."
+    ],
+    "referencias": [
+      "[U03.T02 p.38-41]; [U03-V4 1:42:49-1:45:58]; [U02-V2 40:18]",
+      "[U03.T02 p.6]",
+      "[U03-V1 41:27-45:48]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado: no hay ningún `accessibilityLabel`, `role`, `accessibilityRole` ni `accessibilityHint` en `src/`. La estrella de favorito (`TarjetaEspacio.tsx:41-47`) y la papelera del panel admin (`admin/index.tsx:377-382`) son solo ícono, así que TalkBack anunciaría «botón» sin decir qué hacen; el texto `R E S E R V A R` (`disponibilidad.tsx:239`) se leería letra por letra. A favor: no se desactiva `allowFontScaling` y los turnos dicen LIBRE u OCUPADO con texto, no solo con color. Hipotético: en la estrella, `accessibilityLabel={esFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}` y `role=\"button\"`; en el botón, el texto \"Reservar\" sin espacios.",
+      "archivos": [
+        {
+          "ruta": "src/componentes/TarjetaEspacio.tsx",
+          "lineas": "41-47",
+          "nota": "estrella de favorito, solo ícono"
+        },
+        {
+          "ruta": "src/app/admin/index.tsx",
+          "lineas": "377-382",
+          "nota": "papelera, solo ícono"
+        },
+        {
+          "ruta": "src/app/(tabs)/disponibilidad.tsx",
+          "lineas": "239",
+          "nota": "texto \"R E S E R V A R\""
+        }
+      ]
+    },
+    "desafio": [
+      "1A.35",
+      "8.7",
+      "3.17"
+    ],
+    "preguntasRelacionadas": [
+      "1A.21",
+      "2.22"
+    ],
+    "preguntasRapidas": [
+      "¿Cómo lee TalkBack la estrella de favorito?",
+      "¿Qué le agregarías al botón Reservar?",
+      "¿Se rompe la pantalla con letra agrandada?"
+    ]
+  },
+  {
+    "id": "u03-expo-router-basado-en-archivos-y-layout",
+    "unidad": "U03",
+    "titulo": "Expo Router basado en archivos y `_layout`",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Expo Router es navegación basada en archivos, construida sobre React Navigation: cada archivo de `src/app/` es una ruta (\"la carpeta es el mapa\"). `_layout.tsx` es el navegador de su carpeta y no es una ruta; `(grupo)` no agrega segmento a la URL, `[id]` es un parámetro y `<Slot />` se usa cuando el layout solo envuelve proveedores.",
+    "explicacion": [
+      "En la web la navegación la resuelven la URL y el navegador; en una app no hay navegador, así que hay que construir esa parte. **React Navigation** lo hace registrando cada pantalla a mano dentro de un `NavigationContainer`. **Expo Router** es navegación **basada en archivos**, parecida a Next.js: creás un archivo y ya existe la ruta, sin un lugar central donde registrarla. No compiten: Expo Router está construido encima de React Navigation, y por eso la documentación de React Navigation sirve para las opciones avanzadas.",
+      "El arranque cambia. Con Expo Router, `package.json` tiene `\"main\": \"expo-router/entry\"`, que busca la carpeta `app` (en la plantilla actual, `src/app/`); si no existe, el error pide crear al menos `app/index.tsx`. Ya no hay `App.tsx`: el punto de entrada pasa a ser el `_layout.tsx` raíz. Cada archivo es una URL: `index.tsx` es `/` y `detalle.tsx` es `/detalle`.",
+      "Las convenciones de nombres son lo que más se pregunta. `_layout.tsx` envuelve todo lo que está en su carpeta: es **el navegador de esa carpeta** (ahí se declara si es `Stack`, `Tabs` o `Drawer`, con sus opciones) y no corresponde a ninguna ruta; si devolviera solo un `View`, taparía al `index`. `(grupo)` organiza sin tocar la URL, como `(tabs)/perfil.tsx` → `/perfil`. `[id]` es un parámetro, `[...resto]` captura varios segmentos como array y `+not-found.tsx` atiende rutas inválidas: obligatorio en web y útil en móvil con deep links.",
+      "Cuando el layout no navega y solo envuelve proveedores (sesión, tema, red), se usa **`<Slot />`**: un `_layout` no recibe `children`, y `Slot` es el lugar donde Expo Router dibuja la ruta hija; por eso el Provider de un contexto se pone una sola vez en el layout raíz, envolviendo al `Slot`. Si necesitás header, transición o gesto de volver, va un `Stack`, porque `Slot` muestra una sola ruta y desmonta la anterior. Como cada pantalla tiene una URL real, los deep links y la versión web salen sin configurar nada más."
+    ],
+    "definiciones": [
+      {
+        "termino": "_layout.tsx",
+        "definicion": "Componente que envuelve las rutas de su carpeta y define cómo se navega en ella; no es una ruta.",
+        "ref": "[U03-V2 9:48; 15:26]; [U03.T01 p.4]"
+      },
+      {
+        "termino": "Grupo `(carpeta)`",
+        "definicion": "Carpeta entre paréntesis que organiza archivos sin agregar segmento a la URL.",
+        "ref": "[U03-V2 16:29]; [U03.T01 p.4]"
+      },
+      {
+        "termino": "Ruta dinámica `[id]`",
+        "definicion": "Archivo cuyo nombre entre corchetes es un parámetro: `producto/[id].tsx` → `/producto/42`.",
+        "ref": "[U03.T01 p.4]"
+      },
+      {
+        "termino": "Slot",
+        "definicion": "Lugar del layout donde se dibuja la ruta hija cuando el layout no es un navegador.",
+        "ref": "[U03.T01 p.17]"
+      },
+      {
+        "termino": "Deep link",
+        "definicion": "Abrir la app desde otra app o desde un link y que lleve directo a una pantalla.",
+        "ref": "[U03-V2 10:54]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "React Navigation frente a Expo Router",
+      "columnas": [
+        "",
+        "React Navigation",
+        "Expo Router"
+      ],
+      "filas": [
+        [
+          "Cómo se declaran las rutas",
+          "Registrás cada pantalla en un `Stack.Navigator`",
+          "Cada archivo de `src/app/` es una ruta"
+        ],
+        [
+          "Punto de entrada",
+          "`index.ts` → `registerRootComponent(App)`",
+          "`expo-router/entry` → `_layout.tsx` raíz"
+        ],
+        [
+          "Navegar",
+          "`navigation.navigate('Detalle', { id: 42 })`",
+          "`<Link href=\"/detalle?id=42\">` o `router.push`"
+        ],
+        [
+          "Deep links y web",
+          "Requieren trabajo extra",
+          "Salen de las URLs de los archivos"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "`Stack.Screen name` que no coincide con el archivo (relativo al layout), o dos pantallas con el mismo nombre.",
+        "ref": "[U03-V3 36:18; 1:10:31]"
+      },
+      {
+        "texto": "Un `_layout` que devuelve solo un `View`, sin `Stack` ni `Slot`: tapa al `index`.",
+        "ref": "[U03-V2 15:26]"
+      },
+      {
+        "texto": "Olvidar los paréntesis de `(tabs)`: la ruta pasa a ser `/tabs/perfil`.",
+        "ref": "[U03.T01 p.14]"
+      },
+      {
+        "texto": "Layouts anidados con dos headers: se apaga uno con `headerShown: false`.",
+        "ref": "[U03.T01 p.18]; [U03-V2 34:47]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "import { Slot } from 'expo-router';\n\nexport default function RootLayout() {\n  return (\n    <SesionProvider>\n      <TemaProvider>\n        <Slot />\n      </TemaProvider>\n    </SesionProvider>\n  );\n}",
+      "ref": "[U03.T01 p.17]"
+    },
+    "citasProfe": [
+      {
+        "texto": "La carpeta es el mapa.",
+        "ref": "[U03-V2 10:54]"
+      },
+      {
+        "texto": "Creás un archivo y ya existe la ruta. No hay dónde tenés que registrar la ruta ni nada raro.",
+        "ref": "[U03-V2 10:54]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase se dijo que en el SDK 54 Expo Router era \"medio experimental\" y que, ante problemas, se podía usar React Navigation [U03-V2 2:14; U03-V3 0:02]; el material 2026 lo presenta como la opción que trae la plantilla [U03.T01 p.3]. El TP usa SDK 57, así que esa salvedad no aplica."
+    ],
+    "referencias": [
+      "[U03.T01 p.3-4, 8, 17]; [U03-V2 1:08-12:02]; [U02-V1 38:24-44:44]",
+      "[U03-V2 3:20-16:29]",
+      "[U03-V3 18:11-32:04]",
+      "[U02-V1 44:44]",
+      "[U03.T01 p.2, 14, 18]",
+      "[U03.T03]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`package.json:3` declara `\"main\": \"expo-router/entry\"`. `src/app/_layout.tsx:10-42` es el layout raíz: envuelve con `SafeAreaProvider`, `AuthProvider` y `NetworkProvider` y declara un `Stack` (`:21-37`) con `(tabs)` sin header y las pantallas de login, registro, detalles, escáner y admin. `(tabs)/_layout.tsx:7-80` es el navegador de pestañas. `(auth)` es un grupo sin layout propio: sus pantallas viven en el Stack raíz. `espacio/[id].tsx` y `reserva/[id].tsx` son rutas dinámicas. `src/app/index.tsx:4` solo hace `<Redirect href=\"/(tabs)\" />`, haya o no sesión. No hay `+not-found.tsx` ni `<Slot />`: la raíz usa `Stack`. [POSIBLE] `index.tsx` y `(tabs)/index.tsx` resuelven los dos a `/`; funciona por el `Redirect` explícito.",
+      "archivos": [
+        {
+          "ruta": "src/app/_layout.tsx",
+          "lineas": "10-42",
+          "nota": "RootLayout con providers y Stack (:21-37)"
+        },
+        {
+          "ruta": "src/app/(tabs)/_layout.tsx",
+          "lineas": "7-80",
+          "nota": "navegador de pestañas"
+        },
+        {
+          "ruta": "src/app/index.tsx",
+          "lineas": "4",
+          "nota": "Redirect a /(tabs)"
+        },
+        {
+          "ruta": "package.json",
+          "lineas": "3",
+          "nota": "entrada expo-router/entry"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.27",
+      "6.4.1",
+      "10.1.3"
+    ],
+    "preguntasRelacionadas": [
+      "6.4.2",
+      "3.2",
+      "2.1",
+      "3.4"
+    ],
+    "preguntasRapidas": [
+      "¿Qué hace el `index.tsx` raíz?",
+      "¿Por qué el `_layout` no es una pantalla?",
+      "¿Qué diferencia hay con React Navigation?"
+    ]
+  },
+  {
+    "id": "u03-stack",
+    "unidad": "U03",
+    "titulo": "Stack",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "Stack es una pila: cada pantalla nueva tapa a la anterior sin destruirla, por eso \"atrás\" sabe adónde volver y la de abajo conserva su estado. Se configura en el `_layout.tsx`: `screenOptions` para todas, `options` para una. El header lo dibuja el navegador; con navegadores anidados aparece el doble header y se apaga con `headerShown: false`.",
+    "explicacion": [
+      "En la web, moverse entre páginas lo resuelven la URL y el navegador; en una app no hay navegador web, así que esa parte hay que construirla. Con Expo Router, la carpeta declara qué pantallas existen y el `_layout.tsx` declara **cómo se navega** entre ellas. De las tres formas básicas (Stack, Tabs y Drawer), el profe presentó al Stack como la más simple.",
+      "El **Stack** funciona como una pila: cada pantalla nueva tapa a la anterior, pero no la destruye. Por eso el botón de volver siempre sabe adónde ir, y al volver la pantalla de abajo no se recarga: queda con su último estado, con el mismo scroll y el formulario a medio llenar. El ejemplo del material es Productos → Detalle → Editar.",
+      "Se arma importando `Stack` de `expo-router` en el layout. Cada `Stack.Screen` tiene un `name` que tiene que coincidir con el archivo, relativo al layout, y no puede repetirse. Una pantalla que no se nombra funciona igual y hereda la configuración general: solo se nombra lo que necesita algo distinto.",
+      "**`screenOptions`**, en el `<Stack>`, aplica a todas las pantallas; **`options`**, en un `Stack.Screen`, aplica solo a esa y pisa lo general. El modal no es un navegador aparte: es un `Stack.Screen` con `presentation: 'modal'`.",
+      "El **header** no es parte de la pantalla, lo dibuja el navegador: vos le pasás opciones como `title`, `headerStyle`, `headerTintColor` o `headerRight`. Además del título, resuelve la safe area de arriba y el botón de volver. Si lo apagás con `headerShown: false` (pantalla completa, header propio o header doble), esas tres cosas las tenés que reponer vos, por ejemplo con `useSafeAreaInsets()` y un `Pressable` que llame a `router.back()`.",
+      "El error clásico aparece al anidar navegadores. Si una pestaña tiene su propio Stack, o si las Tabs viven dentro del Stack raíz, cada navegador dibuja su header y quedan dos, uno arriba del otro. Se resuelve apagando uno, normalmente en el padre: `<Stack.Screen name=\"(tabs)\" options={{ headerShown: false }} />`. Es justo lo que hace el TP en su layout raíz."
+    ],
+    "definiciones": [
+      {
+        "termino": "Stack",
+        "definicion": "Navegador en pila: cada pantalla nueva tapa a la anterior sin destruirla, y volver no recarga los componentes.",
+        "ref": "[U03-V3 32:04]"
+      },
+      {
+        "termino": "screenOptions",
+        "definicion": "Prop del navegador (`<Stack>`, `<Tabs>`) con opciones globales para todas sus pantallas.",
+        "ref": "[U03-V2 19:35]"
+      },
+      {
+        "termino": "options",
+        "definicion": "Prop de un `Stack.Screen` con opciones solo para esa pantalla; pisa lo definido en `screenOptions`.",
+        "ref": "[U03.T01 p.8]"
+      },
+      {
+        "termino": "headerShown",
+        "definicion": "Opción que muestra u oculta el header que dibuja el navegador; se puede poner a nivel navegador o a nivel pantalla.",
+        "ref": "[U03.T01 p.11]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "`screenOptions` frente a `options`",
+      "columnas": [
+        "",
+        "`screenOptions`",
+        "`options`"
+      ],
+      "filas": [
+        [
+          "Dónde va",
+          "En el navegador: `<Stack>` o `<Tabs>`",
+          "En una pantalla: `<Stack.Screen>` o `<Tabs.Screen>`"
+        ],
+        [
+          "Alcance",
+          "Todas las pantallas de ese navegador",
+          "Solo esa pantalla"
+        ],
+        [
+          "Precedencia",
+          "Valor por defecto",
+          "Pisa lo de `screenOptions`"
+        ],
+        [
+          "Ejemplo típico",
+          "Color del header y del título para toda la app",
+          "`title` de una pantalla o `headerShown: false` en el login"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Doble header al anidar navegadores (Stack raíz con Tabs o con otro Stack adentro). Se apaga el header de uno con `headerShown: false`.",
+        "ref": "[U03.T01 p.18]; [U03-V3 1:05:12]"
+      },
+      {
+        "texto": "Poner en `Stack.Screen` un `name` que no coincide con el archivo, o repetir nombres: la pantalla no se enlaza o aparece el error de nombres duplicados.",
+        "ref": "[U03-V3 36:18]; [U03-V3 1:10:31]"
+      },
+      {
+        "texto": "Apagar el header y olvidarse de la safe area: el contenido queda debajo del reloj y sin botón de volver.",
+        "ref": "[U03-V2 26:03]; [U03.T01 p.12]"
+      },
+      {
+        "texto": "Hacer que el layout devuelva una vista en lugar de un navegador o un `<Slot />`: el layout toma precedencia y el `index` deja de verse.",
+        "ref": "[U03-V2 15:26]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "import { Stack } from 'expo-router';\nexport default function Layout() {\n  return (\n    <Stack screenOptions={{ headerStyle: { backgroundColor: '#0B3A5D' }, headerTintColor: '#fff' }}>\n      <Stack.Screen name=\"index\"   options={{ title: 'Productos' }} />\n      <Stack.Screen name=\"carrito\" options={{ presentation: 'modal' }} />\n    </Stack>\n  );\n}",
+      "ref": "[U03.T01 p.8]",
+      "nota": "`detalle.tsx` no aparece en el layout y funciona igual: hereda las `screenOptions`."
+    },
+    "citasProfe": [
+      {
+        "texto": "El header no es parte de la pantalla, sino que lo dibuja el navegador",
+        "ref": "[U03-V2 22:57]"
+      },
+      {
+        "texto": "cada pantalla nueva tapa la anterior, pero no la destruye… no recarga los componentes",
+        "ref": "[U03-V3 32:04]"
+      },
+      {
+        "texto": "Es el más simple en realidad.",
+        "ref": "[U03-V2 17:30]"
+      }
+    ],
+    "aclaraciones": [
+      "En la demo de clase el doble header se resolvió poniendo `headerShown: false` en el nivel de arriba, y en ese ejemplo se fue el header de los dos niveles [U03-V3 1:05:12]. El material recomienda apagarlo solo en la pantalla que contiene al navegador anidado, con `options` (`<Stack.Screen name=\"(tabs)\" options={{ headerShown: false }} />`) [U03.T01 p.18]."
+    ],
+    "referencias": [
+      "[U03.T01 p.6-12, 18]; [U03-V2 17:30-27:16]; [U03-V3 32:04-41:38]",
+      "[U03.T01 p.2, 5, 16]",
+      "[U03-V2 15:26]",
+      "[U03-V2 32:39-35:52]",
+      "[U03-V3 32:04-41:38]",
+      "[U03-V3 1:05:12-1:08:27]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "El layout raíz es un `Stack` con `screenOptions` oscuras: `headerStyle` `#121212`, `headerTintColor` blanco, `contentStyle` y `animation: 'slide_from_right'` (`_layout.tsx:21-29`). Cada pantalla tiene su título con `options` (`:31-36`). `(tabs)` va con `headerShown: false` (`:30`) porque el layout de Tabs dibuja su propio header (`(tabs)/_layout.tsx:25-31`); así se evita el doble header. El detalle de cancha, el de reserva, el login, el escáner y el panel de admin se apilan encima de las pestañas.",
+      "archivos": [
+        {
+          "ruta": "src/app/_layout.tsx",
+          "lineas": "21-37",
+          "nota": "Stack raíz, screenOptions y options por pantalla"
+        },
+        {
+          "ruta": "src/app/(tabs)/_layout.tsx",
+          "lineas": "14-32",
+          "nota": "screenOptions de Tabs con header propio"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.28",
+      "10.1.3",
+      "6.4.1"
+    ],
+    "preguntasRelacionadas": [
+      "2.1",
+      "1A.27",
+      "1A.23",
+      "6.4.2"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué `headerShown: false` en `(tabs)`?",
+      "¿`screenOptions` u `options`?",
+      "¿Qué pasa con el estado de la pantalla al volver atrás?"
+    ]
+  },
+  {
+    "id": "u03-tabs",
+    "unidad": "U03",
+    "titulo": "Tabs",
+    "prioridad": "media",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Las Tabs son secciones en paralelo con barra inferior: cada pestaña recuerda dónde estaba y conviene tener de tres a cinco. Se declaran en `(tabs)/_layout.tsx` con `Tabs.Screen`, `title` y `tabBarIcon`. Los íconos van con `@react-native-vector-icons/ionicons`; `@expo/vector-icons` queda deprecado.",
+    "explicacion": [
+      "Las **Tabs** son la barra inferior de apps como Instagram o X: secciones que el usuario recorre **en paralelo**, y cada pestaña recuerda dónde estaba. Conviene tener de tres a cinco, porque con más no entran los rótulos. El criterio del material: si dos secciones se visitan en secuencia y no en paralelo, no son pestañas, son un Stack.",
+      "Se arman como el Stack, pero importando `Tabs` y usando `Tabs.Screen`. Viven en un grupo `(tabs)` con su propio `_layout.tsx`, para que el segmento no aparezca en la URL. En `screenOptions` va, por ejemplo, `tabBarActiveTintColor`; en `options` de cada pestaña van el `title` y el `tabBarIcon`, una función que recibe el `color` y lo pasa al ícono, así se sigue usando el tema de la app. El `name` tiene que existir como archivo y ser único.",
+      "La estructura de casi toda app real es un Stack raíz con `(tabs)` adentro: las secciones son pestañas y lo que se abre encima, como un detalle, va al Stack. Para los íconos, la cátedra pide **`@react-native-vector-icons`**, un paquete por familia, instalado con `npx expo install @react-native-vector-icons/ionicons`. El viejo `@expo/vector-icons` instalaba todas las familias y queda deprecado.",
+      "En el TP hay exactamente cinco pestañas, el máximo recomendado: Canchas, Turnos, Mis Reservas, Mapa y Perfil. Todo lo que se abre encima, como el detalle de una cancha, vive en el Stack raíz, así que al volver se regresa a la pestaña donde se estaba."
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Declarar un `Tabs.Screen` con un nombre que no existe como archivo (en clase, \"perfil\").",
+        "ref": "[U03-V2 31:35]"
+      },
+      {
+        "texto": "Repetir nombres de pantalla: \"screen names tienen que ser únicas\".",
+        "ref": "[U03-V3 1:10:31]"
+      },
+      {
+        "texto": "Armar pestañas para secciones que se recorren en secuencia: eso es un Stack.",
+        "ref": "[U03.T01 p.13]"
+      },
+      {
+        "texto": "Crear la carpeta de pestañas sin paréntesis: la ruta pasa a ser `/tabs/perfil`.",
+        "ref": "[U03.T01 p.14]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "// src/app/(tabs)/_layout.tsx\nimport { Tabs } from 'expo-router';\nimport Ionicons from '@react-native-vector-icons/ionicons';\n<Tabs screenOptions={{ tabBarActiveTintColor: '#0B5394' }}>\n  <Tabs.Screen name=\"index\" options={{ title: 'Inicio',\n    tabBarIcon: ({ color }) => <Ionicons name=\"home\" size={22} color={color} /> }} />\n  <Tabs.Screen name=\"perfil\" options={{ title: 'Perfil' }} />\n</Tabs>",
+      "ref": "[U03.T01 p.14]"
+    },
+    "citasProfe": [
+      {
+        "texto": "Está bueno que sigo usando el tema de la aplicación.",
+        "ref": "[U03-V2 31:35]"
+      }
+    ],
+    "aclaraciones": [
+      "El material y el PRD dan por deprecado `@expo/vector-icons` y piden `@react-native-vector-icons/ionicons` [U03.T01 p.14]; [PRD05 p.5]. El TP importa `Ionicons` de `@expo/vector-icons` (`(tabs)/_layout.tsx:3`)."
+    ],
+    "referencias": [
+      "[U03.T01 p.13-14]; [U03-V2 27:16-32:39]; [U03-V3 1:08:27-1:17:06]; [PRD05 p.5]",
+      "[U03-V2 16:29-17:30]",
+      "[U03.T01 p.18]",
+      "[U03-V3 1:09:31-1:10:31]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "Cinco `Tabs.Screen` con `Ionicons` (`(tabs)/_layout.tsx:34-77`): `index` (Canchas), `disponibilidad` (Turnos), `mis-reservas`, `mapa` y `perfil`. Los íconos vienen de `@expo/vector-icons` (`:3`), no de la librería que pide el PRD. La altura de la barra se calcula con `useSafeAreaInsets()` para que no quede debajo de la barra de gestos (`:9-11`). `const { usuario } = useAuth()` en `:8` no se usa: las pestañas no cambian según el rol.",
+      "archivos": [
+        {
+          "ruta": "src/app/(tabs)/_layout.tsx",
+          "lineas": "1-11",
+          "nota": "import de @expo/vector-icons, useAuth sin uso, cálculo con insets"
+        },
+        {
+          "ruta": "src/app/(tabs)/_layout.tsx",
+          "lineas": "34-77",
+          "nota": "cinco Tabs.Screen"
+        }
+      ]
+    },
+    "desafio": [
+      "2.1",
+      "2.23",
+      "3.10"
+    ],
+    "preguntasRelacionadas": [
+      "1A.28",
+      "10.1.3",
+      "1A.23"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué cinco pestañas?",
+      "¿Deberían cambiar según el rol?",
+      "¿Qué librería de íconos pide el PRD?"
+    ]
+  },
+  {
+    "id": "u03-grupos-de-rutas",
+    "unidad": "U03",
+    "titulo": "Grupos de rutas",
+    "prioridad": "media",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Una carpeta entre paréntesis, `(grupo)`, organiza archivos y permite darles un layout propio sin agregar un segmento a la URL: `(tabs)/perfil.tsx` es `/perfil`. Por eso dos archivos en grupos distintos pueden caer en la misma ruta.",
+    "explicacion": [
+      "En Expo Router, una carpeta entre paréntesis es un **grupo**: organiza archivos sin tocar la URL. `(tabs)/perfil.tsx` responde en `/perfil`; si la carpeta se llamara `tabs`, la ruta sería `/tabs/perfil`. El profe dijo que se usa generalmente para las pestañas.",
+      "El grupo sirve para darle a un conjunto de pantallas **su propio `_layout.tsx`**, por ejemplo unas Tabs, sin que eso se note en la ruta. También permite separar zonas de la app, como el patrón del material de un `(privado)` frente al login para protegerlas con `Stack.Protected`. No toda carpeta necesita layout: va donde las rutas comparten un navegador, un estilo o algo que las envuelva.",
+      "Como el grupo no suma segmento, dos archivos en carpetas distintas pueden terminar en **la misma URL**. Es lo que pasa en el TP con `src/app/index.tsx` y `src/app/(tabs)/index.tsx`, que resuelven los dos a `/`. Funciona porque el primero redirige explícitamente a `/(tabs)`, pero conviene saber explicarlo. Además, `(auth)` no tiene layout: sus pantallas se declaran en el Stack raíz con la ruta completa, `\"(auth)/login\"`, y en la URL quedan como `/login`."
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Olvidarse del paréntesis: el nombre de la carpeta aparece en la URL (`/tabs/perfil`).",
+        "ref": "[U03.T01 p.14]; [U03-V2 27:16]"
+      },
+      {
+        "texto": "Crear dos rutas que resuelven a la misma URL en grupos distintos sin advertirlo.",
+        "ref": "[U03.T01 p.4]"
+      }
+    ],
+    "citasProfe": [
+      {
+        "texto": "define un grupo de rutas pero no modifica la URL",
+        "ref": "[U03-V3 29:54]"
+      },
+      {
+        "texto": "La carpeta es el mapa.",
+        "ref": "[U03-V2 10:54]"
+      }
+    ],
+    "referencias": [
+      "[U03.T01 p.4, 14]; [U03-V2 9:48-12:02]",
+      "[U03-V2 16:29]",
+      "[U03-V3 29:54]",
+      "[U03-V3 40:35-49:15]",
+      "[U03.T01 p.21]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`(tabs)` tiene layout propio con las cinco pestañas. `(auth)` no tiene `_layout`: sus pantallas se declaran en el Stack raíz como `\"(auth)/login\"` y `\"(auth)/register\"` (`_layout.tsx:31-32`). [POSIBLE] `src/app/index.tsx` y `(tabs)/index.tsx` resuelven ambos a `/`; funciona porque `index.tsx:4` hace `<Redirect href=\"/(tabs)\" />`.",
+      "archivos": [
+        {
+          "ruta": "src/app/_layout.tsx",
+          "lineas": "30-32",
+          "nota": "(tabs) y pantallas de (auth) en el Stack raíz"
+        },
+        {
+          "ruta": "src/app/index.tsx",
+          "lineas": "4",
+          "nota": "Redirect a /(tabs)"
+        },
+        {
+          "ruta": "src/app/(tabs)/_layout.tsx",
+          "nota": "layout propio del grupo"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.27",
+      "6.4.2",
+      "3.2"
+    ],
+    "preguntasRelacionadas": [
+      "2.1",
+      "10.1.3",
+      "10.1.4",
+      "1A.31"
+    ],
+    "preguntasRapidas": [
+      "¿Qué URL tiene `(auth)/login`?",
+      "¿Por qué `(auth)` no tiene layout?",
+      "¿Hay conflicto entre los dos `index`?"
+    ]
+  },
+  {
+    "id": "u03-rutas-dinamicas-id-y-parametros",
+    "unidad": "U03",
+    "titulo": "Rutas dinámicas `[id]` y parámetros",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Un archivo `[id].tsx` atiende toda una familia de rutas (`/producto/42`). El valor se lee con `useLocalSearchParams<{ id: string }>()` y todo parámetro llega como texto: `'42'` no es `42`, así que hay que convertirlo antes de compararlo con un número.",
+    "explicacion": [
+      "Un archivo con corchetes es una **ruta dinámica**: `producto/[id].tsx` atiende `/producto/42`, `/producto/7` y cualquier otro valor. Así no hace falta un archivo por producto. El nombre del parámetro es arbitrario: puede ser `id` o, como dijo el profe, incluso \"pepe\". En el nombre del archivo no se puede poner una barra; para capturar varios segmentos está `[...resto].tsx`, que recibe un arreglo.",
+      "Para navegar se arma la ruta con el valor, por ejemplo `router.push('/rutas/' + id)` o `<Link href={`/producto/${id}`}>`, o se pasa un objeto con `pathname` y `params`. También existen los query params (`/buscar?q=zapatillas`). Del otro lado, la pantalla lee los dos tipos con el hook **`useLocalSearchParams`**.",
+      "El punto que más remarcó la cátedra: **todo parámetro llega como texto**, porque viaja en la URL. Ese id es `'42'`, no `42`. Si lo comparás con `===` contra un número no coincide nunca, y el código parece correcto. Por eso el profe insistió en convertirlo con `Number(id)` cuando sabés que es numérico.",
+      "El genérico de `useLocalSearchParams<{ id: string }>()` solo le dice a TypeScript qué esperar: los tipos se borran al compilar y no convierten nada. Si se declarara `number`, el editor lo creería, pero en ejecución seguiría llegando un string.",
+      "Si la pantalla depende del parámetro, se usa un `useEffect` con `[id]` en el arreglo de dependencias: se dispara al montar y cada vez que `id` cambia. Ahí se cargan los datos y se puede poner el título dinámico, con `navigation.setOptions({ title })` como en clase o con `<Stack.Screen options={{ title: data?.nombre ?? 'Cargando…' }} />` como en el material. Si los datos vienen de una API, hay que esperar a que lleguen.",
+      "En el TP los ids son strings como `'esp-02'`, que es la convención del PRD, así que comparar texto con texto funciona sin convertir. Si la API usara ids numéricos, habría que aplicar `Number(id)` antes de buscar o comparar."
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Comparar el parámetro con `===` contra un número: `'42' === 42` es falso.",
+        "ref": "[U03.T01 p.20]; [U03-V2 35:52]"
+      },
+      {
+        "texto": "Creer que el genérico de `useLocalSearchParams` convierte el tipo: solo informa a TypeScript.",
+        "ref": "[U02.T01 p.4]"
+      },
+      {
+        "texto": "Intentar anidar con una barra en el nombre del archivo; para varios segmentos va `[...resto]`, que llega como arreglo.",
+        "ref": "[U03-V3 1:22:24-1:23:24]"
+      },
+      {
+        "texto": "Leer el parámetro una sola vez sin reaccionar a su cambio: la carga va en un `useEffect` con `[id]`.",
+        "ref": "[U03-V3 1:24:31]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "// src/app/producto/[id].tsx → /producto/42\nconst { id } = useLocalSearchParams<{ id: string }>();\nconst idNum = Number(id); // '42' → 42\n// query → /buscar?q=zapatillas&orden=precio\n<Link href={{ pathname: '/buscar', params: { q: 'zapatillas', orden: 'precio' } }}>Buscar</Link>\nconst { q, orden } = useLocalSearchParams<{ q?: string; orden?: string }>();",
+      "ref": "[U03.T01 p.20]"
+    },
+    "citasProfe": [
+      {
+        "texto": "Acuérdense de pasarlo a número en el caso que sepan que le están pasando un ID por parámetro.",
+        "ref": "[U03-V3 1:28:50]"
+      },
+      {
+        "texto": "Si lo comparás con tres iguales contra un número, no va a coincidir.",
+        "ref": "[U03-V2 35:52]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase se explicó que `useEffect` sin parámetros \"se dispara apenas se carga el componente\" [U03-V3 1:24:31]. Técnicamente, sin arreglo de dependencias corre en cada render; con `[]` corre solo al montar; con `[id]` corre al montar y cada vez que `id` cambia."
+    ],
+    "referencias": [
+      "[U03.T01 p.20]; [U03-V3 1:18:13-1:28:50]",
+      "[U03.T01 p.4, 9]",
+      "[U03-V2 35:52]",
+      "[U02.T01 p.4]",
+      "[PRD05 p.6]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`espacio/[id].tsx:21` y `reserva/[id].tsx:20` leen `useLocalSearchParams<{ id: string }>()` y cargan con `useEffect([id])`. Se navega con `router.push` a `/espacio/{id}` (`TarjetaEspacio.tsx:26`, también desde el mapa en `mapa.tsx:132`). Si el id no existe, el detalle muestra \"No se encontró la cancha requerida.\" (`espacio/[id].tsx:80-86`). El título es fijo (\"Detalle de Cancha\", `_layout.tsx:33`), no dinámico. \"Ver grilla\" va a `/(tabs)/disponibilidad` sin pasar la cancha (`espacio/[id].tsx:176`). Hipotético: pasar `params: { espacioId: id }` y leerlo en disponibilidad con `useLocalSearchParams`.",
+      "archivos": [
+        {
+          "ruta": "src/app/espacio/[id].tsx",
+          "lineas": "21-40",
+          "nota": "lectura del parámetro y carga con useEffect([id])"
+        },
+        {
+          "ruta": "src/app/espacio/[id].tsx",
+          "lineas": "80-86",
+          "nota": "id inexistente"
+        },
+        {
+          "ruta": "src/app/espacio/[id].tsx",
+          "lineas": "176",
+          "nota": "Ver grilla sin parámetro"
+        },
+        {
+          "ruta": "src/app/reserva/[id].tsx",
+          "lineas": "20"
+        },
+        {
+          "ruta": "src/componentes/TarjetaEspacio.tsx",
+          "lineas": "26"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.30",
+      "2.2",
+      "10.1.5"
+    ],
+    "preguntasRelacionadas": [
+      "6.4.3",
+      "7.B5",
+      "4.22",
+      "6.4.1"
+    ],
+    "preguntasRapidas": [
+      "¿De qué tipo llega `id`?",
+      "¿Cómo le pasarías la cancha a la grilla?",
+      "¿Qué se muestra si el id no existe?"
+    ]
+  },
+  {
+    "id": "u03-router-push-vs-router-replace",
+    "unidad": "U03",
+    "titulo": "`router.push` vs `router.replace`",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "`router.push` apila la pantalla nueva y deja el botón de volver; `router.replace` reemplaza la actual y no hay vuelta atrás; `router.back` vuelve. Después de un login va `replace`, no `push`, para que \"atrás\" no devuelva al formulario de una sesión ya iniciada.",
+    "explicacion": [
+      "Hay dos formas de moverse en Expo Router. La **declarativa** es `<Link href=\"/perfil\">`, como un enlace web. La **imperativa** es el objeto `router` (o el hook `useRouter()`), que se llama desde una función, por ejemplo después de validar un formulario. El material prefiere `Link` porque es accesible y se puede mantener apretado; para hacer clickeable una vista entera, en clase se usó `Pressable` con `router`.",
+      "**`router.push`** apila: la pantalla nueva queda encima y aparece solo el botón de volver. **`router.replace`** reemplaza la pantalla actual por la nueva: no hay botón de volver porque la anterior sale de la pila. `router.back()` vuelve a la pantalla de abajo y `router.dismiss()` cierra un modal.",
+      "La elección depende de si la pantalla anterior sigue teniendo sentido. Si el usuario debería poder volver, como de la lista al detalle de una cancha, va `push`; si la anterior ya cumplió su función, como el formulario de login, va `replace`. En clase se remarcó que con `router` se puede elegir una u otra según el caso, y el material muestra que `Link` también puede envolver un componente propio con `asChild`.",
+      "Después de un login va `replace`, porque nadie quiere que \"atrás\" lo devuelva al formulario de una sesión ya iniciada. En la demo de clase, el `handlePress` del login validaba que hubiera email y contraseña y hacía `router.push('/rutas')`: aparecía la flecha de volver (en iOS, con el nombre de la pantalla anterior). Al cambiarlo a `router.replace`, la flecha desaparecía. Como resumió el profe con un alumno, `replace` saca al login de la pila.",
+      "Hay un matiz: `replace` cambia solo la pantalla de arriba, no limpia lo que quedó abajo. En el TP, el login se abre con `push` desde una pestaña, y al loguearse se hace `replace('/(tabs)')`. Por eso podrían quedar dos instancias de las pestañas en la pila (sin verificar en ejecución). Si pasara, lo más limpio sería volver con `router.back()` o usar `router.dismissTo`."
+    ],
+    "comparacion": {
+      "titulo": "Formas de navegar",
+      "columnas": [
+        "Método",
+        "Qué hace con la pila",
+        "Botón de volver",
+        "Cuándo"
+      ],
+      "filas": [
+        [
+          "`router.push(ruta)`",
+          "Apila la pantalla nueva",
+          "Sí",
+          "Ir a un detalle, abrir una reserva"
+        ],
+        [
+          "`router.replace(ruta)`",
+          "Reemplaza la actual",
+          "No",
+          "Después del login o del registro"
+        ],
+        [
+          "`router.back()`",
+          "Saca la de arriba",
+          "—",
+          "Volver desde un header propio"
+        ],
+        [
+          "`router.dismiss()`",
+          "Cierra el modal",
+          "—",
+          "Salir de una pantalla `presentation: 'modal'`"
+        ],
+        [
+          "`<Link href>`",
+          "Igual que `push` por defecto",
+          "Sí",
+          "Enlace declarativo, accesible"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Usar `push` después del login: el usuario puede volver al formulario con la sesión ya iniciada.",
+        "ref": "[U03.T01 p.19]; [U03-V3 1:04:11]"
+      },
+      {
+        "texto": "Pensar que `replace` vacía la pila: reemplaza solo la pantalla actual.",
+        "ref": "[U03-V3 1:05:12]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "import { Link, router } from 'expo-router';\n<Link href=\"/perfil\">Ver perfil</Link>\n<Link href={`/producto/${id}`}>Ver producto</Link>\nrouter.push('/perfil');     // apila: queda el botón de volver\nrouter.replace('/inicio');  // reemplaza: sin vuelta atrás\nrouter.back();\nrouter.dismiss();           // cierra un modal",
+      "ref": "[U03.T01 p.19]"
+    },
+    "citasProfe": [
+      {
+        "texto": "[replace] es lo que vamos a hacer generalmente en el login.",
+        "ref": "[U03-V3 59:53]"
+      },
+      {
+        "texto": "El usuario ya no puede ir para atrás.",
+        "ref": "[U03-V3 1:05:12]"
+      }
+    ],
+    "aclaraciones": [
+      "El material dice que `Link` es el preferido, por accesible y porque se puede mantener apretado [U03.T01 p.19]. En clase, ante la pregunta de si cada tarjeta podía ser un `Link`, el profe respondió \"depende… es lo mismo\" y señaló que para una vista entera clickeable conviene `Pressable` con `router` [U04-V4 57:51-58:53].",
+      "El material importa `router` directamente de `expo-router` [U03.T01 p.19]; en clase se usó el hook `useRouter()` [U04-V4 57:51]. Las dos formas sirven, y el TP usa el hook."
+    ],
+    "referencias": [
+      "[U03.T01 p.19]; [U03-V2 35:52-36:57]; [U03-V3 58:51-1:05:12]",
+      "[U04-V4 56:43-58:53]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "Login y registro hacen `router.replace('/(tabs)' as any)` (`login.tsx:38`, `register.tsx:39`). Se usa `router.push` para ir al detalle de cancha (`TarjetaEspacio.tsx:26`), a una reserva (`mis-reservas.tsx:171`) y al login desde Perfil (`perfil.tsx:41`). [POSIBLE] Como el login fue apilado encima de las tabs, el `replace` puede dejar dos `(tabs)` en el Stack; habría que verificarlo ejecutando, y la alternativa sería `router.back()`.",
+      "archivos": [
+        {
+          "ruta": "src/app/(auth)/login.tsx",
+          "lineas": "24-40",
+          "nota": "handleLogin con replace en :38"
+        },
+        {
+          "ruta": "src/app/(auth)/register.tsx",
+          "lineas": "39"
+        },
+        {
+          "ruta": "src/app/(tabs)/perfil.tsx",
+          "lineas": "41-44",
+          "nota": "push al login y al registro"
+        },
+        {
+          "ruta": "src/componentes/TarjetaEspacio.tsx",
+          "lineas": "26"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.29",
+      "2.3",
+      "10.1.4"
+    ],
+    "preguntasRelacionadas": [
+      "6.4.5",
+      "7.B5",
+      "7.D9",
+      "6.4.1"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué `replace` después del login?",
+      "¿Qué pasa al tocar atrás después de loguearte?",
+      "¿Cuándo usarías `router.back()`?"
+    ]
+  },
+  {
+    "id": "u03-rutas-protegidas-stack-protected",
+    "unidad": "U03",
+    "titulo": "Rutas protegidas: `Stack.Protected`",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "`Stack.Protected` envuelve pantallas del layout con un `guard` booleano: si es falso, la ruta no existe y no se llega ni escribiendo la URL. Es mejor que redirigir desde adentro de la pantalla, que alcanza a mostrar la parte privada un instante. La condición suele salir de la sesión.",
+    "explicacion": [
+      "Hay pantallas que solo deberían existir con sesión iniciada, o con cierto rol. La solución ingenua es **redirigir desde adentro**: la pantalla privada se monta, chequea la sesión y, si no hay, manda al login. Tiene dos problemas: la pantalla alcanza a mostrarse un instante antes de que la saquen, y cada pantalla tiene que acordarse de hacer el chequeo.",
+      "**`Stack.Protected`** resuelve la protección en el layout, en un solo lugar. Envuelve uno o más `Stack.Screen` y recibe un `guard` booleano. Si el `guard` es falso, la ruta directamente no existe para el navegador: no se llega ni con `router.push` ni escribiendo la URL. El patrón del material son dos bloques complementarios: el grupo privado con `guard={!!sesion}` y el login con `guard={!sesion}`.",
+      "La condición sale de **la sesión**: de un hook como `useSesion()` que lee un Context, o del token guardado en el teléfono. El profe lo resumió así: si el token está, se muestra la parte privada; si no, el login. En la demo de clase, al cambiar el valor del `guard` desaparecía el login.",
+      "Como el layout consume la sesión, cuando esta cambia el layout se vuelve a dibujar y cambia qué rutas existen. Por eso este tema se apoya en Context y en el almacenamiento seguro del token.",
+      "La protección en el cliente ordena la navegación, pero no es la seguridad final: la autorización que se decide en la app es un riesgo de OWASP (M3). Quien autoriza de verdad es el servidor, que valida el token y el rol de cada pedido.",
+      "El TP no lo usa: el panel de admin chequea el rol adentro de la pantalla y el escáner no chequea el rol. Es el patrón que el material desaconseja, con el agravante de que la propia pantalla de admin ofrece un botón para darse ese rol."
+    ],
+    "comparacion": {
+      "titulo": "Dos formas de proteger una pantalla",
+      "columnas": [
+        "",
+        "`Stack.Protected` en el layout",
+        "Redirigir desde la pantalla"
+      ],
+      "filas": [
+        [
+          "Dónde se decide",
+          "Una vez, en el `_layout.tsx`",
+          "En cada pantalla privada"
+        ],
+        [
+          "Si no hay permiso",
+          "La ruta no existe: no se llega ni por URL",
+          "La pantalla se monta y después redirige"
+        ],
+        [
+          "Parpadeo",
+          "No",
+          "Alcanza a verse un instante"
+        ],
+        [
+          "Riesgo de olvido",
+          "Bajo: es central",
+          "Alto: cada pantalla tiene que acordarse"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Proteger desde adentro de la pantalla con un chequeo y una redirección: se ve la parte privada un instante y cada pantalla tiene que repetirlo.",
+        "ref": "[U03.T01 p.21]"
+      },
+      {
+        "texto": "Creer que proteger rutas en el cliente es seguridad suficiente: la autorización la valida el servidor.",
+        "ref": "[U06.T02 p.4-9]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "// src/app/_layout.tsx (login.tsx → /login; (privado)/perfil.tsx → /perfil)\nconst { sesion } = useSesion();\n<Stack>\n  <Stack.Protected guard={!!sesion}>\n    <Stack.Screen name=\"(privado)\" />\n  </Stack.Protected>\n  <Stack.Protected guard={!sesion}>\n    <Stack.Screen name=\"login\" />\n  </Stack.Protected>\n</Stack>",
+      "ref": "[U03.T01 p.21]"
+    },
+    "citasProfe": [
+      {
+        "texto": "La ruta no existe… no se llega ni escribiendo la URL. Fíjense, es mejor que andar redirigiendo desde adentro.",
+        "ref": "[U03-V2 36:57]"
+      },
+      {
+        "texto": "Si el token está, mostramos la parte privada y si el token no está mostramos el login y ya está.",
+        "ref": "[U03-V3 1:30:53]"
+      }
+    ],
+    "referencias": [
+      "[U03.T01 p.21]; [U03-V2 36:57]; [U03-V3 1:28:50-1:31:55]",
+      "[U03.T03 Context interactivo]",
+      "[U06.T02 p.4-9]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No hay guard central: no se usa `Stack.Protected` ni redirecciones en layouts. `admin/index.tsx:172-192` chequea el rol dentro de la pantalla y ofrece un botón para auto-asignarse administrador (`:183`). `encargado/escaneo.tsx` solo pide biometría (`:73-86`) y no verifica el rol. Además, Perfil tiene un conmutador de roles para cualquiera (`perfil.tsx:118-137`). Hipotético: en el Stack raíz, envolver `admin/index` con `Stack.Protected guard={usuario?.rol === 'administrador'}` y `encargado/escaneo` con un guard para encargado o administrador. Como `RootLayout` es quien monta `AuthProvider`, el `useAuth()` tendría que ir en un componente hijo que dibuje el `Stack`. Sin sacar el conmutador de roles, la guarda se saltea igual.",
+      "archivos": [
+        {
+          "ruta": "src/app/admin/index.tsx",
+          "lineas": "172-192",
+          "nota": "chequeo de rol adentro de la pantalla y auto-promoción"
+        },
+        {
+          "ruta": "src/app/encargado/escaneo.tsx",
+          "lineas": "73-86",
+          "nota": "solo biometría, sin rol"
+        },
+        {
+          "ruta": "src/app/(tabs)/perfil.tsx",
+          "lineas": "118-137",
+          "nota": "conmutador de roles"
+        },
+        {
+          "ruta": "src/app/_layout.tsx",
+          "lineas": "21-37",
+          "nota": "Stack sin guardas"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.31",
+      "2.4",
+      "9.7"
+    ],
+    "preguntasRelacionadas": [
+      "6.4.4",
+      "6.4.3",
+      "7.B12",
+      "8.2"
+    ],
+    "preguntasRapidas": [
+      "¿Cómo protegen el panel de administrador?",
+      "¿Un jugador puede abrir `/encargado/escaneo`?",
+      "¿Cómo lo resolverías con `Stack.Protected`?"
+    ]
+  },
+  {
+    "id": "u03-typedroutes",
+    "unidad": "U03",
+    "titulo": "`typedRoutes`",
+    "prioridad": "complementaria",
+    "enfasisClase": 0,
+    "fuenteTipo": "mixto",
+    "resumen": "`typedRoutes` es una opción experimental de Expo Router que tipa las rutas, para que TypeScript marque un `href` o un `router.push` hacia una ruta que no existe. No se dio en clase: es un elemento del TP. En el TP está activada, pero los casts `as any` la anulan.",
+    "explicacion": [
+      "Se activa en `app.json` con `\"experiments\": { \"typedRoutes\": true }`. Expo Router genera tipos con las rutas que existen en `src/app/`, en archivos que el `tsconfig.json` del TP incluye (`.expo/types` y `expo-env.d.ts`). Con eso, `router.push` y `Link` solo aceptan rutas válidas, y un error de tipeo en la ruta se marca en el editor.",
+      "Se conecta con lo que la cátedra dijo de TypeScript: el error pasa del tiempo de ejecución al de compilación. En un celular no tenés los logs a mano para ver por qué se rompió algo, y el arreglo pasa por la tienda. Sin rutas tipadas, un `'/espacios/'` mal escrito compila igual y falla recién cuando alguien toca el botón.",
+      "El problema del TP es el **`as any`**. Esa aserción le dice al compilador que no revise ese valor, así que apaga justo el chequeo que `typedRoutes` agrega. El profe fue explícito con `any`: no lo quiere ver. La forma tipada de navegar con parámetros es pasar un objeto con `pathname` y `params`, como muestra el material para `Link`, en lugar de concatenar strings y castear."
+    ],
+    "citasProfe": [
+      {
+        "texto": "yo no lo quiero ver en ningún lado",
+        "ref": "[U02-V1 1:02:27]"
+      },
+      {
+        "texto": "para un celular ... no tienen chance de ver los logs de la aplicación para ver por qué se rompió",
+        "ref": "[U01-V2 57:09]"
+      }
+    ],
+    "aclaraciones": [
+      "`typedRoutes` no aparece en las clases ni en los PDF de la cátedra. Lo que se explica sale de la configuración del TP (`app.json`, `tsconfig.json`) y de los conceptos de TypeScript vistos en U01 y U02. Los tipos se generan al correr el proyecto y no están en el repositorio: `.gitignore` excluye `.expo/` y `expo-env.d.ts`."
+    ],
+    "referencias": [
+      "Elemento del TP (`app.json:71-73`)",
+      "Elemento del TP (`tsconfig.json:14-19`; `.gitignore:7, 10`)",
+      "[U02-V1 1:02:27-1:04:31]",
+      "[U01-V2 56:04-57:09]",
+      "[U02.T01 p.5]",
+      "[U03.T01 p.20]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Activado (`\"experiments\": { \"typedRoutes\": true }`, `app.json:71-73`), pero todas las navegaciones castean `as any` (`TarjetaEspacio.tsx:26`, `login.tsx:38`, `perfil.tsx:96`, `mapa.tsx:132`, entre otras), lo que anula el beneficio. Hipotético: sacar los casts y navegar con `router.push({ pathname: '/espacio/[id]', params: { id } })` para que el compilador valide la ruta.",
+      "archivos": [
+        {
+          "ruta": "app.json",
+          "lineas": "71-73",
+          "nota": "experiments.typedRoutes"
+        },
+        {
+          "ruta": "tsconfig.json",
+          "lineas": "14-19",
+          "nota": "incluye .expo/types y expo-env.d.ts"
+        },
+        {
+          "ruta": "src/componentes/TarjetaEspacio.tsx",
+          "lineas": "26",
+          "nota": "push con as any"
+        },
+        {
+          "ruta": "src/app/(auth)/login.tsx",
+          "lineas": "38",
+          "nota": "replace con as any"
+        }
+      ]
+    },
+    "desafio": [
+      "4.22",
+      "1A.12",
+      "7.B11"
+    ],
+    "preguntasRelacionadas": [
+      "2.2",
+      "10.1.4",
+      "7.B5",
+      "2.10",
+      "1A.10"
+    ],
+    "preguntasRapidas": [
+      "¿Qué hace `typedRoutes`?",
+      "¿Por qué castean `as any`?",
+      "¿Qué error te hubiera mostrado sin el cast?"
+    ]
+  },
+  {
+    "id": "u03-context-y-provider",
+    "unidad": "U03",
+    "titulo": "Context y Provider",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "Context hace que un valor llegue a cualquier componente de un subárbol sin pasarlo por props, en tres pasos: crear, proveer y consumir. No guarda nada: el estado es un `useState` del Provider. Conviene un hook propio que avise fuera del Provider y un contexto por tema de datos, para datos que cambian poco (sesión, tema).",
+    "explicacion": [
+      "En React los datos bajan por props, de padre a hijo. Cuando muchos componentes de distintos niveles necesitan el mismo dato, hay que pasarlo a mano por componentes que no lo usan: eso es el **prop drilling**. En clase, con el material interactivo, el profe mostró que cambiar el tema desde una fila de Ajustes obligaba a subir la acción hasta `App` y bajar el dato a todos: \"terminamos renderizando ocho veces, de los cuales cuatro componentes no usaron ese dato\". Lo mismo pasa con la sesión o el idioma.",
+      "**Context** es el mecanismo de React para que un valor llegue a cualquier componente de un subárbol sin pasar por los del medio. El profe lo comparó con un servicio global de Angular.",
+      "Siempre son tres pasos. Primero se **crea** con `createContext(valorPorDefecto)`. Después se **provee** con un componente Provider que guarda el estado y envuelve a sus `children`. Por último se **consume** con `useContext`, que devuelve el valor del Provider más cercano hacia arriba y vuelve a renderizar al componente cuando ese valor cambia.",
+      "La confusión más común es pensar que Context guarda algo: el estado sigue siendo un **`useState`** dentro del Provider, y Context es solo el camino. El Provider se pone una vez, lo más arriba posible; con Expo Router, en el `_layout` raíz. Su alcance llega solo a lo que envuelve. En clase, el profe envolvió solo la ruta del login y usó el hook en otra ruta: dio error.",
+      "Las buenas prácticas de clase fueron tres. Un **hook propio** (`useTheme`) que hace `useContext` y lanza un error claro si no hay Provider; de paso, TypeScript deja de quejarse por el posible `null`. Armar el `value` con `useMemo` para no recrear el objeto en cada render. Y un contexto por tema de datos: tema, sesión e idioma por separado, porque si todo va junto, cambiar el idioma re-renderiza a los que solo leen el tema.",
+      "Conviene para datos que usa media app y que cambian poco: tema, usuario logueado, idioma. No conviene para el estado de un solo componente, para pasar algo uno o dos niveles (ahí alcanzan las props), ni para datos que cambian todo el tiempo, como el texto de un `TextInput`. Context entrega el valor entero y no permite suscribirse a un pedazo; para eso está Zustand con selectores. Igual, el profe recomendó armar un Provider propio para aprender las bases.",
+      "En el TP hay dos contextos separados, la sesión (`AuthContext`) y la red (`NetworkContext`), lo que respeta la regla de un contexto por tema de datos. Lo que no sigue de la clase es el hook que avisa con un error y el `useMemo` del `value`."
+    ],
+    "pasos": [
+      "Crear el contexto con `createContext`, tipado como `createContext<TipoDelContexto | null>(null)`.",
+      "Escribir el Provider: un componente que guarda el estado con `useState` y lo pasa en `value` envolviendo a `children`.",
+      "Montar el Provider una sola vez, lo más arriba posible: en Expo Router, el `_layout.tsx` raíz.",
+      "Escribir un hook propio (`useTema`, `useSesion`) que llame a `useContext` y lance un error si no hay Provider.",
+      "Consumir el dato desde cualquier componente de adentro con ese hook.",
+      "Opcional: memorizar el `value` con `useMemo` para no recrearlo en cada render."
+    ],
+    "definiciones": [
+      {
+        "termino": "Prop drilling",
+        "definicion": "Pasar una prop desde un padre muy arriba hasta un hijo muy abajo, a través de componentes que no la usan.",
+        "ref": "[U03-V5 17:01]"
+      },
+      {
+        "termino": "Provider",
+        "definicion": "Componente que guarda un estado y lo comparte con todos los hijos que envuelve.",
+        "ref": "[U03-V5 20:12-22:16]"
+      },
+      {
+        "termino": "Valor por defecto",
+        "definicion": "El argumento de `createContext`: es lo que recibe quien lee el contexto sin un Provider arriba.",
+        "ref": "[U03.T03 Context interactivo]"
+      },
+      {
+        "termino": "children",
+        "definicion": "Los componentes encerrados por el Provider; si no se renderizan, no aparecen.",
+        "ref": "[U03-V5 35:08]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Dónde poner cada estado",
+      "columnas": [
+        "Herramienta",
+        "Cuándo",
+        "Ejemplo"
+      ],
+      "filas": [
+        [
+          "`useState`",
+          "Dato de una pantalla y sus hijos directos",
+          "El texto de un formulario"
+        ],
+        [
+          "Props",
+          "Pasar algo uno o dos niveles",
+          "Un ítem a su tarjeta"
+        ],
+        [
+          "Context",
+          "Lo leen muchas pantallas y cambia poco",
+          "Sesión, tema, idioma"
+        ],
+        [
+          "TanStack Query",
+          "Datos del servidor",
+          "La lista que trae la API"
+        ],
+        [
+          "Zustand",
+          "Estado del cliente que cambia seguido y tocan pantallas no parientes",
+          "Un carrito, con selectores"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Leer el contexto fuera del Provider: devuelve el valor por defecto; con `null`, la desestructuración rompe con un mensaje poco claro.",
+        "ref": "[U03.T03 Context interactivo]; [U03-V5 46:42-49:00]"
+      },
+      {
+        "texto": "Olvidarse de envolver la app con el Provider, o envolver solo una parte.",
+        "ref": "[U03-V5 25:23-26:26]"
+      },
+      {
+        "texto": "Usar un solo contexto para todo: cada cambio re-renderiza a consumidores que no usan ese dato.",
+        "ref": "[U03-V5 26:26]; [U03.T03 Context interactivo]"
+      },
+      {
+        "texto": "Meter en Context datos que cambian todo el tiempo, como un `TextInput`: re-renderiza a todos los consumidores.",
+        "ref": "[U03-V5 25:23]"
+      },
+      {
+        "texto": "Meter en el estado global la lista que trae la API.",
+        "ref": "[U05.T02 p.19]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "const TemaContext = createContext(null);\nexport function TemaProvider({ children }) {\n  const [tema, setTema] = useState('claro');\n  const alternar = () => setTema((t) => (t === 'claro' ? 'oscuro' : 'claro'));\n  return <TemaContext value={{ tema, alternar }}>{children}</TemaContext>;\n}\nexport function useTema() {\n  const ctx = useContext(TemaContext);\n  if (!ctx) throw new Error('useTema() tiene que usarse dentro de <TemaProvider>');\n  return ctx;\n}",
+      "ref": "[U03.T03 Context interactivo]",
+      "nota": "Con React 19, `<TemaContext value>` funciona como Provider; antes se escribía `<TemaContext.Provider value>`."
+    },
+    "citasProfe": [
+      {
+        "texto": "un mecanismo para poder hacer que un valor llegue a cualquier componente. Es como hacer un servicio de manera global",
+        "ref": "[U03-V5 30:49]"
+      },
+      {
+        "texto": "usar un solo contexto para todo… también está mal",
+        "ref": "[U03-V5 26:26]"
+      },
+      {
+        "texto": "traten de usar un provider para saber cómo se hace… traten de ir a las bases",
+        "ref": "[U03-V5 1:16:33]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase se dijo que usar el contexto fuera del Provider \"da error\" [U03-V5 25:23]. El material precisa que se recibe el valor por defecto de `createContext`: con `null`, la app rompe al desestructurar, y el error claro aparece solo si el hook propio lo lanza [U03.T03 Context interactivo]. Con valores por defecto no-op, como en el TP, no hay ningún aviso.",
+      "U05.T02 dice que, cuando cambia el valor, Context \"re-renderiza todo el árbol\" [U05.T02 p.18]. El material interactivo y la clase precisan que se re-renderizan los componentes que leen el contexto [U03.T03 Context interactivo]; [U03-V5 21:15], y el mismo PDF lo dice así en la p.21.",
+      "En la demo de clase se usó `<ThemeContext.Provider value>` [U03-V5 30:49-35:08]; el material indica que en React 19 `<ThemeContext value>` hace exactamente lo mismo [U03.T03 Context interactivo]."
+    ],
+    "referencias": [
+      "[U03.T03 Context interactivo]; [U03-V5 15:59-1:14:25]; [U05.T02 p.18-21]",
+      "[U03-V5 1:15:29-1:19:44]",
+      "[U03-V5 1:26:00-1:27:00]",
+      "[U05.T02 p.19, 22-23]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`AuthContext` + `useAuth` (`AuthContext.tsx:5-82`) y `NetworkContext` + `useNetwork` (`NetworkContext.tsx:4-49`) están separados por tema de datos y anidados en `_layout.tsx:16-40` (`SafeAreaProvider > AuthProvider > NetworkProvider`). El `AuthProvider` guarda `usuario`, `token` y `cargando` en `useState` y restaura la sesión desde SecureStore en un `useEffect([])` (`:30-40`). Diferencias con lo de clase: `createContext` tiene valores por defecto no-op (`:15-23`) y `useAuth` no chequea nada (`:82`), así que fuera del Provider no avisa; el `value` es un objeto nuevo en cada render, sin `useMemo` (`:66-78`); usa la forma `AuthContext.Provider`. `token` y `cargando` no los consume ninguna pantalla.",
+      "archivos": [
+        {
+          "ruta": "src/context/AuthContext.tsx",
+          "lineas": "15-23",
+          "nota": "createContext con defaults no-op"
+        },
+        {
+          "ruta": "src/context/AuthContext.tsx",
+          "lineas": "25-82",
+          "nota": "AuthProvider, value sin useMemo y useAuth sin chequeo"
+        },
+        {
+          "ruta": "src/context/NetworkContext.tsx",
+          "lineas": "4-49"
+        },
+        {
+          "ruta": "src/app/_layout.tsx",
+          "lineas": "16-40",
+          "nota": "Providers anidados en el layout raíz"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.32",
+      "2.5",
+      "7.E4"
+    ],
+    "preguntasRelacionadas": [
+      "10.2.1",
+      "10.2.2",
+      "6.6.1",
+      "6.6.3",
+      "6.6.4",
+      "4.11",
+      "5.2",
+      "1B.26"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué dos contextos y no uno?",
+      "¿Qué pasa si uso `useAuth` fuera del Provider?",
+      "¿Por qué no usaron Zustand?"
+    ]
+  }
+]

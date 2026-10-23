@@ -1,0 +1,897 @@
+[
+  {
+    "id": "u06-owasp-mobile-top-10-2024",
+    "unidad": "U06",
+    "titulo": "OWASP Mobile Top 10 (2024)",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "En móvil el binario está en manos del atacante: \"el cliente no es un lugar seguro\" y ningún secreto puede vivir en la app. Del OWASP Mobile Top 10 (2024), M1 credenciales, M2 cadena de suministro y M3 autenticación y autorización son \"las tres cosas que todo TP integrador hace\"; M5 comunicación completa los cuatro que marca la cátedra.",
+    "explicacion": [
+      "En la web, el código que importa corre en el servidor. En móvil, la **aplicación entera se descarga e instala** en cada teléfono, así que el atacante tiene el binario en la mano: puede descomprimir el APK, leer el bundle de JavaScript, buscar cadenas e interceptar el tráfico con un proxy [U06.T02 p.4; U06-V2 2:07-3:07]. La consecuencia es que **ningún secreto puede vivir en la app**: ni una clave de API, ni una contraseña, ni un client secret, aunque esté en una variable de entorno, porque termina en el bundle. Y ofuscar no es cifrar.",
+      "A eso se suman cuatro diferencias con el escritorio [U06.T02 p.5; U06-V2 4:08-8:14]: **redes que no controlás**, como el wifi de una terminal; hardware sensible, donde cada permiso es una puerta que hay que justificar; un dispositivo que se pierde o se roba; y parches que pasan por la revisión de la tienda y por usuarios que no actualizan. Para el JavaScript, EAS Update permite corregir sin pasar por la tienda.",
+      "**OWASP** es una fundación sin fines de lucro que releva amenazas y propone mitigaciones. Su **Mobile Top 10** junta los diez riesgos más frecuentes y de mayor impacto a partir de reportes de incidentes, CVE y programas de bug bounty, y cada riesgo trae una sección \"¿soy vulnerable?\" [U06.T02 p.7; U06-V2 8:14-9:16]. La edición vigente es la de 2024: si un artículo dice \"M2: Insecure Data Storage\", está usando la lista vieja de 2016.",
+      "La cátedra marca cuatro riesgos que les van a tocar [U06.T02 p.9; U06-V2 9:16-13:24]: **M1, credenciales** (una clave de API en el código o un token sin cifrar), **M2, cadena de suministro** (dependencias comprometidas o abandonadas: `npm audit` y nada de paquetes con tres descargas), **M3, autenticación y autorización** (login casero, sesiones que no expiran, autorización decidida en el cliente) y **M5, comunicación** (HTTP en lugar de HTTPS o certificados sin validar). M6 aparece al hablar de permisos: pedir de más también es un riesgo [U06.T02 p.29].",
+      "Para M5 la regla es HTTPS siempre: Android e iOS bloquean el texto plano por defecto, y habilitar HTTP no es la solución. El **certificate pinning** hace que la app acepte solo un certificado concreto y protege contra proxies y certificados fraudulentos; el costo es que, cuando el certificado rota, la app deja de conectar hasta publicar otra versión. Por eso el material lo reserva para banca y salud, no para un TP [U06.T02 p.28; U06-V2 38:24-40:00].",
+      "Un ejemplo de M3: si la propia app decide quién es administrador, cualquiera que manipule el cliente se da permisos. Por eso el cierre de la unidad insiste: los secretos y la validación que importa van en el servidor [U06.T02 p.30; U06-V2 41:01]."
+    ],
+    "definiciones": [
+      {
+        "termino": "OWASP",
+        "definicion": "Fundación sin fines de lucro dedicada a la seguridad del software; publica material abierto que funciona como estándar de hecho.",
+        "ref": "[U06.T02 p.7]"
+      },
+      {
+        "termino": "OWASP Mobile Top 10",
+        "definicion": "Lista de los diez riesgos más frecuentes y de mayor impacto en apps móviles, armada con reportes de incidentes, CVE y bug bounty. La vigente es la de 2024.",
+        "ref": "[U06.T02 p.7-8]"
+      },
+      {
+        "termino": "Cadena de suministro (supply chain)",
+        "definicion": "Las dependencias que instalamos en la app: una librería comprometida o abandonada es un riesgo propio (M2).",
+        "ref": "[U06-V2 10:18]"
+      },
+      {
+        "termino": "Certificate pinning",
+        "definicion": "La app acepta solo un certificado conocido, no cualquiera válido; si el certificado rota, hay que publicar una versión nueva.",
+        "ref": "[U06.T02 p.28]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Los cuatro riesgos que les van a tocar",
+      "columnas": [
+        "Riesgo",
+        "Ejemplo típico",
+        "Mitigación"
+      ],
+      "filas": [
+        [
+          "M1 · Credenciales",
+          "Clave de API en el código; token guardado sin cifrar",
+          "Nada secreto en la app; tokens en SecureStore"
+        ],
+        [
+          "M2 · Cadena de suministro",
+          "Dependencia npm comprometida o abandonada",
+          "`npm audit`; no instalar paquetes con pocas descargas"
+        ],
+        [
+          "M3 · Autenticación y autorización",
+          "Login casero, sesiones que no expiran, rol decidido en el cliente",
+          "JWT, sesiones que expiran, refresh token; validar en el servidor"
+        ],
+        [
+          "M5 · Comunicación",
+          "HTTP en vez de HTTPS; certificados sin validar",
+          "HTTPS siempre; pinning solo en banca o salud"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Creer que una clave en una variable de entorno queda oculta: termina en el bundle.",
+        "ref": "[U06.T02 p.4]"
+      },
+      {
+        "texto": "Citar la lista de 2016 (\"M2: Insecure Data Storage\") en lugar de la edición 2024.",
+        "ref": "[U06.T02 p.7]"
+      },
+      {
+        "texto": "Decidir en la app quién tiene permisos de administrador (autorización en el cliente, M3).",
+        "ref": "[U06.T02 p.9]"
+      },
+      {
+        "texto": "Habilitar HTTP para que una petición funcione en lugar de usar HTTPS.",
+        "ref": "[U06.T02 p.28]"
+      },
+      {
+        "texto": "Pedir todos los permisos al iniciar la app: hay que pedirlos cuando se usan, y pedir de más es riesgo M6 y motivo de rechazo en la tienda.",
+        "ref": "[U06.T02 p.29; U06-V2 40:00]"
+      }
+    ],
+    "citasProfe": [
+      {
+        "texto": "client secret… contraseña… no puede estar dentro de la app porque es vulnerable",
+        "ref": "[U06-V2 3:07]"
+      },
+      {
+        "texto": "No instalar cualquier dependencia que veamos",
+        "ref": "[U06-V2 12:21]"
+      },
+      {
+        "texto": "evitar… los login caseros",
+        "ref": "[U06-V2 12:21]"
+      }
+    ],
+    "aclaraciones": [
+      "La frase \"son las tres cosas que todo TP integrador hace\" se refiere a M1, M2 y M3 [U06.T02 p.8]. M5 se suma en la diapositiva siguiente, como cuarto de \"los cuatro que les van a tocar\" [U06.T02 p.9].",
+      "En la transcripción del video se lee \"si la solución… es habilitar el HTTP, estamos en el camino el correcto\" [U06-V2 38:24-40:00]; por el contexto y por el material (\"habilitar HTTP no es la solución\") se entiende \"incorrecto\".",
+      "El material dice que EAS Update se vio \"en la Unidad 7\" y el video lo anuncia para esa unidad; el concepto de OTA ya se había presentado en U01 y U02 [U01-V1 58:02; U02.T02 p.22]."
+    ],
+    "referencias": [
+      "[U06.T02 p.4-9]; [U06-V2 2:07-13:24]",
+      "[U06.T02 p.28-30]",
+      "[U06-V2 38:24-41:01]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "La contraseña se ignora (`auth.ts:14-17`) y el token es falso y predecible (`vgy_token_{id}_{timestamp}`, `auth.ts:30`). Cualquier usuario logueado se cambia a administrador desde Perfil (`perfil.tsx:118-137`) o desde el panel (`admin/index.tsx:180-189`), y el rol queda persistido (`auth.ts:92-98`): es autorización decidida en el cliente (M3). El escáner tampoco verifica el rol (`escaneo.tsx`). A favor: todas las consultas SQL usan parámetros `?`, y como no hay backend no hay claves de API en el código ni tráfico HTTP que proteger todavía.",
+      "archivos": [
+        {
+          "ruta": "src/servicios/auth.ts",
+          "lineas": "14-37",
+          "nota": "contraseña ignorada y token falso"
+        },
+        {
+          "ruta": "src/servicios/auth.ts",
+          "lineas": "92-98",
+          "nota": "cambiarRolPruebas persiste el rol en SecureStore"
+        },
+        {
+          "ruta": "src/app/(tabs)/perfil.tsx",
+          "lineas": "118-137",
+          "nota": "conmutador de roles para cualquier usuario"
+        },
+        {
+          "ruta": "src/app/admin/index.tsx",
+          "lineas": "172-192",
+          "nota": "botón que se autoasigna el rol administrador"
+        },
+        {
+          "ruta": "src/app/encargado/escaneo.tsx",
+          "lineas": "73-86",
+          "nota": "solo pide biometría, no rol"
+        },
+        {
+          "ruta": "src/bd/sqlite.ts",
+          "lineas": "46-62, 75",
+          "nota": "SQL parametrizado"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.31",
+      "7.C4",
+      "9.7"
+    ],
+    "preguntasRelacionadas": [
+      "8.9",
+      "1B.32",
+      "9.9",
+      "8.2"
+    ],
+    "preguntasRapidas": [
+      "¿Qué riesgo OWASP tiene el conmutador de roles?",
+      "¿Dónde debería decidirse el rol?",
+      "¿Qué pasa si alguien entra con un email de los mocks?"
+    ]
+  },
+  {
+    "id": "u06-securestore-y-tokens",
+    "unidad": "U06",
+    "titulo": "SecureStore y tokens",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "`expo-secure-store` guarda cadenas cifradas en el almacén de claves del sistema: Keystore en Android y Keychain en iOS. Va lo que, leído por otro, le permite hacerse pasar por el usuario. Access token de vida corta y refresh token de vida larga, los dos ahí; el logout los borra y avisa al servidor. El token nunca va en kv-store.",
+    "explicacion": [
+      "En el teléfono hay almacenamientos con distinta protección. `expo-sqlite/kv-store` sirve para preferencias, el último filtro o el modo oscuro, pero **no está cifrado**: en un teléfono rooteado se lee en texto plano. `expo-secure-store` es para lo que no puede leerse nunca: tokens, credenciales y datos personales [U06.T02 p.11; U06-V2 14:25]. La pregunta para decidir es una sola: si alguien lee este valor, ¿puede hacerse pasar por el usuario o acceder a sus datos? Si la respuesta es sí, va en SecureStore.",
+      "La API es mínima: `setItemAsync`, `getItemAsync` (devuelve `null` si no hay nada) y `deleteItemAsync`. Por debajo usa el almacén de claves del sistema operativo: en Android, SharedPreferences cifradas con el **Keystore**; en iOS, el **Keychain** [U06.T02 p.12; U06-V2 15:26-16:27]. Solo guarda cadenas de texto, así que un objeto se guarda con `JSON.stringify` y se recupera con `JSON.parse`.",
+      "Hay tres detalles que sorprenden [U06.T02 p.13; U06-V2 16:27]. La persistencia es asimétrica: Android borra los datos al desinstalar, mientras que el Keychain de iOS suele conservarlos y reaparecen al reinstalar con el mismo bundle ID, algo en lo que no hay que apoyarse. Los valores grandes pueden fallar: históricamente iOS rechazaba más de unos 2 KB. Y no es una base de datos sino un llavero: para volumen está SQLite.",
+      "Al iniciar sesión, el servidor entrega dos tokens [U06.T02 p.14; U06-V2 17:28-19:31]. El **access token** vive minutos u horas y viaja en cada request, en la cabecera `Authorization`: si se filtra, el daño tiene fecha de vencimiento. El **refresh token** vive días o meses y solo sirve para pedir un access token nuevo: si se filtra, el atacante se renueva solo, y por eso es el que más hay que cuidar. Los dos van en SecureStore.",
+      "El cierre de sesión tiene que borrarlos del teléfono y además avisarle al servidor para que revoque el refresh token: borrarlo solo del dispositivo no lo invalida. El PRD 05 lo fija como convención de datos: la sesión viaja en `Authorization: Bearer <token>` y el token se guarda en `expo-secure-store`, nunca en `kv-store` [PRD05 p.6]. El material de U05 dice que guardar el token en almacenamiento común es el hallazgo más frecuente en los TP [U05.T02 p.9].",
+      "Así se cumple también el requisito de que la sesión sobreviva al cierre de la app [TFI p.2, req. 2]: al arrancar, la app lee el token desde SecureStore y, si existe, restaura la sesión sin volver a pedir el login."
+    ],
+    "definiciones": [
+      {
+        "termino": "Keystore / Keychain",
+        "definicion": "Almacenes de claves del sistema operativo (Android / iOS) que usa SecureStore para cifrar lo que guarda.",
+        "ref": "[U06.T02 p.12]"
+      },
+      {
+        "termino": "Access token",
+        "definicion": "Credencial de vida corta que viaja en cada request en la cabecera `Authorization`.",
+        "ref": "[U06.T02 p.14]"
+      },
+      {
+        "termino": "Refresh token",
+        "definicion": "Credencial de vida larga que solo sirve para pedir un access token nuevo; es la que más hay que proteger.",
+        "ref": "[U06.T02 p.14]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Los dos tokens",
+      "columnas": [
+        "",
+        "Access token",
+        "Refresh token"
+      ],
+      "filas": [
+        [
+          "Vida",
+          "Corta: minutos u horas",
+          "Larga: días o meses"
+        ],
+        [
+          "Uso",
+          "Viaja en cada request (`Authorization`)",
+          "Solo para pedir un access token nuevo"
+        ],
+        [
+          "Si se filtra",
+          "El daño tiene fecha de vencimiento",
+          "El atacante se renueva solo"
+        ],
+        [
+          "Dónde va",
+          "SecureStore",
+          "SecureStore"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Guardar el token en kv-store o en almacenamiento común: el hallazgo más frecuente en los TP.",
+        "ref": "[U05.T02 p.9]"
+      },
+      {
+        "texto": "Hacer un logout que solo borra los tokens del teléfono sin pedirle al servidor que revoque el refresh token.",
+        "ref": "[U06.T02 p.14]"
+      },
+      {
+        "texto": "Usar SecureStore como base de datos o guardar valores grandes en él.",
+        "ref": "[U06.T02 p.13]"
+      },
+      {
+        "texto": "Contar con que el dato sigue ahí después de reinstalar: depende de la plataforma.",
+        "ref": "[U06.T02 p.13]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "import * as SecureStore from 'expo-secure-store';\n\n// guardar: solo strings (un objeto va con JSON.stringify)\nawait SecureStore.setItemAsync('token', valor);\n// leer\nconst token = await SecureStore.getItemAsync('token'); // null si no hay\n// borrar, por ejemplo en el logout\nawait SecureStore.deleteItemAsync('token');",
+      "ref": "[U06.T02 p.12]",
+      "nota": "Los comentarios de guardar, leer y borrar son agregados; las cuatro instrucciones son las de la diapositiva."
+    },
+    "citasProfe": [
+      {
+        "texto": "me había salteado esto que es muy importante: dónde guarda los datos de forma segura",
+        "ref": "[U06-V2 16:27]"
+      },
+      {
+        "texto": "¿los datos que vamos a guardar son sensibles o lo puede acceder cualquiera?",
+        "ref": "[U06-V2 15:26]"
+      }
+    ],
+    "aclaraciones": [
+      "La consigna pide `expo-sqlite/kv-store` \"para preferencias y sesión\" [TFI p.2-3, req. 7], mientras que el PRD dice que el token va en SecureStore, \"nunca en `kv-store`\" [PRD05 p.6], y U06 también [U06.T02 p.30]. Para el token, la indicación explícita de la cátedra es SecureStore.",
+      "En la transcripción del video el almacenamiento no cifrado aparece como \"Expo SQLite… tipo clave valor\" [U06-V2 14:25] y en el resumen como \"nunca en C Store\" [U06-V2 41:01]. Algunas notas lo interpretan como AsyncStorage; el material lo nombra `expo-sqlite/kv-store` [U06.T02 p.11], que es la API que reemplaza a AsyncStorage [U05.T02 p.6]."
+    ],
+    "referencias": [
+      "[U06.T02 p.11-14]; [U06-V2 13:24-19:31]; [TFI p.2, req. 2]; [PRD05 p.6]",
+      "[U06.T02 p.13]",
+      "[U05.T02 p.6, 9]",
+      "[U06-V2 41:01]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Token y usuario se guardan en SecureStore con las claves `auth_token_reservas_vgy` y `user_data_reservas_vgy` (`secureStore.ts:4-5`, `auth.ts:33-34`); el usuario va completo como JSON, rol incluido. `cerrarSesion` borra ambos (`auth.ts:100-102`) y la sesión se restaura al abrir la app (`AuthContext.tsx:30-40`). Lo parcial: en web cae a `localStorage` en texto plano (`secureStore.ts:9-10`); el token es falso, no hay refresh token ni servidor al que avisar en el logout, y el token nunca se envía porque no hay HTTP. `kvStore.ts` existe pero no se usa.",
+      "archivos": [
+        {
+          "ruta": "src/bd/secureStore.ts",
+          "lineas": "4-29",
+          "nota": "claves, set/get y fallback web a localStorage"
+        },
+        {
+          "ruta": "src/servicios/auth.ts",
+          "lineas": "30-34, 100-102",
+          "nota": "guarda token y usuario; logout"
+        },
+        {
+          "ruta": "src/context/AuthContext.tsx",
+          "lineas": "30-40",
+          "nota": "restaura la sesión al montar"
+        },
+        {
+          "ruta": "app.json",
+          "lineas": "46",
+          "nota": "plugin expo-secure-store"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.28",
+      "2.11",
+      "7.E1"
+    ],
+    "preguntasRelacionadas": [
+      "4.15",
+      "8.2",
+      "10.2.3",
+      "9.18",
+      "7.C5",
+      "1B.23",
+      "8.4"
+    ],
+    "preguntasRapidas": [
+      "¿Qué guardan en SecureStore y por qué ahí?",
+      "¿Qué pasa en la versión web?",
+      "¿Cómo sobrevive la sesión al cierre de la app?"
+    ]
+  },
+  {
+    "id": "u06-biometria-expo-local-authentication",
+    "unidad": "U06",
+    "titulo": "Biometría: `expo-local-authentication`",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "`expo-local-authentication` usa la huella o el rostro del sistema en tres pasos: `hasHardwareAsync`, `isEnrolledAsync` y `authenticateAsync`. \"Siempre tiene que haber un camino alternativo\". Sola es una pantalla; con `requireAuthentication` de SecureStore protege el dato de verdad, pero no funciona en Expo Go. La consigna pide reingreso biométrico con alternativa.",
+    "explicacion": [
+      "La biometría no la implementa la app: es una API del sistema operativo que Expo expone con `expo-local-authentication`. El teléfono compara la huella o el rostro con lo que el usuario registró y la app solo recibe si salió bien o no. En clase se planteó como el reingreso de las apps de banco, con el token ya guardado [U02-V2 11:26; 34:53], y la consigna la pide así: reingreso con huella o rostro, \"con alternativa para el dispositivo que no la tenga\" [TFI p.2, req. 2].",
+      "El flujo de la cátedra tiene tres pasos [U06.T02 p.15; U06-V2 19:31-22:35]. Primero `hasHardwareAsync()` pregunta si el dispositivo tiene lector. Después `isEnrolledAsync()` pregunta si el usuario tiene huellas o rostro registrados. Solo si las dos respuestas son `true` se llama a `authenticateAsync()` con un `promptMessage`, y si el resultado trae `success` se abre la sesión.",
+      "La regla que más se remarca es que **siempre tiene que haber un camino alternativo**: no todos los teléfonos tienen biometría, y un dedo mojado no la pasa [U06.T02 p.15]. Si no hay lector o no hay nada registrado, la app no puede quedar trabada: tiene que ofrecer otra forma de entrar, por ejemplo volver a pedir las credenciales.",
+      "Usada sola, la biometría es una pantalla: decide si se muestra algo, pero el token sigue legible en el almacenamiento. Combinada con SecureStore cambia: si el refresh token se guarda con `requireAuthentication: true`, el dato no se puede leer sin que el usuario se autentique, y la biometría \"pasa a proteger el dato de verdad\" [U06.T02 p.16; U06-V2 19:31-22:35]. Tiene un costo que hay que prever: si el usuario agrega una huella nueva o cambia el rostro registrado, la clave se invalida y el valor deja de poder leerse.",
+      "`requireAuthentication` **no funciona en Expo Go** cuando hay biometría disponible, porque falta el `NSFaceIDUsageDescription`: requiere development build y el plugin de `expo-secure-store` [U06.T02 p.16; U06-V2 22:35]. Es otro caso donde Expo Go deja de alcanzar."
+    ],
+    "pasos": [
+      "`hasHardwareAsync()`: ¿el dispositivo tiene lector?",
+      "`isEnrolledAsync()`: ¿hay huellas o rostro registrados?",
+      "Si las dos dan `true`, `authenticateAsync({ promptMessage, cancelLabel })`.",
+      "Si `success` es verdadero, abrir la sesión (o leer el token protegido).",
+      "Si cualquier paso falla, ofrecer el camino alternativo."
+    ],
+    "definiciones": [
+      {
+        "termino": "Camino alternativo",
+        "definicion": "Forma de entrar que no depende de la biometría, para teléfonos sin lector, sin huellas registradas o cuando la lectura falla.",
+        "ref": "[U06.T02 p.15]"
+      },
+      {
+        "termino": "`requireAuthentication`",
+        "definicion": "Opción de SecureStore que hace que el valor no pueda leerse sin que el usuario se autentique con la biometría del sistema.",
+        "ref": "[U06.T02 p.16]"
+      }
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Biometría sin alternativa: en un teléfono sin lector la función queda bloqueada.",
+        "ref": "[U06.T02 p.15]"
+      },
+      {
+        "texto": "Llamar a `authenticateAsync` sin preguntar antes por el lector y por los datos registrados.",
+        "ref": "[U06.T02 p.15]"
+      },
+      {
+        "texto": "Creer que la biometría sola protege el token: sin `requireAuthentication` es solo una pantalla.",
+        "ref": "[U06.T02 p.16]"
+      },
+      {
+        "texto": "Probar `requireAuthentication` en Expo Go.",
+        "ref": "[U06.T02 p.16; U06-V2 22:35]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "import * as LocalAuthentication from 'expo-local-authentication';\n\nconst hayLector = await LocalAuthentication.hasHardwareAsync();\nconst hayHuellas = await LocalAuthentication.isEnrolledAsync();\nif (hayLector && hayHuellas) {\n  const r = await LocalAuthentication.authenticateAsync({\n    promptMessage: 'Confirmá tu identidad',\n    cancelLabel: 'Cancelar',\n  });\n  if (r.success) abrirSesion();\n}",
+      "ref": "[U06.T02 p.15]",
+      "nota": "Falta el `else`: ahí va el camino alternativo."
+    },
+    "citasProfe": [
+      {
+        "texto": "Require authentication no funciona con Expo Go",
+        "ref": "[U06-V2 22:35]"
+      },
+      {
+        "texto": "buscar la manera de poder usar huella o rostro cuando quiera reingresar ... como las aplicaciones de banco",
+        "ref": "[U02-V2 11:26; 34:53]"
+      }
+    ],
+    "aclaraciones": [
+      "En el video, el profe dijo que la diapositiva mostraba `set` y que debía ser `get` (`getItemAsync('refreshToken', { requireAuthentication: true })`) [U06-V2 21:34]; el PDF muestra la opción en `setItemAsync` [U06.T02 p.16]. Las dos lecturas se complementan: el valor se guarda protegido y la autenticación se exige al leerlo."
+    ],
+    "referencias": [
+      "[U06.T02 p.15-16]; [U06-V2 19:31-22:35]; [TFI p.2, req. 2]; [U02-V2 34:53]",
+      "[U06-V2 21:34]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "`autenticarConBiometria` (`auth.ts:107-140`) sigue los tres pasos y usa `disableDeviceFallback: false`, así que el sistema ofrece PIN o patrón, pero solo si hay sensor y huella registrada: sin hardware o sin huellas devuelve `exito: false` antes de llegar a `authenticateAsync` (`:114-122`). Bloquea la entrada al escáner (`escaneo.tsx:34-41, 73-86`) y hay un botón de prueba en Perfil (`perfil.tsx:19-26`). Parcial: no hay reingreso biométrico al abrir la app, el `cancelLabel: 'Usar contraseña'` no lleva a ninguna contraseña, sin lector el escáner queda bloqueado, no se usa `requireAuthentication`, y la biometría valida al dueño del teléfono, no al usuario logueado ni su rol.",
+      "archivos": [
+        {
+          "ruta": "src/servicios/auth.ts",
+          "lineas": "107-140",
+          "nota": "autenticarConBiometria"
+        },
+        {
+          "ruta": "src/app/encargado/escaneo.tsx",
+          "lineas": "34-41, 73-86",
+          "nota": "biometría al montar y pantalla de reintento"
+        },
+        {
+          "ruta": "src/app/(tabs)/perfil.tsx",
+          "lineas": "19-26",
+          "nota": "botón de prueba"
+        },
+        {
+          "ruta": "app.json",
+          "lineas": "20-21, 29, 62-67",
+          "nota": "permisos y plugin de expo-local-authentication"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.29",
+      "2.12",
+      "9.22"
+    ],
+    "preguntasRelacionadas": [
+      "5.14",
+      "8.1",
+      "4.18"
+    ],
+    "preguntasRapidas": [
+      "¿Qué pasa en un teléfono sin huella?",
+      "¿Por qué la pusieron solo en el escáner?",
+      "¿La biometría protege algún dato o es una pantalla?"
+    ]
+  },
+  {
+    "id": "u06-oauth-2-0-con-pkce",
+    "unidad": "U06",
+    "titulo": "OAuth 2.0 con PKCE",
+    "prioridad": "media",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Con OAuth 2.0 el usuario se loguea en el sitio del proveedor, en el navegador del sistema, y la app nunca ve la contraseña: recibe un código que se canjea por un token. PKCE ata ese código a un secreto (code verifier) para que otra app no pueda canjearlo. El canje con client secret va en el servidor.",
+    "explicacion": [
+      "Un login propio obliga a la app a ver la contraseña y, con eso, a guardarla, transmitirla, hashearla, resolver el \"olvidé mi clave\", el segundo factor y el bloqueo por intentos: cada uno es una oportunidad de equivocarse [U06.T02 p.18; U06-V2 22:35-23:36]. Con **OAuth 2.0** el usuario se autentica en el sitio de un proveedor (Google, GitHub, el campus) y la app recibe un token sin ver nunca la contraseña. Ese login ocurre en el **navegador del sistema** y no en una pantalla propia, para que el usuario pueda verificar el dominio en la barra de direcciones, un control que una WebView le quita [U06-V2 23:36-25:37].",
+      "El flujo se llama **authorization code grant** y tiene cinco pasos: la app abre el navegador en el proveedor, el usuario se loguea y autoriza, el proveedor redirige a la app con un código, la app canjea el código por un token y el token se guarda en SecureStore [U06.T02 p.19; U06-V2 23:36-27:42]. El código intermedio existe para que el token nunca viaje por la barra de direcciones ni quede en el historial o en los logs.",
+      "El punto débil es la vuelta a la app: otra app instalada puede registrar el mismo esquema de redirección e interceptar el código. **PKCE** lo resuelve así: la app inventa un secreto al azar, el **code verifier**, y le manda al proveedor solo su hash; el proveedor asocia el código a ese hash, y para canjearlo hay que presentar el secreto original, que quien robó el código no tiene [U06.T02 p.20; U06-V2 27:42-29:48]. En `expo-auth-session` viene activado por defecto (`usePKCE: true`) y no hay que desactivarlo.",
+      "En Expo se arma con `expo-auth-session` y `expo-web-browser`: `maybeCompleteAuthSession()` cierra la ventana al volver, `makeRedirectUri()` arma la dirección de regreso (que cambia entre desarrollo, producción y web) y el botón espera a que el pedido esté listo con `disabled={!request}` [U06.T02 p.21-22; U06-V2 29:48-32:52]. Expo Go no sirve para probarlo porque no permite personalizar el esquema: hace falta development build.",
+      "Por último, el canje que usa `client_secret` **no puede ocurrir en el teléfono**, porque cualquier secreto del bundle se puede leer: va en un servidor propio, como una API route del proyecto o el backend del grupo [U06.T02 p.23; U06-V2 32:52]. Es el mismo principio de toda la unidad: el cliente no es un lugar seguro."
+    ],
+    "pasos": [
+      "La app abre el navegador del sistema en el proveedor.",
+      "El usuario se loguea y autoriza.",
+      "El proveedor redirige a la app con un código.",
+      "El código se canjea por un token (con PKCE; si hay client secret, en el servidor).",
+      "El token se guarda en SecureStore."
+    ],
+    "definiciones": [
+      {
+        "termino": "Authorization code grant",
+        "definicion": "Flujo de OAuth en el que el proveedor devuelve un código intermedio que después se canjea por el token, para que el token no viaje por la barra de direcciones.",
+        "ref": "[U06.T02 p.19; U06-V2 26:38]"
+      },
+      {
+        "termino": "PKCE / code verifier",
+        "definicion": "Secreto al azar que inventa la app; manda su hash al pedir el código y presenta el original al canjearlo, así un código robado no sirve.",
+        "ref": "[U06.T02 p.20]"
+      },
+      {
+        "termino": "Client secret",
+        "definicion": "Secreto que identifica a la aplicación ante el proveedor; nunca va en la app, el canje que lo usa va en el servidor.",
+        "ref": "[U06.T02 p.23]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Login propio frente a OAuth 2.0",
+      "columnas": [
+        "",
+        "Login propio",
+        "OAuth 2.0"
+      ],
+      "filas": [
+        [
+          "¿Quién ve la contraseña?",
+          "La app",
+          "Solo el proveedor"
+        ],
+        [
+          "¿Dónde se loguea el usuario?",
+          "En una pantalla de la app",
+          "En el navegador del sistema, con la URL a la vista"
+        ],
+        [
+          "¿Qué recibe la app?",
+          "La contraseña, que tiene que enviar y proteger",
+          "Un código que se canjea por un token"
+        ],
+        [
+          "¿Qué tiene que resolver el equipo?",
+          "Hash, olvido de clave, segundo factor, bloqueo por intentos",
+          "Configurar el redirect y canjear el código"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Olvidar `WebBrowser.maybeCompleteAuthSession()`: la ventana no se cierra al volver.",
+        "ref": "[U06.T02 p.22]"
+      },
+      {
+        "texto": "Escribir la redirect URI a mano en lugar de usar `makeRedirectUri()`.",
+        "ref": "[U06.T02 p.22]"
+      },
+      {
+        "texto": "No deshabilitar el botón con `disabled={!request}`: el pedido se arma de forma asíncrona.",
+        "ref": "[U06.T02 p.22]"
+      },
+      {
+        "texto": "Poner el client secret en la app o desactivar PKCE.",
+        "ref": "[U06.T02 p.20, 23]"
+      },
+      {
+        "texto": "Hacer el login dentro de una WebView.",
+        "ref": "[U06-V2 29:48]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "import * as WebBrowser from 'expo-web-browser';\nimport { makeRedirectUri, useAuthRequest } from 'expo-auth-session';\nWebBrowser.maybeCompleteAuthSession(); // cierra la ventana al volver\nconst discovery = {\n  authorizationEndpoint: 'https://github.com/login/oauth/authorize',\n  tokenEndpoint: 'https://github.com/login/oauth/access_token' };\nconst [request, response, promptAsync] = useAuthRequest(\n  { clientId: CLIENT_ID, scopes: ['identity'],\n    redirectUri: makeRedirectUri({ scheme: 'tuapp' }) },\n  discovery\n);\n<Button title=\"Entrar\" disabled={!request} onPress={() => promptAsync()} />",
+      "ref": "[U06.T02 p.21]",
+      "nota": "Ejemplo de la diapositiva con GitHub, con el cierre de `discovery` compactado; el canje con client secret no se hace acá, sino en el servidor."
+    },
+    "citasProfe": [
+      {
+        "texto": "un código intermedio que existe para que el token… nunca viaje por la barra de direcciones del navegador",
+        "ref": "[U06-V2 26:38]"
+      },
+      {
+        "texto": "Eso tenemos que siempre recordar, que no debe ocurrir en el teléfono",
+        "ref": "[U06-V2 32:52]"
+      }
+    ],
+    "aclaraciones": [
+      "En U02 se descartó el login con Google para el TP porque obliga a código nativo, y se pidió usuario y contraseña con registro [U02-V2 24:16-25:16]. En U06 se presenta OAuth con `expo-auth-session`, que según el material requiere development build [U06.T02 p.22]. Las dos cosas son compatibles: el TP sigue la decisión de U02 y U06 explica cómo se haría."
+    ],
+    "referencias": [
+      "[U06.T02 p.18-23]; [U06-V2 22:35-32:52]",
+      "[U02-V2 24:16-25:16]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No hay OAuth: el login es propio, por email, contra los mocks (`login.tsx`, `auth.ts:14-37`), y la contraseña se ignora; en clase el login con Google se descartó por exigir código nativo [U02-V2 24:16-25:16]. `expo-web-browser` está instalado y figura en `plugins` (`app.json:69`, cambio sin commitear), pero ningún archivo lo usa. Hipotético: con `expo-auth-session` y `expo-web-browser` se abriría el proveedor en el navegador del sistema, el código se canjearía en el backend y el token iría a SecureStore, donde la app ya guarda el suyo.",
+      "archivos": [
+        {
+          "ruta": "src/app/(auth)/login.tsx",
+          "nota": "login propio por email"
+        },
+        {
+          "ruta": "src/servicios/auth.ts",
+          "lineas": "14-37",
+          "nota": "iniciarSesion ignora la clave"
+        },
+        {
+          "ruta": "app.json",
+          "lineas": "69",
+          "nota": "plugin expo-web-browser sin uso en el código"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.30",
+      "1B.27",
+      "9.8"
+    ],
+    "preguntasRelacionadas": [
+      "6.2.3",
+      "8.4"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué no hicieron login con Google?",
+      "¿Para qué sirve PKCE?",
+      "¿Dónde va el client secret?"
+    ]
+  },
+  {
+    "id": "u06-webview-vs-navegador-del-sistema",
+    "unidad": "U06",
+    "titulo": "WebView vs navegador del sistema",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "`react-native-webview` mete una página web dentro de la app; sirve para términos o un reporte, pero trae riesgos de XSS, phishing (no hay barra de direcciones) y redirecciones. Se acota con `originWhitelist`, `javaScriptEnabled={false}` y `onShouldStartLoadWithRequest`. \"Nunca un login dentro de una WebView\": el contenido ajeno va al navegador del sistema con `expo-web-browser`.",
+    "explicacion": [
+      "Son dos cosas distintas que suelen confundirse, y en clase se aclaró a pedido de los alumnos [U02-V1 34:07-38:24]. Una **WebView** es una vista web embebida en un componente: con `react-native-webview` la app muestra una página, o HTML propio, dentro de su pantalla [U06-V2 32:52-33:54]. El **navegador del sistema**, que se abre con `WebBrowser.openBrowserAsync(url)` de `expo-web-browser`, usa Chrome Custom Tabs en Android y SFSafariViewController en iOS: muestra la barra de direcciones y corre con el motor y los parches del sistema [U06.T02 p.27].",
+      "La WebView sirve para términos y condiciones, un reporte o una pasarela de pago, pero abre tres riesgos [U06.T02 p.25; U06-V2 33:54-35:57]. **XSS**: si alguien inyecta JavaScript en la página, ese código puede, por ejemplo, leer el token y mandarlo a un servidor externo. **Phishing**: como no hay barra de direcciones, el usuario no ve si lo llevaron a una URL que imita a Google. Y **redirecciones**: la página puede llevar a cualquier dominio sin que se note.",
+      "Si hace falta una WebView, se acota con tres props [U06.T02 p.26; U06-V2 35:57-36:58]. `originWhitelist` limita los orígenes a los propios; `javaScriptEnabled={false}` apaga lo que no se usa; y `onShouldStartLoadWithRequest` se ejecuta antes de cada navegación y, si devuelve `false`, no carga. Ese último es el control que evita que una redirección saque al usuario a otro dominio; en el video se mostró como una lista blanca de dominios con una función que devuelve verdadero o falso.",
+      "La regla que se repite es **nunca un login dentro de una WebView**: sin barra de direcciones, el usuario no puede verificar dónde está escribiendo su contraseña [U06.T02 p.18, 25]. Para OAuth se usa `expo-web-browser`, \"no una webview, que es lo incorrecto\" [U06-V2 29:48]. La regla práctica del material vale para todo lo demás: si el contenido no es tuyo, va al navegador [U06.T02 p.27].",
+      "El mapa del TP es un caso para explicar bien: una WebView con HTML propio que arma la app y con JavaScript habilitado, porque Leaflet es una librería de JavaScript. No hay login adentro, pero como el HTML se arma con datos y la página le manda mensajes a React Native, importa cerrar los orígenes y validar lo que vuelve."
+    ],
+    "definiciones": [
+      {
+        "termino": "WebView",
+        "definicion": "Componente que muestra una página web embebida dentro de la app (`react-native-webview`).",
+        "ref": "[U06-V2 32:52-33:54]"
+      },
+      {
+        "termino": "Navegador del sistema",
+        "definicion": "Chrome Custom Tabs (Android) o SFSafariViewController (iOS), abierto con `expo-web-browser`; muestra la URL y usa el motor y los parches del sistema.",
+        "ref": "[U06.T02 p.27]"
+      },
+      {
+        "termino": "XSS",
+        "definicion": "Inyección de JavaScript en la página para que haga algo que no queremos, por ejemplo llevarse el token a un servidor externo.",
+        "ref": "[U06-V2 34:57]"
+      },
+      {
+        "termino": "`onShouldStartLoadWithRequest`",
+        "definicion": "Función que se ejecuta antes de cada navegación de la WebView; si devuelve `false`, la página no se carga.",
+        "ref": "[U06.T02 p.26]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "WebView frente a navegador del sistema",
+      "columnas": [
+        "",
+        "WebView (`react-native-webview`)",
+        "Navegador del sistema (`expo-web-browser`)"
+      ],
+      "filas": [
+        [
+          "Dónde se ve",
+          "Dentro de un componente de la app",
+          "Chrome Custom Tabs / SFSafariViewController"
+        ],
+        [
+          "Barra de direcciones",
+          "No",
+          "Sí: el usuario ve el dominio"
+        ],
+        [
+          "Motor y parches",
+          "Los que maneja la app",
+          "Los del sistema"
+        ],
+        [
+          "Uso recomendado",
+          "Contenido propio: términos, reportes, pasarela de pago",
+          "Contenido ajeno y login (OAuth)"
+        ],
+        [
+          "Login",
+          "Nunca",
+          "Sí"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Hacer el login dentro de una WebView.",
+        "ref": "[U06.T02 p.25]"
+      },
+      {
+        "texto": "Dejar `originWhitelist={['*']}` y JavaScript habilitado cuando no hace falta.",
+        "ref": "[U06.T02 p.26]"
+      },
+      {
+        "texto": "No controlar la navegación con `onShouldStartLoadWithRequest`: una redirección saca al usuario a otro dominio sin que se note.",
+        "ref": "[U06.T02 p.26]"
+      },
+      {
+        "texto": "Confundir `expo-web-browser` (navegador) con una WebView (vista web embebida).",
+        "ref": "[U02-V1 34:07-38:24]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "<WebView\n  source={{ uri: 'https://midominio.edu.ar/terminos' }}\n  originWhitelist={['https://midominio.edu.ar']}\n  javaScriptEnabled={false}\n  onShouldStartLoadWithRequest={(req) =>\n    req.url.startsWith('https://midominio.edu.ar')\n  }\n/>",
+      "ref": "[U06.T02 p.26]"
+    },
+    "citasProfe": [
+      {
+        "texto": "Son dos cosas diferentes, una es el navegador y la otra es la vista web",
+        "ref": "[U02-V1 34:07-38:24]"
+      },
+      {
+        "texto": "Volvemos a repetir, no una webview, que es lo incorrecto",
+        "ref": "[U06-V2 29:48]"
+      }
+    ],
+    "aclaraciones": [
+      "En U02 el profe describió `expo-web-browser` como un navegador embebido \"adentro\" de la app [U02-V1 36:12-38:24]; el material de U06 dice que corre fuera de la app, con el motor y los parches del sistema [U06.T02 p.27]. Las dos fuentes coinciden en lo importante: muestra la URL y no es una WebView."
+    ],
+    "referencias": [
+      "[U06.T02 p.25-27]; [U06-V2 32:52-38:24]; [U02-V1 34:07-38:24]",
+      "[U06.T02 p.18]",
+      "[U06-V2 29:48]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "El mapa es una WebView (`react-native-webview` con Leaflet) con `originWhitelist={['*']}`, `javaScriptEnabled` y `domStorageEnabled` (`mapa.tsx:159-167`). El HTML se arma por interpolación de strings con los datos de los espacios (`generarLeafletHtml`, `:45-126`) y carga scripts de unpkg sin SRI; `handleMessage` acepta cualquier mensaje que empiece con `NAV:` y navega a ese id (`:128-134`). A favor: no hay ningún login en WebView y el contenido es propio. `expo-web-browser` no se usa. Hipotético: restringir orígenes, validar el id de `NAV:` contra la lista de espacios y escapar los datos al armar el HTML.",
+      "archivos": [
+        {
+          "ruta": "src/app/(tabs)/mapa.tsx",
+          "lineas": "45-126",
+          "nota": "generarLeafletHtml: HTML por interpolación"
+        },
+        {
+          "ruta": "src/app/(tabs)/mapa.tsx",
+          "lineas": "128-134",
+          "nota": "handleMessage con prefijo NAV:"
+        },
+        {
+          "ruta": "src/app/(tabs)/mapa.tsx",
+          "lineas": "159-167",
+          "nota": "WebView sin acotar"
+        }
+      ]
+    },
+    "desafio": [
+      "7.E2",
+      "4.19",
+      "6.9.5"
+    ],
+    "preguntasRelacionadas": [
+      "2.18",
+      "5.5",
+      "9.15",
+      "4.24"
+    ],
+    "preguntasRapidas": [
+      "¿Qué riesgos tiene la WebView del mapa?",
+      "¿Cómo la acotarías?",
+      "¿Por qué un login nunca va en una WebView?"
+    ]
+  },
+  {
+    "id": "u06-computacion-ubicua-iot-y-ble",
+    "unidad": "U06",
+    "titulo": "Computación ubicua, IoT y BLE",
+    "prioridad": "media",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Computación ubicua es cómputo que deja de verse: invisible, contextual y distribuido (Weiser, 1991); el IoT es su implementación concreta. Capas: percepción, red, middleware, aplicación (\"acá entra nuestra app\") y negocio. El celular es interfaz, sensor y canal de avisos; BLE para lo cercano (`react-native-ble-plx`, development build) y nube o API para lo demás.",
+    "explicacion": [
+      "La **computación ubicua** es el paradigma en el que estamos rodeados de dispositivos con los que interactuamos sin saberlo: la SUBE, un molinete, un semáforo, un termostato. Mark Weiser la formuló en 1991: las tecnologías más profundas son las que desaparecen y se vuelven parte de la vida cotidiana [U06.T01 p.4; U06-V1 0:02-3:18]. Tiene tres rasgos: es **invisible** (no hay pantalla que anuncie el cómputo), **contextual** (reacciona a dónde estás y qué hacés) y **distribuida** (muchos dispositivos chicos en lugar de uno grande). Ninguno tiene teclado: la interfaz, cuando hace falta, suele ser el celular.",
+      "El **IoT** es la implementación concreta: objetos físicos con sensores, capacidad de cómputo y conexión, que recopilan y comparten datos con mínima intervención humana [U06.T01 p.8; U06-V1 7:32]. Lo hicieron posible los chips baratos y de bajo consumo, los sensores chicos, la conectividad y la nube. Ejemplos de clase: una pulsera que avisa del ritmo cardíaco, sensores de humedad del suelo o contenedores que avisan cuando están llenos.",
+      "La arquitectura se piensa en cinco capas [U06.T01 p.9; U06-V1 9:38-12:44]: percepción (sensores y actuadores), red (wifi, Bluetooth, LoRa, celular), **middleware** (recibe datos de dispositivos distintos, los normaliza y los almacena), aplicación (lo que ve el usuario: \"acá entra nuestra app\") y negocio (las decisiones). El middleware existe para que la app no tenga que saber si el sensor habla MQTT, CoAP o HTTP.",
+      "El celular cumple tres roles: es la interfaz que el dispositivo no tiene, es un sensor más (ubicación, acelerómetro, cámara) y es el canal de avisos [U06.T01 p.18; U06-V1 24:18-25:22]. Para hablar con los dispositivos hay dos caminos: directo por **BLE** con lo cercano (una balanza, una cerradura), o por la nube, donde una plataforma como **ThingsBoard** hace de middleware y expone una API REST que la app consume como cualquier otra, con el token en SecureStore [U06.T01 p.13, 16-17; U06-V1 16:53-24:18]. La mayoría de los productos combina los dos: BLE para la primera configuración y nube para el uso diario.",
+      "BLE desde Expo se hace con `react-native-ble-plx`, que trae código nativo: no corre en Expo Go y necesita config plugin y development build. Desde Android 12 pide `BLUETOOTH_SCAN` y `BLUETOOTH_CONNECT` (antes pedía ubicación, y todavía hay teléfonos así), todo es asíncrono y puede fallar, y no hay emulador: se prueba con hardware real [U06.T01 p.14-15; U06-V1 19:59-22:08].",
+      "El IoT tiene cuatro retos: fiabilidad, rendimiento, interoperabilidad, y seguridad y privacidad [U06.T01 p.11; U06-V1 13:45-16:53]. Un aviso de la cámara de seguridad que llega minutos después \"ya es tarde\", y un dispositivo barato con la contraseña de fábrica deja expuestos datos como a qué hora la casa está vacía."
+    ],
+    "definiciones": [
+      {
+        "termino": "Computación ubicua",
+        "definicion": "Paradigma en el que la tecnología está integrada a la vida cotidiana y la usamos sin notarla: cómputo invisible, contextual y distribuido.",
+        "ref": "[U06.T01 p.4; U06-V1 0:02]"
+      },
+      {
+        "termino": "IoT",
+        "definicion": "Objetos físicos con sensores, capacidad de cómputo y conexión que recopilan y comparten datos con mínima intervención humana.",
+        "ref": "[U06.T01 p.8]"
+      },
+      {
+        "termino": "Middleware",
+        "definicion": "Capa que recibe datos de dispositivos heterogéneos, los normaliza, los almacena y se los entrega a la aplicación.",
+        "ref": "[U06.T01 p.9; U06-V1 10:39]"
+      },
+      {
+        "termino": "ThingsBoard",
+        "definicion": "Plataforma IoT de código abierto que funciona como middleware: recibe telemetría por MQTT, HTTP o CoAP, la guarda, define reglas y expone una API REST.",
+        "ref": "[U06.T01 p.16-17]"
+      },
+      {
+        "termino": "Dust, Skin, Clay",
+        "definicion": "Escalas de la computación ubicua: dispositivos diminutos como RFID, superficies que cambian o emiten luz, y objetos con volumen que se manipulan.",
+        "ref": "[U06.T01 p.5]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Directo por BLE o por la nube",
+      "columnas": [
+        "",
+        "Directo (BLE)",
+        "Por la nube (API)"
+      ],
+      "filas": [
+        [
+          "Alcance",
+          "Requiere estar cerca",
+          "A distancia; internet en los dos extremos"
+        ],
+        [
+          "Cómo viaja",
+          "BLE, wifi local, NFC",
+          "REST o WebSockets hasta la plataforma; MQTT, HTTP o CoAP hasta el dispositivo"
+        ],
+        [
+          "Ejemplo",
+          "Pulsera, balanza, cerradura",
+          "Ver la cámara de casa desde el trabajo"
+        ],
+        [
+          "En Expo",
+          "`react-native-ble-plx` con development build",
+          "fetch o TanStack Query, como cualquier API"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Intentar probar `react-native-ble-plx` en Expo Go o en un emulador.",
+        "ref": "[U06.T01 p.14-15; U06-V1 21:05-22:08]"
+      },
+      {
+        "texto": "Pedir solo `BLUETOOTH_SCAN` y `BLUETOOTH_CONNECT` y olvidar que los Android anteriores a la 12 piden ubicación.",
+        "ref": "[U06.T01 p.15]"
+      },
+      {
+        "texto": "No manejar las fallas y la reconexión: con BLE todo es asíncrono y se corta por distancia o batería.",
+        "ref": "[U06.T01 p.15; U06-V1 21:05]"
+      },
+      {
+        "texto": "Hacer que la app hable el protocolo de cada sensor en vez de consumir el middleware.",
+        "ref": "[U06.T01 p.9]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "import { BleManager } from 'react-native-ble-plx';\nconst manager = new BleManager();\nmanager.startDeviceScan(null, null, (error, device) => {\n  if (error) return;\n  if (device?.name === 'MiSensor') {\n    manager.stopDeviceScan();\n    device.connect()\n      .then((d) => d.discoverAllServicesAndCharacteristics())\n      .then(leerTemperatura);\n  }\n});",
+      "ref": "[U06.T01 p.14]",
+      "nota": "Los dos `null` significan no filtrar: detecta todo lo cercano [U06-V1 19:59]."
+    },
+    "citasProfe": [
+      {
+        "texto": "Un dato importante es que esta librería… no la podemos correr con Expo Go",
+        "ref": "[U06-V1 21:05]"
+      },
+      {
+        "texto": "no hay emulador, hay que realizar las pruebas con un hardware real",
+        "ref": "[U06-V1 22:08]"
+      },
+      {
+        "texto": "la cara visible del sistema mucho más grande",
+        "ref": "[U06-V1 26:29]"
+      }
+    ],
+    "aclaraciones": [
+      "En la presentación del TFI se dijo que la Unidad 6 de IoT es teoría obligatoria y no se desarrolla en el TP [U02-V2 37:04-39:11]."
+    ],
+    "referencias": [
+      "[U06.T01 p.4-18]; [U06-V1 0:02-27:30]",
+      "[U06.T01 p.19]",
+      "[U06-V1 13:45-16:53]",
+      "[U02-V2 37:04-39:11]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No hay IoT ni BLE, y la cátedra aclaró que la unidad no se desarrolla en el TP [U02-V2 37:04-39:11]. Sí aparecen dos de los roles del celular: como sensor (ubicación en `useLocation.ts`, cámara en el escáner) y como canal de avisos (notificaciones locales). Hipotético: la app ocuparía la capa de aplicación, por ejemplo leyendo de una plataforma tipo ThingsBoard un sensor de lluvia de la cancha para bloquear turnos con la lógica de bloqueos que ya existe (`bloquearTurno`).",
+      "archivos": [
+        {
+          "ruta": "src/hooks/useLocation.ts",
+          "nota": "el teléfono como sensor (GPS)"
+        },
+        {
+          "ruta": "src/app/encargado/escaneo.tsx",
+          "nota": "el teléfono como sensor (cámara)"
+        },
+        {
+          "ruta": "src/hooks/useNotifications.ts",
+          "nota": "el teléfono como canal de avisos"
+        },
+        {
+          "ruta": "src/servicios/reservas.ts",
+          "lineas": "287-297",
+          "nota": "bloquearTurno, punto de entrada del ejemplo hipotético"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.33",
+      "7.E5",
+      "1B.34"
+    ],
+    "preguntasRelacionadas": [
+      "1A.6",
+      "7.C3"
+    ],
+    "preguntasRapidas": [
+      "¿En qué capa está la app?",
+      "¿Cómo integrarías un sensor o un molinete en la cancha?",
+      "¿Por qué BLE no corre en Expo Go?"
+    ]
+  }
+]

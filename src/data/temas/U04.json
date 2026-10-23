@@ -1,0 +1,2130 @@
+[
+  {
+    "id": "u04-modulos-nativos-y-eleccion-de-librerias",
+    "unidad": "U04",
+    "titulo": "Módulos nativos y elección de librerías",
+    "prioridad": "media",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Una llamada en JS, como sacar una foto, pasa por un módulo nativo en Swift o Kotlin que la traduce a la API del sistema (AVFoundation en iOS, CameraX en Android); por eso una librería nativa cambia el binario. Se busca primero en el Expo SDK, después en la comunidad, y antes de instalar se hacen cuatro preguntas.",
+    "explicacion": [
+      "Hasta la U03 todo se resolvía dentro de React: componentes, estado, estilos y navegación, y lo que andaba en tu teléfono andaba en el de cualquiera. Con la U04 aparecen dos ideas que no son de React: el **permiso**, porque el usuario puede decir que no, y la **disponibilidad**, porque el teléfono puede no tener ese sensor. Las dos se manejan en el código.",
+      "El camino completo es así: cuando llamás desde TypeScript a algo como `takePictureAsync()`, esa función habla con un **módulo nativo** escrito en Swift o Kotlin, que traduce la llamada a la API del sistema operativo: AVFoundation en iOS y CameraX en Android. Ese módulo es lo que hay que compilar. Por eso agregar una librería nativa no es como sumar un paquete de npm: cambia el binario. Se instala con `npx expo install`, que elige la versión compatible con el SDK del proyecto.",
+      "Para buscar una capacidad nueva hay un orden. Primero el **Expo SDK**: módulos mantenidos por Expo, versionados junto con el SDK y probados en cada release. Si no está ahí, la comunidad, a través de React Native Directory, filtrando por plataforma, mantenimiento y compatibilidad con Expo Go. Como último recurso, un módulo propio con `create-expo-module`, que queda fuera del alcance de la materia. La regla práctica para el TP es simple: si está en el SDK, se usa eso.",
+      "Antes de instalar, la cátedra pide hacerse **cuatro preguntas**. ¿En qué plataformas corre? Algunos sensores dicen “device only” y no andan en el simulador. ¿Corre en Expo Go o necesita una development build? ¿Está viva? Se mira el último commit, los issues y el soporte de la Nueva Arquitectura, sin el cual no corre en SDK 55 o superior. ¿Qué permisos arrastra? Una librería puede sumar permisos al manifiesto sin que los pidas, y Apple rechaza apps que declaran permisos que no usan.",
+      "En el TP, por ejemplo, `expo-haptics` o `expo-camera` salen del SDK, mientras que el mapa usa `react-native-webview` y el QR se dibuja con `react-native-qrcode-svg`, dos librerías de la comunidad."
+    ],
+    "definiciones": [
+      {
+        "termino": "Módulo nativo",
+        "definicion": "Código en Swift (iOS) o Kotlin (Android) que traduce una llamada de JavaScript a la API del sistema operativo. Es la parte que hay que compilar.",
+        "ref": "[U04.T01 p.5]"
+      },
+      {
+        "termino": "Expo SDK",
+        "definicion": "Conjunto de módulos mantenidos por Expo, versionados junto con el SDK y probados en cada release. Es el primer lugar donde buscar.",
+        "ref": "[U04.T01 p.6]; [U04-V1 3:07]"
+      },
+      {
+        "termino": "React Native Directory",
+        "definicion": "Registro de paquetes de la comunidad; permite filtrar por plataforma, mantenimiento y compatibilidad con Expo Go.",
+        "ref": "[U04-V1 6:10]; [U04.T01 p.6]"
+      },
+      {
+        "termino": "Development build",
+        "definicion": "Build propia de la app, necesaria cuando una librería o un config plugin no está incluido en Expo Go (por ejemplo, las notificaciones push).",
+        "ref": "[U04.T01 p.7, 9]"
+      }
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Instalar con `npm install`: baja la última versión publicada, que puede no ser compatible con el SDK. Se usa `npx expo install`, y `npx expo install --check` antes de entregar.",
+        "ref": "[U04.T01 p.8]; [U04-V4 13:08]"
+      },
+      {
+        "texto": "Instalar sin mirar qué permisos arrastra la librería: pueden terminar en el manifiesto permisos que la app no usa.",
+        "ref": "[U04.T01 p.7]"
+      },
+      {
+        "texto": "Elegir una librería sin el badge de Expo Go sin tener lista una development build.",
+        "ref": "[U04.T01 p.7, 9]"
+      }
+    ],
+    "citasProfe": [
+      {
+        "texto": "es el primer lugar donde tienen que ir a buscar",
+        "ref": "[U04-V1 4:08]"
+      },
+      {
+        "texto": "antes de instalar, tenemos que hacernos cuatro preguntas",
+        "ref": "[U04-V1 8:13]"
+      },
+      {
+        "texto": "Siempre traten de ir primero al Expo SDK",
+        "ref": "[U04-V4 11:58]"
+      }
+    ],
+    "aclaraciones": [
+      "En el video U04-V1 la explicación de *development build* quedó confusa (se la asocia a configurar a mano las carpetas nativas); en el material es la build propia que hace falta cuando algo no está incluido en Expo Go [U04-V1 9:14-11:17]; [U04.T01 p.7, 9]."
+    ],
+    "referencias": [
+      "[U04.T01 p.4-7]; [U04-V1 2:07-8:13]; [U04-V4 11:58]",
+      "[U04.T01 p.8-9]",
+      "[U04-V1 1:05-2:07]",
+      "[U04-V1 3:07-6:10]",
+      "[U04-V4 13:08-14:13]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "Módulos del SDK (`expo-camera`, `expo-location`, `expo-haptics`, `expo-local-authentication`, `expo-sqlite`, `expo-notifications`, entre otros) y dos de la comunidad: `react-native-webview` para el mapa Leaflet y `react-native-qrcode-svg` para dibujar el QR. Ocho archivos cargan módulos con `require()` dinámico dentro de `try/catch` (por ejemplo `useHaptics.ts:6` y `NetworkContext.tsx:31`) para no romper en web o en Expo Go; el costo es que se pierde el tipado y se ocultan errores. `react-native-maps` quedó instalado sin uso.",
+      "archivos": [
+        {
+          "ruta": "package.json",
+          "nota": "Módulos de Expo en versiones ~57.x, más `react-native-webview` y `react-native-qrcode-svg`"
+        },
+        {
+          "ruta": "src/hooks/useHaptics.ts",
+          "lineas": "3-14",
+          "nota": "`require('expo-haptics')` en `try/catch`; devuelve `null` en web"
+        },
+        {
+          "ruta": "src/context/NetworkContext.tsx",
+          "lineas": "31",
+          "nota": "`require('expo-network')`"
+        },
+        {
+          "ruta": "src/hooks/useNotifications.ts",
+          "lineas": "7-17",
+          "nota": "Evita cargar `expo-notifications` en Expo Go"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.1",
+      "1B.2",
+      "3.8"
+    ],
+    "preguntasRelacionadas": [
+      "4.21",
+      "1A.8",
+      "7.B2",
+      "3.6"
+    ],
+    "preguntasRapidas": [
+      "¿Qué pasa por debajo cuando llamás a `notificationAsync`?",
+      "¿Por qué `require()` dentro de funciones?",
+      "¿Qué revisarías antes de instalar `react-native-webview`?"
+    ]
+  },
+  {
+    "id": "u04-cng-y-npx-expo-prebuild",
+    "unidad": "U04",
+    "titulo": "CNG y `npx expo prebuild`",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "Continuous Native Generation: `android/` e `ios/` son un artefacto de build que `npx expo prebuild` regenera desde `app.json`, como `node_modules`. Si agregás una librería nativa o tocás plugins, permisos o íconos, corresponde `prebuild --clean` y build nueva; si solo cambia JS, alcanza con Fast Refresh. Las carpetas nativas no se editan a mano ni se commitean.",
+    "explicacion": [
+      "Antes de Expo, cada librería nativa obligaba a tocar a mano `AndroidManifest.xml`, `Info.plist`, `build.gradle` y el `Podfile`. Esos archivos vivían en el repositorio y actualizar de versión significaba resolver conflictos en archivos que casi nadie entiende. La **generación nativa continua** (CNG, Continuous Native Generation) resuelve eso: el único archivo que editás es `app.json`.",
+      "La idea de fondo es que el proyecto nativo sea un **artefacto de build**, como `node_modules`: no se versiona, se reconstruye. Así como `npm install` genera `node_modules`, `npx expo prebuild` lee `app.json` y genera `android/` e `ios/`. Cada librería aporta su config plugin, una función JS que sabe qué tocar: los permisos van al manifiesto y al `Info.plist`, las dependencias nativas a `build.gradle` y al `Podfile`, y los recursos como íconos y splash a sus carpetas. En la demo de clase, el prebuild creó el manifiesto con los permisos por defecto de Expo y copió los íconos en todas las densidades.",
+      "De ahí sale la regla de **cuándo recompilar**. Si cambiás componentes, estilos, navegación o estado, o sumás una librería solo JavaScript, alcanza con Fast Refresh. Si instalás una librería con código nativo, agregás o cambiás un config plugin, o tocás permisos, íconos, nombre o esquema de URL, hay que correr `npx expo prebuild --clean` y generar una build nueva. El síntoma típico es agregar un plugin, recargar y ver que el permiso no aparece: no es un bug, el binario instalado es viejo y sigue teniendo el manifiesto anterior.",
+      "Por la misma razón, las carpetas nativas **no se tocan a mano**. El próximo prebuild las borra y las vuelve a crear desde `app.json`, así que lo que agregaste a mano se pierde, también cuando el prebuild lo corre un compañero en su máquina. Si igual se editan, el proyecto pasa a ser *bare*: las carpetas son tuyas, hay que versionarlas y el salto de SDK deja de ser automático. Si una librería pide un cambio nativo sin plugin, se escribe un config plugin propio, algo que en la materia no debería hacer falta.",
+      "Por eso `android/` e `ios/` van en el `.gitignore` y cada integrante las genera en su máquina. Expo Go, en cambio, es un binario ya armado: un config plugin que cambia el proyecto nativo recién se ve en una build propia."
+    ],
+    "pasos": [
+      "Instalar la librería con `npx expo install`, si es nueva.",
+      "Declarar el plugin, los permisos o los íconos en `app.json`.",
+      "Correr `npx expo prebuild --clean` (se puede limitar a una sola plataforma).",
+      "Generar e instalar una build nueva, local o con EAS: recargar no alcanza.",
+      "Probar el cambio en esa build, no en el binario viejo."
+    ],
+    "definiciones": [
+      {
+        "termino": "CNG (Continuous Native Generation)",
+        "definicion": "Modelo de Expo en el que el proyecto nativo es un artefacto de build: no se versiona, se regenera desde `app.json`.",
+        "ref": "[U04.T01 p.11]; [U04-V2 1:02-2:02]"
+      },
+      {
+        "termino": "`npx expo prebuild`",
+        "definicion": "Comando que lee `app.json`, ejecuta los config plugins y genera las carpetas `android/` e `ios/`. Con `--clean` las borra y las vuelve a crear.",
+        "ref": "[U04.T01 p.12-15]; [U04-V2 2:02-7:10]"
+      },
+      {
+        "termino": "Proyecto bare",
+        "definicion": "Proyecto cuyas carpetas nativas se editan a mano: hay que versionarlas y las migraciones de SDK pasan a ser manuales.",
+        "ref": "[U04.T01 p.16]"
+      },
+      {
+        "termino": "Podfile / Pods",
+        "definicion": "En iOS, el Podfile es “como el package.json” y Pods “como el node_modules”.",
+        "ref": "[U04-V2 4:07]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "¿Recargar o recompilar?",
+      "columnas": [
+        "Basta con recargar (Fast Refresh)",
+        "Hay que rearmar el binario (`prebuild --clean` + build nueva)"
+      ],
+      "filas": [
+        [
+          "Cualquier cambio en tus componentes",
+          "Instalar una librería con código nativo"
+        ],
+        [
+          "Estilos, navegación, estado",
+          "Agregar o cambiar un config plugin"
+        ],
+        [
+          "Agregar una librería que sea solo JavaScript",
+          "Tocar permisos, íconos, nombre o esquema de URL"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Agregar un plugin y solo recargar: el permiso no aparece porque el binario instalado es viejo.",
+        "ref": "[U04.T01 p.15]; [U04-V4 20:30]"
+      },
+      {
+        "texto": "Editar `AndroidManifest.xml` o `Info.plist` a mano: el próximo prebuild lo pisa.",
+        "ref": "[U04-V2 10:13]; [U04-V4 16:20-19:24]"
+      },
+      {
+        "texto": "Commitear `android/` e `ios/`: se generan en cada máquina.",
+        "ref": "[U04-V2 11:14]"
+      }
+    ],
+    "citasProfe": [
+      {
+        "texto": "Una cosa que nunca deben hacer… es ir manualmente al XML de Android Manifest",
+        "ref": "[U04-V2 10:13]"
+      },
+      {
+        "texto": "No es un bug, sino que… el binario instalado… es viejito",
+        "ref": "[U04-V4 20:30]"
+      },
+      {
+        "texto": "las carpetas de iOS y Android no se commitean",
+        "ref": "[U04-V2 11:14]"
+      }
+    ],
+    "aclaraciones": [
+      "En el video se dijo que agregar o cambiar un plugin “quiere decir que no soporta Expo Go” [U04-V2 9:11]; el material lo precisa: lo que no corre en Expo Go son los config plugins que cambian el proyecto nativo, que necesitan una development build [U04.T01 p.9]."
+    ],
+    "referencias": [
+      "[U04.T01 p.11-16]; [U04-V2 0:01-11:14]; [U04-V4 15:17-21:33]",
+      "[U04-V2 2:02-7:10]",
+      "[U04-V4 22:33]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "No hay `android/` ni `ios/` en el repo y `.gitignore:42-43` las ignora; toda la configuración nativa (paquete, `bundleIdentifier`, permisos de Android, `infoPlist` y plugins) vive en `app.json`. Dos detalles: `eas.json` tiene un perfil `development` con `developmentClient: true` pero `expo-dev-client` no está instalado, y `assets/icon.png` es en realidad un JPEG, lo que [POSIBLE] genere una advertencia al copiar los íconos en el prebuild.",
+      "archivos": [
+        {
+          "ruta": "app.json",
+          "lineas": "10-31",
+          "nota": "Bloques `android` e `ios`: paquete, ícono adaptable, permisos e `infoPlist`"
+        },
+        {
+          "ruta": ".gitignore",
+          "lineas": "42-43",
+          "nota": "`/ios` y `/android`"
+        },
+        {
+          "ruta": "eas.json",
+          "lineas": "7-10",
+          "nota": "Perfil `development` sin `expo-dev-client` instalado"
+        },
+        {
+          "ruta": "assets/icon.png",
+          "nota": "JPEG con extensión .png"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.3",
+      "1B.4",
+      "7.B3"
+    ],
+    "preguntasRelacionadas": [
+      "7.C1"
+    ],
+    "preguntasRapidas": [
+      "¿Qué genera `npx expo prebuild`?",
+      "Agregaste un plugin y el permiso no aparece: ¿por qué?",
+      "¿Qué pasa si editás `AndroidManifest.xml` a mano?"
+    ]
+  },
+  {
+    "id": "u04-config-plugins-en-app-json",
+    "unidad": "U04",
+    "titulo": "Config plugins en `app.json`",
+    "prioridad": "media",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Cada librería aporta un config plugin que se declara en `plugins` de `app.json`: un string es el plugin con su configuración por defecto y un array es `[\"nombre\", { opciones }]`. Los textos de permiso son los que ve el usuario y tienen que ser específicos; cambiarlos obliga a recompilar.",
+    "explicacion": [
+      "Un **config plugin** es la pieza que hace funcionar la CNG: cada librería trae una función JS que, al correr el prebuild, sabe qué tocar del proyecto nativo. En clase se lo presentó como la forma que da Expo de usar la cámara o el GPS desde JavaScript sin configurar a mano el proyecto de Android. Se declara en la clave `plugins` de `app.json`, que es un array con un ítem por plugin; `expo-router` aparece por defecto.",
+      "Cada ítem puede escribirse de dos maneras. Un **string suelto** es el plugin con su configuración por defecto. Un **array** es `[\"nombre\", { opciones }]`: en la posición 0 va el nombre y en la 1 un objeto de configuración. Las opciones dependen de cada plugin: `expo-camera` acepta `cameraPermission`, `microphonePermission` y `recordAudioAndroid`, que debería ir en `false` si la cámara no graba video; `expo-image-picker` acepta `photosPermission`, que es solo para iOS. Un mismo `app.json` sirve para las dos plataformas.",
+      "Los **textos de permiso** son los que ve el usuario en el cartel del sistema, así que tienen que decir para qué se usa el permiso: no “necesito la cámara”, sino “para leer el código QR”. Los plugins traen textos por defecto genéricos, y en iOS un texto genérico es motivo de rechazo, así que hay que reescribirlos. Como todo esto termina en el binario, cambiar un plugin o un texto obliga a recompilar.",
+      "Un detalle de orden: el plugin se resuelve desde el paquete instalado. En clase el profe declaró `expo-image-picker` en `plugins` sin haberlo instalado y Expo falló al resolver el plugin; después de `npx expo install expo-image-picker` dejó de quejarse. El profe avisó, además, que en el TP se va a mirar si supieron usar cada plugin y por qué."
+    ],
+    "definiciones": [
+      {
+        "termino": "Config plugin",
+        "definicion": "Función JS que aporta cada librería y que el prebuild ejecuta para tocar permisos, dependencias nativas y recursos del proyecto nativo.",
+        "ref": "[U04.T01 p.12-13]; [U04-V2 1:02]"
+      },
+      {
+        "termino": "String vs array en `plugins`",
+        "definicion": "`\"expo-router\"` usa la configuración por defecto; `[\"expo-camera\", { … }]` le pasa opciones al plugin.",
+        "ref": "[U04.T01 p.14]"
+      }
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Declarar el plugin sin instalar el paquete: Expo no puede resolverlo.",
+        "ref": "[U04-V4 1:05:11]"
+      },
+      {
+        "texto": "Dejar el texto por defecto o escribir uno genérico.",
+        "ref": "[U04.T01 p.22]; [U04-V2 8:11]"
+      },
+      {
+        "texto": "No poner `recordAudioAndroid: false` cuando la cámara no graba video.",
+        "ref": "[U04-V4 18:24]; [U04-V5 8:26-9:28]"
+      },
+      {
+        "texto": "Cambiar un plugin y solo recargar.",
+        "ref": "[U04.T01 p.15]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "json",
+      "fragmento": "\"plugins\": [\n  \"expo-router\",\n  [\"expo-camera\", {\n    \"cameraPermission\": \"La app necesita la cámara para poder escanear el código QR del medidor\",\n    \"barcodeScannerEnabled\": true,\n    \"recordAudioAndroid\": false\n  }]\n]",
+      "ref": "[U04-V5 8:26-9:28]",
+      "nota": "Configuración de la práctica de clase (app de lectura de medidores)."
+    },
+    "citasProfe": [
+      {
+        "texto": "Los textos en permiso son los que ve el usuario en el cartel del sistema",
+        "ref": "[U04-V4 19:24]"
+      },
+      {
+        "texto": "acuérdense que es un array donde el primer ítem… va a ser expo-camera",
+        "ref": "[U04-V5 8:26]"
+      },
+      {
+        "texto": "a ver si supieron usar el plugin y por qué",
+        "ref": "[U04-V4 8:46]"
+      }
+    ],
+    "aclaraciones": [
+      "En la transcripción automática la última frase se lee “supieron no usar el plugin”; por el contexto, las notas la toman como “supieron usar el plugin y por qué” [U04-V4 8:46]."
+    ],
+    "referencias": [
+      "[U04.T01 p.12-15]; [U04-V2 7:10-9:11]; [U04-V5 8:26-9:28]",
+      "[U04-V4 2:12-3:21]",
+      "[U04-V4 18:24-19:24]",
+      "[U04-V4 1:03:11-1:05:11]",
+      "[U04.T01 p.22]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Con opciones: `expo-splash-screen`, `expo-camera` con `cameraPermission` (`app.json:50-55`), `expo-location` (`:56-61`, con el texto en la clave de ubicación “siempre”, `locationAlwaysAndWhenInUsePermission`, aunque la app solo pide primer plano) y `expo-local-authentication` con `faceIDPermission` (`:62-67`). Como strings: `expo-router`, `expo-secure-store`, `expo-sqlite`, `expo-video` y `expo-audio`, este último sin uso en el código. No figuran `expo-notifications` ni `expo-image-picker`, y `expo-camera` no fija `recordAudioAndroid: false`. `expo-image` y `expo-web-browser` aparecen en `plugins` por un cambio sin commitear.",
+      "archivos": [
+        {
+          "ruta": "app.json",
+          "lineas": "36-70",
+          "nota": "Array `plugins`"
+        },
+        {
+          "ruta": "src/hooks/useLocation.ts",
+          "lineas": "30",
+          "nota": "Solo `requestForegroundPermissionsAsync()`"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.5",
+      "7.A2",
+      "9.17"
+    ],
+    "preguntasRelacionadas": [
+      "9.19"
+    ],
+    "preguntasRapidas": [
+      "¿Para qué sirve el objeto de opciones de `expo-camera`?",
+      "¿Por qué está `expo-audio` en plugins si no se usa?",
+      "¿Qué le falta a `expo-notifications`?"
+    ]
+  },
+  {
+    "id": "u04-permisos-declarar-vs-solicitar",
+    "unidad": "U04",
+    "titulo": "Permisos: declarar vs solicitar",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "Dos momentos: la declaración al compilar (`app.json` → manifiesto e `Info.plist`) y la solicitud en tiempo de ejecución, justo antes de usar la función. Hacen falta los dos. En iOS el texto es obligatorio y específico; en Android se pueden bloquear permisos de más. El profe anticipó que esto “puede ser una pregunta”.",
+    "explicacion": [
+      "Antes, una app declaraba todo lo que iba a usar y el usuario solo lo veía en la tienda, sin elegir nada. Eso era poco transparente y traía problemas de seguridad, como apps que accedían a archivos por detrás. Por eso aparecieron los **permisos en tiempo de ejecución** (en Android, desde la versión 6.0): el sistema le pregunta al usuario en el momento, y el usuario puede conceder “mientras la app esté en uso” o revocar.",
+      "De ahí salen **dos momentos**, que el profe anticipó como posible pregunta. La **declaración** ocurre al compilar: en `app.json` (el texto del plugin, `ios.infoPlist`, `android.permissions`) se dice qué permisos puede llegar a pedir la app, y la CNG los lleva al `AndroidManifest.xml` y al `Info.plist`. Así la app se instala sabiendo que en algún momento va a pedir ese permiso, y la tienda puede mostrarlo. La **solicitud** ocurre en ejecución: tu código dispara el cartel del sistema justo antes de usar la función, por ejemplo cuando el usuario toca “Sacar foto”, no al abrir la app.",
+      "Hacen falta los dos. Si el permiso está declarado pero no lo pedís, la API falla igual; si lo pedís sin declararlo, el pedido falla. Según el material, la mitad de los “no me anda la cámara” de la cursada son uno de estos dos pasos que falta. El cartel lo dibuja el sistema operativo: vos elegís cuándo aparece y le das el texto.",
+      "Hay diferencias por plataforma. En **iOS** el texto es obligatorio y tiene que ser específico: si falta, la app se cierra al pedir el permiso, y si es genérico Apple rechaza la publicación. En **Android**, `permissions` agrega permisos (casi nunca hace falta, porque las librerías declaran lo suyo) y `blockedPermissions` saca lo que una librería metió y no usás, como el `RECORD_AUDIO` de la cámara si solo sacás fotos. La regla vale para las dos: declarar solo lo que se usa. Aparte están los manifiestos de privacidad de Apple (`ios.privacyManifests`), que no son para el usuario sino para Apple.",
+      "Para pedir, dentro de un componente se usa un hook como `useCameraPermissions()`. Fuera de un componente se usan funciones que vienen de a pares: `get…PermissionsAsync()` consulta sin molestar y `request…PermissionsAsync()` muestra el cartel. En el TP, `useNotifications` consulta primero con `getPermissionsAsync()` y solo pide si hace falta."
+    ],
+    "pasos": [
+      "Instalar el módulo con `npx expo install`.",
+      "Declarar en `app.json` con un texto que explique el uso (opciones del plugin o `ios.infoPlist`); en Android, bloquear lo que no se use.",
+      "Recompilar: `npx expo prebuild --clean` y build nueva.",
+      "En el código, consultar el estado y pedir el permiso justo antes de usar la función.",
+      "Manejar la respuesta: seguir si se concedió; explicar y ofrecer una alternativa si se negó."
+    ],
+    "definiciones": [
+      {
+        "termino": "Declaración",
+        "definicion": "Lista de permisos que el binario puede llegar a pedir. Va en `app.json` y termina en `AndroidManifest.xml` e `Info.plist`.",
+        "ref": "[U04.T01 p.18]"
+      },
+      {
+        "termino": "Solicitud",
+        "definicion": "Pedido en tiempo de ejecución que muestra el cartel del sistema; lo dispara tu código en el momento que elijas.",
+        "ref": "[U04.T01 p.18]; [U04-V3 1:01]"
+      },
+      {
+        "termino": "`blockedPermissions`",
+        "definicion": "Clave de Android en `app.json` que saca del manifiesto permisos que una librería agregó y la app no usa.",
+        "ref": "[U04.T01 p.23]"
+      },
+      {
+        "termino": "Manifiesto de privacidad",
+        "definicion": "Archivo `PrivacyInfo.xcprivacy` donde se le explica a Apple por qué la app usa ciertas APIs sensibles; en Expo, `ios.privacyManifests`. No reemplaza los textos de `infoPlist`.",
+        "ref": "[U04.T01 p.24]; [U04-V3 7:07-8:08]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Los dos momentos de un permiso",
+      "columnas": [
+        "",
+        "Declarar",
+        "Solicitar"
+      ],
+      "filas": [
+        [
+          "Cuándo",
+          "Al compilar: queda en el binario",
+          "En ejecución, justo antes de usar la función"
+        ],
+        [
+          "Dónde",
+          "`app.json`: opciones del plugin, `ios.infoPlist`, `android.permissions`",
+          "En el código: hook `use…Permissions()` o `request…PermissionsAsync()`"
+        ],
+        [
+          "Qué produce",
+          "Entrada en el manifiesto o el `Info.plist` y el texto del cartel",
+          "El cartel del sistema; el usuario decide"
+        ],
+        [
+          "Si falta",
+          "El pedido falla; en iOS, sin texto, la app se cierra",
+          "La API falla aunque el permiso esté declarado"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Que falte uno de los dos pasos.",
+        "ref": "[U04-V4 22:33]; [U04.T01 p.18]"
+      },
+      {
+        "texto": "Pedir todos los permisos al abrir la app.",
+        "ref": "[U04.T01 p.25]; [U04-V3 8:08]"
+      },
+      {
+        "texto": "Dejar en iOS un texto genérico o ninguno.",
+        "ref": "[U04.T01 p.22]; [U04-V3 5:05]"
+      },
+      {
+        "texto": "Declarar permisos de más.",
+        "ref": "[U04-V3 6:06]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "json",
+      "fragmento": "\"ios\": {\n  \"infoPlist\": {\n    \"NSCameraUsageDescription\": \"Sacamos la foto del producto que vas a publicar.\",\n    \"NSLocationWhenInUseUsageDescription\": \"Mostramos los locales cercanos a donde estás.\"\n  }\n},\n\"android\": {\n  \"permissions\": [\"android.permission.CAMERA\"],\n  \"blockedPermissions\": [\"android.permission.RECORD_AUDIO\"]\n}",
+      "ref": "[U04.T01 p.22-23]",
+      "nota": "Fragmentos de `app.json` de dos diapositivas consecutivas, unidos."
+    },
+    "citasProfe": [
+      {
+        "texto": "eso puede ser una pregunta de aparecer por las dudas. Sí. ¿Dónde se encuentran? ¿En qué momento?",
+        "ref": "[U04-V4 8:46]"
+      },
+      {
+        "texto": "La mitad de los 'no me anda la cámara' es generalmente porque le está faltando uno de los dos",
+        "ref": "[U04-V4 22:33]"
+      },
+      {
+        "texto": "hay que destacar dos momentos diferentes. Uno es cuando se declaran los permisos y la otra es cuando se solicitan",
+        "ref": "[U04-V3 0:01]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase el profe dudó de la versión de Android (“Android 14 o por ahí… creo que era Lollipop”); los permisos en tiempo de ejecución llegaron con Android 6.0 Marshmallow (dato externo) [U04-V4 3:21-5:31].",
+      "Sobre qué pasa si se pide un permiso no declarado hay versiones distintas. En clase se respondió que la app “rompe, crashea” (un alumno agregó “en tiempo de build”), que en iOS “sobre todo rompe cuando compila” y que en Android aparece un mensaje genérico y después rechaza el store [U04-V4 8:46-11:58]. El material dice que sin declaración el pedido en tiempo de ejecución “falla sin mostrar nada” [U04.T01 p.18] y que en iOS, si falta el texto, la app se cierra al pedir el permiso [U04.T01 p.22]."
+    ],
+    "referencias": [
+      "[U04.T01 p.18, 22-25]; [U04-V3 0:01-2:02]; [U04-V4 6:36-9:50]; [U04-V4 22:33]",
+      "[U04.T01 p.21]",
+      "[U04-V3 5:05-8:08]",
+      "[U04-V4 3:21-5:31]",
+      "[U04-V4 8:46-11:58]",
+      "[U04-V4 25:46-26:49]",
+      "[U04-V5 7:24-9:28]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Declarados: `android.permissions` con `CAMERA`, ubicación, `USE_BIOMETRIC` y `USE_FINGERPRINT` (`app.json:16-22`), `ios.infoPlist` con cámara, ubicación y Face ID (`:26-30`) y los textos de los plugins. Pedidos en contexto: la cámara al abrir el escáner (`escaneo.tsx:21, 92-105`), la ubicación al entrar al mapa (`useLocation.ts:30`), la galería al tocar el botón de foto (`espacio/[id].tsx:42`) y las notificaciones al confirmar una reserva, consultando antes de pedir (`useNotifications.ts:28-42`). Falta declarar la galería para iOS: no hay `NSPhotoLibraryUsageDescription` ni plugin de `expo-image-picker`, lo que [POSIBLE] rompa ese pedido en una build de iOS. Tampoco usan `blockedPermissions`.",
+      "archivos": [
+        {
+          "ruta": "app.json",
+          "lineas": "16-22",
+          "nota": "`android.permissions`"
+        },
+        {
+          "ruta": "app.json",
+          "lineas": "26-30",
+          "nota": "`ios.infoPlist`: cámara, ubicación y Face ID; sin galería"
+        },
+        {
+          "ruta": "src/app/encargado/escaneo.tsx",
+          "lineas": "21, 92-105",
+          "nota": "`useCameraPermissions()` y botón para pedir"
+        },
+        {
+          "ruta": "src/hooks/useLocation.ts",
+          "lineas": "30",
+          "nota": "`requestForegroundPermissionsAsync()`"
+        },
+        {
+          "ruta": "src/app/espacio/[id].tsx",
+          "lineas": "42",
+          "nota": "`requestMediaLibraryPermissionsAsync()`"
+        },
+        {
+          "ruta": "src/hooks/useNotifications.ts",
+          "lineas": "28-42",
+          "nota": "`getPermissionsAsync()` y luego `requestPermissionsAsync()`"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.6",
+      "2.13",
+      "7.A1"
+    ],
+    "preguntasRelacionadas": [
+      "7.D1",
+      "7.B1",
+      "1B.9",
+      "10.3.1",
+      "10.3.2",
+      "9.19"
+    ],
+    "preguntasRapidas": [
+      "¿Dónde y cuándo se declaran y se piden los permisos?",
+      "¿Qué pasa si pedís uno que no declaraste?",
+      "¿Desde qué versión de Android se piden en tiempo de ejecución?"
+    ]
+  },
+  {
+    "id": "u04-estados-del-permiso-y-canaskagain",
+    "unidad": "U04",
+    "titulo": "Estados del permiso y `canAskAgain`",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "Un permiso está `undetermined`, `granted` o `denied`; si `canAskAgain` es `false`, el cartel no vuelve y solo queda Ajustes. El hook tiene tres ramas: resolviendo (`null`), no concedido y concedido. Hay que dar feedback y un camino alternativo: “la app tiene que seguir siendo usable si el usuario rechaza todo”.",
+    "explicacion": [
+      "Un permiso puede estar en tres estados: `undetermined`, cuando todavía no se preguntó (así arranca al instalar); `granted`, cuando se concedió y la API funciona; y `denied`, cuando se rechazó. El objeto que devuelve Expo trae además `canAskAgain` y, en el caso de la galería, `accessPrivileges` (`all`, `limited` o `none`), como se vio en la demo de clase.",
+      "La trampa está en **`canAskAgain`**. Si es `false`, el cartel no vuelve a aparecer nunca y la única salida es que el usuario lo habilite desde Ajustes, o que reinstale la app. En Android el cartel puede salir varias veces hasta que aparece “no volver a preguntar”; en iOS, si lo rechazan la primera vez, ya no vuelve. Por eso el profe insistió en que los permisos se pueden negar y dejar de funcionar, y en que siempre hay que darle feedback al usuario.",
+      "Con el hook `useCameraPermissions()` el patrón tiene **tres ramas**, no dos. Si `permiso` es `null`, todavía se está resolviendo; si no está concedido, se explica para qué hace falta y se ofrece un botón que llama a `pedirPermiso`; si está concedido, se muestra la cámara. Saltear la primera rama es el bug más común: por un instante `permiso` es `null` y la pantalla parpadea con el mensaje de rechazo. Devolver una vista vacía en esa rama “es lo mínimo”; en la práctica el profe mostró un texto de carga.",
+      "La cátedra resume las **buenas prácticas** en una tabla: pedir en contexto, explicar antes con interfaz propia, manejar las tres ramas y ofrecer un camino alternativo, como elegir de la galería o escribir la dirección a mano. Esto se evalúa en el TP: la app tiene que seguir siendo usable si el usuario rechaza todo; no tiene que hacer todo, pero no puede romperse. El ejemplo de clase: sin ubicación, el mapa no te encuentra, pero sigue mostrando los puntos de interés.",
+      "Otra opción que se vio en clase es un `Alert` con un botón “Habilitar permiso” que vuelve a pedirlo, contando los intentos para no entrar en un bucle."
+    ],
+    "definiciones": [
+      {
+        "termino": "`undetermined`",
+        "definicion": "Todavía no se preguntó; es el estado al instalar.",
+        "ref": "[U04.T01 p.19]"
+      },
+      {
+        "termino": "`granted`",
+        "definicion": "Concedido: la API funciona.",
+        "ref": "[U04.T01 p.19]"
+      },
+      {
+        "termino": "`denied`",
+        "definicion": "Rechazado. Hay que mirar `canAskAgain` para saber si se puede volver a pedir.",
+        "ref": "[U04.T01 p.19]"
+      },
+      {
+        "termino": "`canAskAgain`",
+        "definicion": "Indica si el sistema todavía puede mostrar el cartel. Si es `false`, no vuelve a aparecer y solo queda cambiarlo desde Ajustes.",
+        "ref": "[U04.T01 p.19]; [U04-V3 2:02-3:02]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Cómo se pide bien",
+      "columnas": [
+        "Mal",
+        "Bien"
+      ],
+      "filas": [
+        [
+          "Pedir todos los permisos al abrir la app",
+          "Pedirlo cuando el usuario aprieta “Sacar foto”"
+        ],
+        [
+          "Mostrar el cartel sin ningún contexto previo",
+          "Explicar antes, con tu propia interfaz, para qué es"
+        ],
+        [
+          "Dar por hecho que dijo que sí",
+          "Manejar las tres ramas del hook"
+        ],
+        [
+          "Dejar la pantalla en blanco si dijo que no",
+          "Ofrecer un camino alternativo: elegir de la galería, escribir la dirección a mano"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Saltear la rama de carga (`permiso` en `null`): la pantalla parpadea con el mensaje de rechazo.",
+        "ref": "[U04.T01 p.20]"
+      },
+      {
+        "texto": "Dejar la pantalla en blanco, o una vista vacía, si el usuario dijo que no.",
+        "ref": "[U04.T01 p.25]; [U04-V3 4:04]"
+      },
+      {
+        "texto": "No contemplar `canAskAgain` en `false`: el botón para pedir el permiso deja de mostrar el cartel.",
+        "ref": "[U04.T01 p.19]"
+      },
+      {
+        "texto": "Probar solo en Expo Go, donde el permiso puede aparecer ya concedido.",
+        "ref": "[U04-V4 1:12:36-1:13:40]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "const [permiso, pedirPermiso] = useCameraPermissions();\n// 1 · resolviendo\nif (!permiso) return <View />;\n// 2 · no lo tenemos\nif (!permiso.granted) return (/* texto + <Button onPress={pedirPermiso}/> */);\n// 3 · adelante\nreturn <CameraView style={{ flex: 1 }} facing=\"back\" />;",
+      "ref": "[U04.T01 p.20]",
+      "nota": "“Siempre son tres ramas, no dos.” Los comentarios se pasaron a líneas propias."
+    },
+    "citasProfe": [
+      {
+        "texto": "los permisos pueden ser denegados más de una vez y después ya les va a dejar de andar",
+        "ref": "[U04-V4 1:29:37]"
+      },
+      {
+        "texto": "Con iOS si lo cancelan la primera vez ya está, no te va a aparecer nunca más",
+        "ref": "[U04-V4 23:35]"
+      },
+      {
+        "texto": "La app tiene que seguir siendo usable",
+        "ref": "[U04-V3 8:08]"
+      }
+    ],
+    "aclaraciones": [
+      "En la práctica se dijo que con solo usar el hook `useCameraPermissions` ya se piden los permisos por primera vez [U04-V5 9:28]; en el material el cartel aparece al llamar a la función de pedido (`pedirPermiso` o `request…PermissionsAsync`), mientras que `get…PermissionsAsync` solo consulta [U04.T01 p.20-21].",
+      "En la clase sincrónica el reintento con `Alert` se describió como una función “media recursiva” [U04-V4 1:25:19-1:29:37]; en la práctica se aclaró que en el patrón con hook “no hay recursividad”, porque el reintento lo dispara el botón [U04-V5 14:38].",
+      "En Expo Go los permisos pueden aparecer ya concedidos; en la app real se piden [U04-V4 1:12:36-1:13:40]."
+    ],
+    "referencias": [
+      "[U04.T01 p.19-20, 25]; [U04-V3 2:02-5:05]; [U04-V4 22:33-25:46]; [U02-V2 39:11-40:18]",
+      "[U04-V3 8:08]",
+      "[U04-V4 1:03:11-1:16:50]",
+      "[U04-V4 1:23:11-1:29:37]",
+      "[U04-V5 9:28-14:38]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "El escáner usa `useCameraPermissions()` con tres ramas (`escaneo.tsx:21, 88-105`): con `permission` en `null` devuelve una vista vacía, sin permiso muestra una explicación y el botón “Conceder Permiso de Cámara”, y con permiso muestra la cámara. No contempla `canAskAgain === false` ni `Linking.openSettings()`: si el permiso quedó negado para siempre, el botón no vuelve a mostrar el cartel. El ingreso manual del código (`:156-183`) está solo en la vista con permiso concedido, así que sin cámara no hay camino alternativo. Con la ubicación negada, el mapa se centra en Villaguay con un banner (`mapa.tsx:139-146`), sin botón para reintentar. Mejora hipotética: si `canAskAgain` es `false`, mostrar un botón que abra Ajustes y ofrecer el ingreso manual también en esa rama.",
+      "archivos": [
+        {
+          "ruta": "src/app/encargado/escaneo.tsx",
+          "lineas": "88-105",
+          "nota": "Ramas `null` y no concedido; sin `canAskAgain`"
+        },
+        {
+          "ruta": "src/app/encargado/escaneo.tsx",
+          "lineas": "156-183",
+          "nota": "Ingreso manual, solo visible con permiso concedido"
+        },
+        {
+          "ruta": "src/app/(tabs)/mapa.tsx",
+          "lineas": "139-146",
+          "nota": "Banner de ubicación denegada"
+        },
+        {
+          "ruta": "src/hooks/useLocation.ts",
+          "lineas": "31-36",
+          "nota": "`permisoDenegado` y centro por defecto"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.7",
+      "4.23",
+      "7.C2"
+    ],
+    "preguntasRelacionadas": [
+      "1B.8",
+      "7.D7",
+      "9.22",
+      "10.3.5",
+      "5.13"
+    ],
+    "preguntasRapidas": [
+      "Si el encargado negó la cámara para siempre, ¿qué ve?",
+      "¿Por qué tres ramas y no dos?",
+      "¿La app sigue siendo usable si se niega todo?"
+    ]
+  },
+  {
+    "id": "u04-camara-cameraview-vs-expo-image-picker",
+    "unidad": "U04",
+    "titulo": "Cámara: `CameraView` vs `expo-image-picker`",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "`expo-camera` da un componente, `CameraView`, con vista previa propia y escaneo de códigos; `expo-image-picker` da una función que abre la cámara del sistema o la galería. La cátedra recomienda empezar por el picker, salvo que necesites vista previa propia o leer QR. En los dos casos la foto queda en la caché.",
+    "explicacion": [
+      "Para la cámara hay **dos librerías distintas para dos problemas parecidos**. `expo-camera` te da un componente, `CameraView`: la vista previa vive dentro de tu pantalla, diseñás la interfaz, controlás zoom, linterna, flash y cámara frontal o trasera, y además escanea códigos QR y de barras. `expo-image-picker` te da una función asíncrona que abre una pantalla del sistema que el usuario ya conoce: la cámara del SO o la galería. Permite recortar y elegir varias, y cuando se cierra devuelve la imagen.",
+      "La recomendación de la cátedra es empezar por `expo-image-picker`, que resuelve la mayoría de los casos con pocas líneas, y pasar a `expo-camera` solo si hace falta la vista previa dentro de tu pantalla o leer códigos. En clase quedó claro el criterio para el TP: si el trabajo usa QR, tiene que usar `CameraView`, porque la cámara del sistema no escanea; si no usa QR, alcanza con el picker. Se pueden usar las dos en la misma app.",
+      "`CameraView` necesita un `style` con `flex` para verse, recibe `facing` (`'back'` o `'front'`; para QR, la trasera) y `enableTorch`, y acepta hijos, así que los botones se dibujan encima de la vista previa. Para sacar una foto se usa una referencia, `useRef<CameraView>`, y `takePictureAsync({ quality })`, que devuelve `uri`, `width` y `height`. Con `base64: true` también trae el contenido, pero pesa un tercio más.",
+      "Con el picker se llama a `launchImageLibraryAsync` o `launchCameraAsync`, cada una con su permiso (`requestMediaLibraryPermissionsAsync` o `requestCameraPermissionsAsync`). `mediaTypes` ahora es un **array de strings**, como `['images']`, porque `MediaTypeOptions.Images` está deprecado. Si el usuario cancela, `canceled` (con una sola l) viene en `true`; si no, la imagen está en `assets[0]`, con `uri`, tamaño, `fileSize` y `mimeType`. En la demo el profe la mostró con `<Image source={{ uri }} />`; el material recomienda `expo-image`.",
+      "En los dos casos la foto queda en la **caché** de la app, que el sistema puede borrar. Si tiene que sobrevivir, hay que copiarla con `expo-file-system`."
+    ],
+    "definiciones": [
+      {
+        "termino": "`CameraView`",
+        "definicion": "Componente de `expo-camera` que muestra la vista previa dentro de tu pantalla; acepta hijos y puede escanear códigos.",
+        "ref": "[U04.T02 p.5]"
+      },
+      {
+        "termino": "Asset",
+        "definicion": "Objeto que devuelve el picker por cada imagen: `uri`, `width`, `height`, `fileSize`, `mimeType`, `fileName`, `exif`.",
+        "ref": "[U04.T02 p.9]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Dos librerías para dos problemas parecidos",
+      "columnas": [
+        "",
+        "`expo-camera` (`CameraView`)",
+        "`expo-image-picker`"
+      ],
+      "filas": [
+        [
+          "Qué te da",
+          "Un componente con vista previa dentro de tu pantalla",
+          "Una función que abre la pantalla del sistema"
+        ],
+        [
+          "Interfaz",
+          "Propia: la diseñás vos",
+          "La del sistema, que el usuario ya conoce"
+        ],
+        [
+          "Controles",
+          "Zoom, linterna, flash, frontal o trasera",
+          "Recortar y elegir varias"
+        ],
+        [
+          "Galería",
+          "No",
+          "Sí, además de la cámara del sistema"
+        ],
+        [
+          "Lee QR y códigos de barras",
+          "Sí",
+          "No"
+        ],
+        [
+          "Cuándo usarla",
+          "Vista previa propia o escaneo de códigos",
+          "El resto de los casos: empezar por acá"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Usar `MediaTypeOptions.Images` de un tutorial viejo: está deprecado.",
+        "ref": "[U04.T02 p.8]"
+      },
+      {
+        "texto": "Escribir `cancelled` con dos l.",
+        "ref": "[U04.T02 p.8]"
+      },
+      {
+        "texto": "Darle a `CameraView` un estilo sin `flex`: no se ve.",
+        "ref": "[U04-V4 31:00-34:08]"
+      },
+      {
+        "texto": "Guardar la URI de la caché como si fuera permanente.",
+        "ref": "[U04.T02 p.6]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "const resultado = await ImagePicker.launchImageLibraryAsync({\n  mediaTypes: ['images'], // también 'videos' y 'livePhotos'\n  allowsEditing: true, aspect: [4, 3], quality: 0.8 });\nif (resultado.canceled) return;\nconst imagen = resultado.assets[0];",
+      "ref": "[U04.T02 p.8]"
+    },
+    "citasProfe": [
+      {
+        "texto": "Para código QR tienen que usar sí o sí esta otra de la izquierda",
+        "ref": "[U04-V4 29:59]"
+      },
+      {
+        "texto": "Y si su trabajo usa código QR, tiene que usar la izquierda",
+        "ref": "[U04-V4 29:59-31:00]"
+      },
+      {
+        "texto": "es bastante acotada, no te deja… escanear código QR",
+        "ref": "[U04-V4 1:28:32]"
+      }
+    ],
+    "aclaraciones": [
+      "Un alumno señaló que en el PDF “están las dos como obligatorias”; el profe aclaró que `CameraView` hace falta solo si el TP usa QR [U04-V4 29:59-31:00]. En el PRD de Reservas, la tabla de capacidades pide las dos: `expo-camera` para el QR y `expo-image-picker` para las fotos [PRD05 p.5]."
+    ],
+    "referencias": [
+      "[U04.T02 p.4-9]; [U04-V4 27:51-31:00]; [U04-V4 1:28:32]",
+      "[U04-V4 31:00-34:08]",
+      "[U04-V4 1:03:11-1:34:19]",
+      "[PRD05 p.5]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`CameraView facing=\"back\"` con `barcodeScannerSettings={{ barcodeTypes: ['qr'] }}` para el QR del encargado (`escaneo.tsx:118-125`), y `launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 })` para las fotos del estado de la cancha (`espacio/[id].tsx:41-70`). Coincide con lo que pide el PRD. El picker abre solo la galería (no hay `launchCameraAsync`, aunque el botón tenga ícono de cámara) y la URI queda en el estado local, así que la foto se pierde al salir de la pantalla.",
+      "archivos": [
+        {
+          "ruta": "src/app/encargado/escaneo.tsx",
+          "lineas": "118-125",
+          "nota": "`CameraView` trasera, solo QR"
+        },
+        {
+          "ruta": "src/app/espacio/[id].tsx",
+          "lineas": "41-70",
+          "nota": "Permiso de galería, `launchImageLibraryAsync` y URI en estado local"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.10",
+      "5.6",
+      "7.D5"
+    ],
+    "preguntasRelacionadas": [
+      "6.7.1",
+      "6.7.2",
+      "6.7.5"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué `CameraView` para el QR y el picker para las fotos?",
+      "¿Dónde queda la foto elegida?",
+      "¿Por qué `mediaTypes` es un array?"
+    ]
+  },
+  {
+    "id": "u04-escaneo-de-qr",
+    "unidad": "U04",
+    "titulo": "Escaneo de QR",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "`CameraView` lee códigos con `barcodeScannerSettings` y `onBarcodeScanned`, que se dispara en cada cuadro en que el código es visible: “sin una bandera de estado vas a navegar treinta veces”. Después de leer hay que mostrar el resultado y validarlo contra los datos. En clase se recomendó un `Modal` antes que una ruta.",
+    "explicacion": [
+      "Para leer un QR se usa el mismo `CameraView`, con dos props más: `barcodeScannerSettings`, que recibe en `barcodeTypes` un array con los tipos a leer (por ejemplo `['qr']`; hay muchos más), y `onBarcodeScanned`, el callback que recibe `{ type, data }`, donde `data` es el texto del código. Antes vale todo lo de permisos: instalar `expo-camera`, configurar el plugin y manejar las tres ramas del hook. Para QR se usa la cámara trasera.",
+      "El punto clave es que `onBarcodeScanned` **se dispara en cada cuadro** en que el código está visible, no una sola vez. Sin control, la app procesaría o navegaría muchas veces con el mismo código. La solución que se vio en clase es una **bandera de estado**, por ejemplo `escaneado`: al leer el primer código se pone en `true` y, mientras esté así, al `CameraView` se le pasa `undefined` en lugar del callback. Para leer otro código se vuelve a poner en `false`.",
+      "Leer no alcanza: después hay que **mostrar el resultado y validarlo** contra los datos. En el ejemplo del profe, el código del medidor se compara con el que viene de la API; si es una URL, se le muestra al usuario para que confirme, como hacen las apps de cámara. Si no, la app escanea el primer QR que aparezca y se cierra.",
+      "Sobre dónde poner el escáner, el profe recomendó un **`Modal`** de React Native antes que una ruta: el modal vive dentro de la pantalla que lo abrió y puede devolverle el dato al padre (por ejemplo con `onClose(data)`), mientras que desde una ruta cuesta mandar la información hacia atrás. No se puede abrir un modal encima de otro.",
+      "El otro lado es generar el QR: el código se dibuja en el teléfono con una librería a partir de un texto. En el PRD de Reservas, el encargado escanea el QR en la puerta y, si el código no corresponde a ese día o a esa cancha, la app tiene que decirlo con claridad."
+    ],
+    "pasos": [
+      "Instalar `expo-camera` y configurar su plugin en `app.json`.",
+      "Pedir el permiso y manejar las tres ramas del hook.",
+      "Montar `CameraView` con `facing=\"back\"` y `barcodeTypes: ['qr']`.",
+      "En `onBarcodeScanned`, cortar con una bandera después del primer código.",
+      "Mostrar el resultado y validarlo contra los datos.",
+      "Reactivar la bandera para escanear otro código."
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Escanear sin bandera: el callback se llama en cada cuadro y la app navega o procesa muchas veces.",
+        "ref": "[U04.T02 p.7]; [U04-V5 28:33-31:37]"
+      },
+      {
+        "texto": "Aceptar cualquier código sin validarlo ni mostrar el resultado.",
+        "ref": "[U04-V5 31:37-33:38]"
+      },
+      {
+        "texto": "Abrir el escáner en un `Modal` encima de otro `Modal`.",
+        "ref": "[U04-V5 27:20]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "<CameraView style={{ flex: 1 }}\n  barcodeScannerSettings={{ barcodeTypes: ['qr', 'ean13'] }}\n  onBarcodeScanned={escaneado ? undefined : ({ type, data }) => {\n    setEscaneado(true);  // sin esto se dispara decenas de veces por segundo\n    router.push(`/producto/${data}`);\n  }} />",
+      "ref": "[U04.T02 p.7]"
+    },
+    "citasProfe": [
+      {
+        "texto": "sin esto se dispara millones de veces por segundo",
+        "ref": "[U04-V4 34:08]"
+      },
+      {
+        "texto": "Les recomiendo usar un modal porque… vive dentro de la pantalla… le pueden pasar información al padre",
+        "ref": "[U04-V5 33:38]"
+      },
+      {
+        "texto": "va a escanear el primer código QR que se vea y se va a cerrar",
+        "ref": "[U04-V5 31:37-33:38]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase se dijo que sin la bandera el callback “se dispara millones de veces por segundo” [U04-V4 34:08]; el material habla de decenas de veces por segundo [U04.T02 p.7]. Lo que importa es que se llama en cada cuadro en que el código es visible.",
+      "En U03 se mencionó generar el QR con una librería y usar los deep links de Expo Router al leerlo [U03-V4 1:48:02]; en U04 la lectura se hizo con `CameraView`."
+    ],
+    "referencias": [
+      "[U04.T02 p.7]; [U04-V5 28:33-33:38]; [U03-V4 1:48:02]",
+      "[U04-V5 0:16-35:40]",
+      "[U04-V4 31:00-34:08]",
+      "[PRD05 p.2]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Bandera `escaneando`: `onBarcodeScanned={escaneando ? handleBarcodeScanned : undefined}` y `setEscaneando(false)` al primer código (`escaneo.tsx:43-47, 121`); el botón “Escanear Otro Código QR” la reactiva (`:143-151`). Como `setEscaneando` no cambia el valor hasta el próximo render, [POSIBLE] entren dos lecturas muy seguidas; un `useRef` como bandera lo cortaría en el acto. `escanearQrReserva(codigo, 'todos')` valida que el código exista y que no esté usado ni cancelado, pero el `'todos'` desactiva la validación de cancha y no se valida la fecha (`escaneo.tsx:53`, `reservas.ts:231-285`), aunque el PRD lo pide. La búsqueda es en la SQLite del propio teléfono, así que el encargado no valida reservas hechas en otro dispositivo. El escáner es una ruta (`/encargado/escaneo`), no un modal, y el QR se genera con `react-native-qrcode-svg` a partir de un texto predecible (`QrViewer.tsx:14-19`).",
+      "archivos": [
+        {
+          "ruta": "src/app/encargado/escaneo.tsx",
+          "lineas": "43-53, 121, 143-151",
+          "nota": "Bandera, llamada con `'todos'` y botón para reactivar"
+        },
+        {
+          "ruta": "src/servicios/reservas.ts",
+          "lineas": "231-285",
+          "nota": "`escanearQrReserva`: `QR_INVALIDO`, `QR_YA_UTILIZADO`, `RESERVA_CANCELADA`; `CANCHA_INCORRECTA` omitido con `'todos'`"
+        },
+        {
+          "ruta": "src/componentes/QrViewer.tsx",
+          "lineas": "14-19",
+          "nota": "Genera el QR con `react-native-qrcode-svg`"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.11",
+      "2.14",
+      "9.9"
+    ],
+    "preguntasRelacionadas": [
+      "7.B6",
+      "4.9",
+      "4.18",
+      "6.8.1",
+      "6.8.3",
+      "10.3.3",
+      "10.3.4",
+      "9.10"
+    ],
+    "preguntasRapidas": [
+      "¿Cómo evitan procesar el mismo QR muchas veces?",
+      "¿Qué valida el escaneo y qué no?",
+      "¿El encargado puede validar una reserva hecha en otro teléfono?"
+    ]
+  },
+  {
+    "id": "u04-sistema-de-archivos-expo-file-system",
+    "unidad": "U04",
+    "titulo": "Sistema de archivos: `expo-file-system`",
+    "prioridad": "alta",
+    "enfasisClase": 1,
+    "fuenteTipo": "mixto",
+    "resumen": "Desde el SDK 54 se usan `File`, `Directory` y `Paths`; las funciones viejas tiran error (“no están deprecadas: no andan”). `Paths.document` es permanente y `Paths.cache` temporal. La URI que devuelven la cámara o la galería está en caché: hay que copiarla a `document` y, para el servidor, subirla a un storage en lugar de mandar base64.",
+    "explicacion": [
+      "Desde el SDK 54, `expo-file-system` tiene una **API nueva** y la anterior ya no funciona: funciones sueltas como `writeAsStringAsync`, `readAsStringAsync` o `getInfoAsync` tiran error en tiempo de ejecución. Como dice el material, no están deprecadas: no andan. Existe `expo-file-system/legacy` para migrar de a poco, no para arrancar un proyecto nuevo. El PRD lo advierte entre las cosas que la documentación vieja de internet dice mal.",
+      "El cambio de fondo es pasar de funciones sobre strings a **objetos con métodos**: `File`, `Directory` y `Paths`. Un `File` sabe si existe (`exists`), cuánto pesa y cómo leerse (`text()` o `textSync()`), y se escribe, copia, mueve o borra con sus métodos; un `Directory` se crea con `create()` y se recorre con `list()`. Las versiones sincrónicas sirven para archivos chicos; para algo grande conviene la asincrónica, o se traba la interfaz.",
+      "Lo importante es **dónde guardar**. `Paths.document` es permanente: sobrevive a reinicios y actualizaciones y solo se borra al desinstalar; ahí van notas, borradores o la foto que subió el usuario. `Paths.cache` es temporal: el sistema la puede vaciar sin avisar cuando falta espacio, y sirve para miniaturas, descargas en curso y la salida de la cámara.",
+      "De ahí sale un error clásico: `takePictureAsync` y `launchImageLibraryAsync` devuelven una URI en la caché. Si guardás esa referencia en la base sin copiar el archivo, a los días la imagen ya no está, un bug que aparece en la entrega final y nunca en la demo. La solución es crear una carpeta en `Paths.document`, copiar ahí el archivo y guardar la URI nueva.",
+      "En clase el profe completó el **recorrido de la imagen**: sale de la caché, se copia a una carpeta propia de la app (así el usuario no la borra de la galería antes de sincronizar) y, cuando vuelve la señal, se sube a un storage, que devuelve un id; con ese id se llama a la API. No se manda la imagen en base64 a la API, porque pesa y las APIs no siempre están preparadas para eso."
+    ],
+    "pasos": [
+      "Obtener la URI de la cámara o la galería (está en la caché).",
+      "Crear, si no existe, una carpeta en `Paths.document`.",
+      "Copiar el archivo a esa carpeta con `File.copy()`.",
+      "Guardar la URI definitiva en los datos de la app.",
+      "Con señal, subir el archivo a un storage y mandar a la API solo el id que devuelve."
+    ],
+    "definiciones": [
+      {
+        "termino": "`Paths.document`",
+        "definicion": "Carpeta permanente: sobrevive a reinicios y actualizaciones; se borra al desinstalar.",
+        "ref": "[U04.T02 p.26]"
+      },
+      {
+        "termino": "`Paths.cache`",
+        "definicion": "Carpeta temporal que el sistema puede vaciar sin avisar cuando falta espacio.",
+        "ref": "[U04.T02 p.26]"
+      },
+      {
+        "termino": "`File` / `Directory`",
+        "definicion": "Objetos de la API nueva que representan un archivo o una carpeta y traen sus propios métodos (`exists`, `create()`, `write()`, `copy()`, `list()`).",
+        "ref": "[U04.T02 p.25, 27]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "API vieja vs API nueva",
+      "columnas": [
+        "API vieja (SDK 53 o anterior)",
+        "API nueva (SDK 54 o posterior)"
+      ],
+      "filas": [
+        [
+          "`documentDirectory`",
+          "`Paths.document`"
+        ],
+        [
+          "`cacheDirectory`",
+          "`Paths.cache`"
+        ],
+        [
+          "`writeAsStringAsync()`",
+          "`archivo.write()`"
+        ],
+        [
+          "`readAsStringAsync()`",
+          "`archivo.text()` · `textSync()`"
+        ],
+        [
+          "`copyAsync()` · `moveAsync()` · `deleteAsync()`",
+          "`archivo.copy()` · `move()` · `delete()`"
+        ],
+        [
+          "`makeDirectoryAsync()`",
+          "`new Directory(…).create()`"
+        ],
+        [
+          "`getInfoAsync()`",
+          "`archivo.exists` · `archivo.info`"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Copiar código de la API vieja de un tutorial: tira error en tiempo de ejecución.",
+        "ref": "[U04.T02 p.24]; [PRD05 p.5]"
+      },
+      {
+        "texto": "Guardar en la base la URI de la caché sin copiar el archivo.",
+        "ref": "[U04.T02 p.29]"
+      },
+      {
+        "texto": "Mandar la imagen en base64 a la API.",
+        "ref": "[U04-V4 1:16:50-1:22:07]"
+      },
+      {
+        "texto": "En iOS, guardar en documentos archivos que se pueden volver a descargar: es motivo de rechazo.",
+        "ref": "[U04.T02 p.26]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "async function guardarFoto(uriDeLaCamara: string) {\n  const galeria = new Directory(Paths.document, 'fotos');\n  if (!galeria.exists) galeria.create();\n  const temporal = new File(uriDeLaCamara);          // está en la caché\n  const definitiva = new File(galeria, `${Date.now()}.jpg`);\n  temporal.copy(definitiva);                          // ahora sí sobrevive\n  return definitiva.uri;\n}",
+      "ref": "[U04.T02 p.29]"
+    },
+    "citasProfe": [
+      {
+        "texto": "por eso es que nunca se mandan los archivos a una API",
+        "ref": "[U04-V4 1:22:07]"
+      },
+      {
+        "texto": "para no correr el riesgo de que el usuario la pueda borrar desde la galería antes de que vos la hayas podido sincronizar",
+        "ref": "[U04-V4 36:16]"
+      }
+    ],
+    "aclaraciones": [
+      "Sobre el peso de las fotos, en clase se recomendó subir la imagen como está y que la API haga el resize [U04-V4 38:29-40:46]; el material sugiere redimensionar antes de subir con `expo-image-manipulator` [U04.T02 p.9]. El profe aclaró que el manipulador no es obligatorio para el TP."
+    ],
+    "referencias": [
+      "[U04.T02 p.23-29]; [PRD05 p.5]; [TFI p.2, req. 4]; [U04-V4 34:08-37:18]",
+      "[U04-V4 1:16:50-1:22:07]",
+      "[U04-V4 38:29-40:46]",
+      "[U04.T02 p.6, 9]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "`handleTomarFotoEstado` elige la foto con el picker y después solo hace `require('expo-file-system')` y `console.log(Paths.cache)` (`espacio/[id].tsx:57-65`); `File` y `Directory` se desestructuran sin uso. La URI de la caché queda en el estado local y se pierde al salir, aunque el `Alert` diga que la foto se guardó en el dispositivo. Por eso la parte de archivos del requisito 4 de la consigna (guardado y lectura con `File`, `Directory` y `Paths`) no está cumplida, aunque la de cámara sí. Implementación hipotética: copiar la URI a `Paths.document` con una función como `guardarFoto` del material y guardar la URI definitiva, por ejemplo en SQLite.",
+      "archivos": [
+        {
+          "ruta": "src/app/espacio/[id].tsx",
+          "lineas": "41-70",
+          "nota": "Picker, `console.log(Paths.cache)` en `:57-65` y `Alert` de “foto guardada”"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.12",
+      "8.13",
+      "9.12"
+    ],
+    "preguntasRelacionadas": [
+      "7.D6",
+      "6.7.3",
+      "6.7.4",
+      "4.25"
+    ],
+    "preguntasRapidas": [
+      "¿Dónde se guardan las fotos del estado de la cancha?",
+      "¿Qué diferencia hay entre `Paths.document` y `Paths.cache`?",
+      "¿Cómo copiarías la foto con `File`?"
+    ]
+  },
+  {
+    "id": "u04-ubicacion-expo-location",
+    "unidad": "U04",
+    "titulo": "Ubicación: `expo-location`",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Con `expo-location` se pide el permiso de primer plano, que es el que se usa en la materia, y nunca el de segundo plano «por las dudas». Hay tres formas de leer la posición: `getLastKnownPositionAsync` (rápida, puede ser vieja), `getCurrentPositionAsync` (precisa, tarda) y `watchPositionAsync` (suscripción que se libera con `remove()`).",
+    "explicacion": [
+      "La ubicación es una librería **independiente del mapa**. En la app de medidores de la práctica, el profe la usó para saber si el lector estaba cerca del domicilio y aclaró que alcanza con matemática para saber si está cerca o lejos, sin dibujar nada. Por eso, antes de instalar `expo-location` con `npx expo install`, conviene tener claro para qué se necesita la posición: mostrar un punto azul, calcular una distancia o registrar desde dónde se hizo algo.",
+      "Hay **dos permisos** distintos. `requestForegroundPermissionsAsync` corresponde a «Mientras uso la app» y es el que se usa en la materia. `requestBackgroundPermissionsAsync` permite saber dónde está el usuario aun con la app cerrada: exige justificación ante las dos tiendas y en Android primero hay que tener el de primer plano. La regla de la cátedra es no pedirlo nunca por las dudas, porque es el permiso que más rechazos de publicación genera. El texto que ve el usuario se declara en el plugin de `expo-location` en `app.json`; en clase se usó el de «mientras uso la app».",
+      "Para leer la posición hay tres funciones. `getLastKnownPositionAsync` devuelve lo antes posible la última posición conocida, que puede ser vieja. `getCurrentPositionAsync` hace una lectura nueva, más precisa pero más lenta, y acepta `accuracy` (de `Lowest` a `BestForNavigation`). El material propone combinarlas: mostrar enseguida la última conocida y corregirla cuando llega la lectura fina, así el usuario no mira una pantalla vacía. `watchPositionAsync`, en cambio, es una **suscripción** a los cambios de posición, con opciones como `distanceInterval`.",
+      "La suscripción tiene una regla que no se negocia: va dentro de un `useEffect` y la limpieza llama a `remove()`. Si no, el GPS sigue activo después de salir de la pantalla y gasta la batería; según el material, es el bug que más aparece corregido en las entregas. En la práctica, el profe primero pidió la ubicación al guardar la lectura y después la pasó a un `useEffect` con `[]`, que corre solo al montar, para que el usuario no tuviera que esperar al guardar.",
+      "Dos detalles prácticos. Si el GPS del emulador está apagado, la lectura falla; por eso el helper de clase estaba dentro de un `try/catch` que devolvía `null`. Y si el usuario niega el permiso, la app tiene que seguir funcionando con todo lo que no depende de la posición. `expo-location` también geocodifica: `geocodeAsync` pasa de dirección a coordenadas y `reverseGeocodeAsync` de coordenadas a dirección; las dos devuelven un array que puede venir vacío."
+    ],
+    "pasos": [
+      "Instalar con `npx expo install expo-location` y declarar el texto de uso en el plugin de `app.json`.",
+      "Pedir `requestForegroundPermissionsAsync` justo antes de usar la ubicación.",
+      "Si `status` no es `granted`, devolver `null` y seguir sin ubicación.",
+      "Leer con `getLastKnownPositionAsync` (rápida) y/o `getCurrentPositionAsync` con la `accuracy` que haga falta.",
+      "Si hay que seguir al usuario, usar `watchPositionAsync` dentro de un `useEffect` y llamar a `remove()` en la limpieza."
+    ],
+    "definiciones": [
+      {
+        "termino": "Permiso de primer plano",
+        "definicion": "«Mientras uso la app»: se pide con `requestForegroundPermissionsAsync` y alcanza para casi todo en un TP.",
+        "ref": "[U04.T02 p.11]"
+      },
+      {
+        "termino": "Permiso de segundo plano",
+        "definicion": "«Siempre», incluso con la app cerrada: `requestBackgroundPermissionsAsync`. Requiere justificación ante las tiendas y, en Android, tener antes el de primer plano.",
+        "ref": "[U04.T02 p.11]"
+      },
+      {
+        "termino": "`accuracy`",
+        "definicion": "Opción de precisión de la lectura, de `Lowest` a `Highest`/`BestForNavigation`; más precisión implica más demora.",
+        "ref": "[U04-V5 38:42-40:46]"
+      },
+      {
+        "termino": "Reverse geocoding",
+        "definicion": "Pasar de coordenadas a dirección con `reverseGeocodeAsync`; lo inverso es `geocodeAsync`.",
+        "ref": "[U04.T02 p.14]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Tres formas de obtener la posición",
+      "columnas": [
+        "Función",
+        "Qué devuelve",
+        "Cuándo conviene"
+      ],
+      "filas": [
+        [
+          "`getLastKnownPositionAsync`",
+          "La última posición conocida, al instante; puede ser vieja",
+          "Mostrar algo ya, mientras llega la lectura fina"
+        ],
+        [
+          "`getCurrentPositionAsync`",
+          "Una lectura nueva, más precisa; tarda",
+          "Registrar desde dónde se hizo algo o calcular una distancia"
+        ],
+        [
+          "`watchPositionAsync`",
+          "Una suscripción que avisa cada cambio de posición",
+          "Un mapa que sigue al usuario; se libera con `remove()`"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Pedir el permiso de segundo plano «por las dudas»: es la causa de rechazo de publicación más frecuente.",
+        "ref": "[U04.T02 p.11]"
+      },
+      {
+        "texto": "Olvidar el `remove()` de `watchPositionAsync` en la limpieza del `useEffect`: el GPS sigue activo y vacía la batería.",
+        "ref": "[U04.T02 p.13]"
+      },
+      {
+        "texto": "Probar en el emulador con el GPS apagado y pensar que el código está mal: la lectura falla y el helper devuelve `null`.",
+        "ref": "[U04-V5 50:11-51:15]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "const { status } = await Location.requestForegroundPermissionsAsync();\nif (status !== 'granted') return null;\nconst ultima = await Location.getLastKnownPositionAsync();   // rápida, puede ser vieja\nif (ultima) mostrar(ultima);\nconst actual = await Location.getCurrentPositionAsync({\n  accuracy: Location.Accuracy.Balanced,\n}); // precisa, tarda\nmostrar(actual);",
+      "ref": "[U04.T02 p.12]",
+      "nota": "Patrón de doble pedido: se muestra algo enseguida y se corrige cuando llega la lectura fina."
+    },
+    "citasProfe": [
+      {
+        "texto": "nunca pedirlo por las dudas… te pueden rechazar… en los stores",
+        "ref": "[U04-V5 37:41]"
+      },
+      {
+        "texto": "es rápido, pero puede ser un lugar viejo",
+        "ref": "[U04-V5 38:42]"
+      },
+      {
+        "texto": "con matemática puedo saber si está cerca o lejos",
+        "ref": "[U04-V5 36:41]"
+      }
+    ],
+    "aclaraciones": [
+      "La fórmula de distancia no se vio en clase ni en el material: el profe solo dijo que «con matemática» se puede saber si alguien está cerca. Haversine es una decisión del grupo.",
+      "En clase se mencionó que `timeInterval` y `mayShowUserSettingsDialog` son opciones solo de Android [U04-V5 52:16]."
+    ],
+    "referencias": [
+      "[U04.T02 p.11-13]; [U04-V5 36:41-52:16]",
+      "[U04.T02 p.14]",
+      "[U04-V5 50:11-51:15]",
+      "[U02-V2 39:11]",
+      "[TFI p.2, req. 5]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`useLocation` (`useLocation.ts:11-79`) pide `requestForegroundPermissionsAsync` (`:30`) en un `useEffect` con `[]` y lee una sola vez con `getCurrentPositionAsync({ accuracy: Accuracy.Balanced })` (`:38-40`). No usa `getLastKnownPositionAsync` ni `watchPositionAsync`, así que no hay suscripción que liberar. La distancia se calcula con Haversine (R = 6371 km, redondeada a un decimal, `:57-69`) y se muestra en cada tarjeta del tab Mapa (`mapa.tsx:176-178`). Cualquier excepción, como el GPS apagado, se marca como \"denegado\" (`:46-48`), y el mapa sigue usable con un banner. Ojo: el plugin de `app.json` declara `locationAlwaysAndWhenInUsePermission` (el texto de «siempre») aunque la app solo pide primer plano.",
+      "archivos": [
+        {
+          "ruta": "src/hooks/useLocation.ts",
+          "lineas": "11-79",
+          "nota": "permiso, lectura única y Haversine"
+        },
+        {
+          "ruta": "src/app/(tabs)/mapa.tsx",
+          "lineas": "139-146, 176-178",
+          "nota": "banner de permiso denegado y distancia por tarjeta"
+        },
+        {
+          "ruta": "app.json",
+          "lineas": "18-19, 28, 56-61",
+          "nota": "permisos de Android, texto de iOS y plugin con texto de «siempre»"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.13",
+      "2.17",
+      "9.19"
+    ],
+    "preguntasRelacionadas": [
+      "6.9.1",
+      "6.9.2",
+      "6.9.3",
+      "8.6",
+      "5.13",
+      "7.B7"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué primer plano y no segundo plano?",
+      "¿Cómo calculan la distancia?",
+      "¿Qué pasa con el GPS apagado?"
+    ]
+  },
+  {
+    "id": "u04-mapas",
+    "unidad": "U04",
+    "titulo": "Mapas",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "`react-native-maps` dibuja el mapa con `MapView` y sus hijos (`Marker`, `Polyline`, `Polygon`, `Circle`). Viene en Expo Go y no pide clave en desarrollo; en producción sí (Google Maps, restringida por SHA-1). El mapa es solo una vista y no necesita permiso: la ubicación sí. La consigna exige `react-native-maps` y el profe pidió Google Maps «sí o sí».",
+    "explicacion": [
+      "Mapa y ubicación son cosas distintas, y el profe lo repitió varias veces: el mapa es solo una vista, que se puede ver y mover sin ningún permiso. Lo que pide permiso es saber **dónde está el usuario**: el punto azul o el botón «centrame». Por eso, si el mapa no necesita la posición exacta del usuario, no hay que pedir el permiso de ubicación.",
+      "La librería estándar es **`react-native-maps`**. Viene incluida en Expo Go (1.27.2 en SDK 57), así que se prueba sin configurar nada. En desarrollo, Expo Go usa Apple Maps en iOS y Google Maps en Android sin credenciales. Recién en la build de producción Google Maps exige una **clave de API** propia, restringida por la huella SHA-1 y el identificador del paquete. Esa clave no se escribe en el repositorio: va en una variable de entorno y, en EAS, en un secret.",
+      "`MapView` se comporta parecido a `CameraView`: ocupa la pantalla con `flex: 1` o `StyleSheet.absoluteFill`. `initialRegion` recibe latitud, longitud y los **deltas**, que indican cuánto se aleja la vista del centro, o sea, el zoom. Encima del mapa, como hijos directos, se dibujan `Marker` (pines), `Polyline` (una línea con inicio y fin), `Polygon` (inicio y fin en el mismo punto) y `Circle` (centro y radio en metros). En la demo de clase, el profe agregaba marcadores con `onLongPress`: guardaba `event.nativeEvent.coordinate` en un estado y los dibujaba con `markers.map(...)`.",
+      "Un mapa que se ve negro casi nunca es un problema de permisos. Lo primero es revisar el estilo (`flex: 1` en el contenedor) y qué librería se está usando. `expo-maps` es la alternativa de Expo, con un componente por plataforma, pero está en alfa y no corre en Expo Go. La cursada enseña `react-native-maps` y muestra `expo-maps` como el camino que viene.",
+      "Para el TP, la consigna pide `expo-location` junto con `react-native-maps`, y si el usuario niega el permiso la app tiene que seguir siendo usable. Cuando le preguntaron por Leaflet, el profe dijo que es solo una librería de JavaScript, que no creía que funcionara y que convenía usar Google Maps. Ante otra consulta fue más tajante: Google Maps «sí o sí», salvo que no cargue, porque la idea es una experiencia lo más parecida posible a la nativa."
+    ],
+    "pasos": [
+      "Instalar con `npx expo install react-native-maps`, que no trae permisos propios.",
+      "Poner `<MapView style={StyleSheet.absoluteFill} />` o darle `flex: 1`.",
+      "Definir `initialRegion` con latitud, longitud, `latitudeDelta` y `longitudeDelta`.",
+      "Dibujar `Marker`, `Polyline`, `Polygon` o `Circle` como hijos directos de `MapView`.",
+      "Pedir el permiso de ubicación solo si se usa `showsUserLocation` o un botón para centrar en el usuario.",
+      "Para producción: `androidGoogleMapsApiKey` en el plugin, leída de una variable de entorno."
+    ],
+    "definiciones": [
+      {
+        "termino": "`latitudeDelta` / `longitudeDelta`",
+        "definicion": "Cuántos grados entran en la pantalla: qué tan alejada está la vista del centro (el zoom).",
+        "ref": "[U04.T02 p.15]; [U04-V5 57:22]"
+      },
+      {
+        "termino": "`Polygon`",
+        "definicion": "Área cuyo inicio y fin son el mismo punto; necesita al menos tres puntos.",
+        "ref": "[U04-V5 58:23]"
+      },
+      {
+        "termino": "`Circle`",
+        "definicion": "Figura con centro y radio en metros.",
+        "ref": "[U04.T02 p.15]"
+      },
+      {
+        "termino": "`expo-maps`",
+        "definicion": "Módulo de Expo con `AppleMaps.View` (iOS) y `GoogleMaps.View` (Android), sin componente único; en alfa y fuera de Expo Go.",
+        "ref": "[U04.T02 p.17]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Opciones de mapa frente a lo que pide la cursada",
+      "columnas": [
+        "",
+        "`react-native-maps`",
+        "`expo-maps`",
+        "Leaflet en WebView"
+      ],
+      "filas": [
+        [
+          "Qué es",
+          "Mapa nativo (Google o Apple) con componentes de React Native",
+          "Módulo de Expo con un componente por plataforma",
+          "Librería web de JavaScript dentro de una WebView"
+        ],
+        [
+          "Postura de la cátedra",
+          "Lo que se enseña y lo que nombra la consigna",
+          "En alfa: «tienen que saber que está»",
+          "En clase: «No creo que funcione»"
+        ],
+        [
+          "Expo Go",
+          "Incluido (1.27.2 en SDK 57)",
+          "No corre",
+          "Necesita `react-native-webview`"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Creer que el mapa necesita permiso de ubicación: el permiso es para saber dónde está el usuario.",
+        "ref": "[U04-V5 1:01:25]"
+      },
+      {
+        "texto": "Ver el mapa en negro y buscar una API faltante, cuando suele faltar `flex: 1` en el contenedor.",
+        "ref": "[U04-V4 9:50-10:52]"
+      },
+      {
+        "texto": "Subir la clave de Google Maps al repositorio: va en una variable de entorno o en un secret de EAS.",
+        "ref": "[U04.T02 p.16]"
+      },
+      {
+        "texto": "Al tocar un marcador también se dispara el `onPress` del mapa y se agrega otro marcador (bug que apareció en la demo).",
+        "ref": "[U04-V5 1:20:22]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "import MapView, { Marker, Circle } from 'react-native-maps';\n\n<MapView\n  style={{ flex: 1 }}\n  initialRegion={{ latitude: -31.7333, longitude: -60.5297,\n    latitudeDelta: 0.05, longitudeDelta: 0.05 }}>\n  <Marker coordinate={{ ... }} title=\"FCAD\" description=\"...\" />\n  <Circle center={{ ... }} radius={500} />\n</MapView>",
+      "ref": "[U04.T02 p.15]",
+      "nota": "Lo que se dibuja encima va como hijo directo de `MapView`."
+    },
+    "citasProfe": [
+      {
+        "texto": "el mapa es una vista no más",
+        "ref": "[U04-V5 1:01:25]"
+      },
+      {
+        "texto": "Sí o sí tienen que usar Google Maps",
+        "ref": "[U04-V5 1:23:29]"
+      },
+      {
+        "texto": "Es una librería de JavaScript solamente… No creo que funcione.",
+        "ref": "[U04-V5 1:22:28]"
+      }
+    ],
+    "aclaraciones": [
+      "El profe llamó a `expo-maps` «beta» en [U04-V1 5:09] y [U04-V4 10:52], y «alfa» en [U04-V4 14:13] y [U04-V5 59:23]; el material dice ALPHA [U04.T02 p.17].",
+      "En clase la clave de producción se nombró como `android.config.googleMaps.apiKey` [U04-V5 59:23]; el material la pone en el plugin como `androidGoogleMapsApiKey` [U04.T02 p.16].",
+      "Sobre `Circle` el profe dijo «creo que el radio está en metros»; el material lo confirma [U04.T02 p.15]."
+    ],
+    "referencias": [
+      "[U04.T02 p.15-17]; [TFI p.2, req. 5]; [U04-V5 53:17-1:01:25]; [U04-V5 1:22:28-1:23:29]",
+      "[U04-V4 9:50-10:52]",
+      "[U04-V4 1:34:19-1:36:27]",
+      "[U04-V1 5:09]",
+      "[U04-V4 13:08-14:13]",
+      "[U04-V5 59:23]",
+      "[U02-V2 39:11]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Parcial: el mapa es Leaflet 1.9.4 dentro de `react-native-webview` (`mapa.tsx:45-126, 159-167`). React Native le habla a la página con `injectJavaScript` (`:36-42`), y la página responde con `window.ReactNativeWebView.postMessage('NAV:...')`, que `onMessage` convierte en `router.push` (`:59, 128-134`). `react-native-maps` sigue en `package.json:37` sin importarse: se reemplazó en el commit `77f66e1`. El mapa no anda sin conexión (Leaflet desde unpkg y tiles de OpenStreetMap) y el HTML se regenera en cada render (`:162`). Lo que sí cumple: con el permiso negado, el mapa se ve igual, centrado en Villaguay y con un banner (`:139-146`). Migrar sería, hipotéticamente, un `MapView` con un `Marker` por espacio a partir de `coordenadas`.",
+      "archivos": [
+        {
+          "ruta": "src/app/(tabs)/mapa.tsx",
+          "lineas": "36-42, 45-126, 128-134, 159-167",
+          "nota": "HTML de Leaflet, injectJavaScript y mensajes 'NAV:'"
+        },
+        {
+          "ruta": "package.json",
+          "lineas": "37, 44",
+          "nota": "`react-native-maps` sin uso y `react-native-webview`"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.14",
+      "4.19",
+      "7.D4"
+    ],
+    "preguntasRelacionadas": [
+      "2.18",
+      "5.5",
+      "9.15",
+      "6.9.4",
+      "6.9.5",
+      "7.D2",
+      "7.B8",
+      "4.24"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué Leaflet si la consigna pide `react-native-maps`?",
+      "¿Cómo se comunican React Native y el WebView?",
+      "¿El mapa necesita permiso de ubicación?"
+    ]
+  },
+  {
+    "id": "u04-haptica-expo-haptics",
+    "unidad": "U04",
+    "titulo": "Háptica: `expo-haptics`",
+    "prioridad": "media",
+    "enfasisClase": 0,
+    "fuenteTipo": "pdf",
+    "resumen": "`expo-haptics` tiene tres tipos de respuesta: `selectionAsync` (cambio de selección), `notificationAsync` con `Success`, `Warning` o `Error` (resultado de una acción) e `impactAsync` (choque físico simulado). La vibración nunca va sola. El PRD pide una vibración distinta para un ingreso válido y uno inválido.",
+    "explicacion": [
+      "La háptica es la respuesta táctil del teléfono, y `expo-haptics` la divide en **tres tipos** según lo que se quiere comunicar. `selectionAsync()` es el más sutil y acompaña un cambio de selección: un ítem, un slider, una pestaña. `notificationAsync(tipo)` comunica el **resultado de una acción**, con `Success`, `Warning` o `Error` (se guardó, falló el pago). `impactAsync(estilo)` simula un choque físico, con estilos de `Light` a `Heavy`, `Rigid` y `Soft`.",
+      "Elegir el tipo es parte del diseño: el resultado de validar algo es una notificación, no un impacto. En Android, la documentación recomienda `performAndroidHapticsAsync` en lugar de `impactAsync`, porque usa el motor háptico del sistema y no necesita el permiso `VIBRATE`.",
+      "La regla del material es que la vibración **nunca** sea la única señal. En iOS no vibra con el modo de bajo consumo, con el Taptic Engine apagado o con la cámara en uso, así que siempre tiene que ir acompañada de algo visible.",
+      "La consigna pide al menos un uso justificado de `expo-sensors` o `expo-haptics` que aporte algo a la experiencia, y el PRD 05 lo concreta: una vibración distinta al validar un ingreso correcto y uno inválido. Así el encargado, en la puerta, puede saber el resultado sin mirar la pantalla."
+    ],
+    "definiciones": [
+      {
+        "termino": "`selectionAsync()`",
+        "definicion": "Toque sutil para un cambio de selección (ítem, slider, pestaña).",
+        "ref": "[U04.T02 p.22]"
+      },
+      {
+        "termino": "`notificationAsync(tipo)`",
+        "definicion": "Resultado de una acción: `Success`, `Warning` o `Error`.",
+        "ref": "[U04.T02 p.22]"
+      },
+      {
+        "termino": "`impactAsync(estilo)`",
+        "definicion": "Choque físico simulado: `Light`, `Medium`, `Heavy`, `Rigid`, `Soft`.",
+        "ref": "[U04.T02 p.22]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Cuándo usar cada respuesta háptica",
+      "columnas": [
+        "Función",
+        "Comunica",
+        "Ejemplo"
+      ],
+      "filas": [
+        [
+          "`selectionAsync`",
+          "Cambió una selección",
+          "Mover un slider o cambiar de pestaña"
+        ],
+        [
+          "`notificationAsync`",
+          "El resultado de una acción",
+          "QR válido (`Success`) o inválido (`Error`)"
+        ],
+        [
+          "`impactAsync`",
+          "Un choque físico simulado",
+          "Un elemento que golpea un borde"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Usar la vibración como única señal: hay teléfonos y modos en los que no vibra.",
+        "ref": "[U04.T02 p.22]"
+      },
+      {
+        "texto": "Usar `impactAsync` para informar un resultado, cuando para eso está `notificationAsync`.",
+        "ref": "[U04.T02 p.22]"
+      }
+    ],
+    "aclaraciones": [
+      "La háptica no se trató en las clases grabadas: el contenido sale del material [U04.T02 p.22], del PRD 05 y de la consigna."
+    ],
+    "referencias": [
+      "[U04.T02 p.22]; [PRD05 p.5]; [TFI p.2-3, req. 8]",
+      "[TFI p.2-3, req. 8]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`useHaptics` (`useHaptics.ts:16-48`) expone `vibrarExito` y `vibrarError`, las dos con `notificationAsync` (`Success` y `Error`, `:17-35`). El escáner las llama al validar el QR (`escaneo.tsx:57, 64`), siempre junto con un cartel verde o rojo. `vibrarSeleccion` (`selectionAsync`) está definida pero no se usa. El módulo se carga con `require` dentro de `try/catch` y devuelve `null` en web (`:3-14`). Ojo: como el escáner llama a `escanearQrReserva(codigo, 'todos')`, el caso «QR de otra cancha» nunca llega a vibrar como error.",
+      "archivos": [
+        {
+          "ruta": "src/hooks/useHaptics.ts",
+          "lineas": "16-48",
+          "nota": "vibrarExito, vibrarError y vibrarSeleccion (sin uso)"
+        },
+        {
+          "ruta": "src/app/encargado/escaneo.tsx",
+          "lineas": "49-71",
+          "nota": "procesarCodigo: háptica y cartel según el resultado"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.16",
+      "4.17",
+      "8.1"
+    ],
+    "preguntasRelacionadas": [
+      "2.16",
+      "4.25"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué `notificationAsync` y no `impactAsync`?",
+      "¿Es un uso justificado?",
+      "¿Qué pasa si el teléfono no vibra?"
+    ]
+  },
+  {
+    "id": "u04-sensores-expo-sensors",
+    "unidad": "U04",
+    "titulo": "Sensores: `expo-sensors`",
+    "prioridad": "complementaria",
+    "enfasisClase": 1,
+    "fuenteTipo": "mixto",
+    "resumen": "`expo-sensors` reúne acelerómetro, giroscopio, magnetómetro, barómetro, luz, podómetro y `DeviceMotion`, todos con la misma API. El patrón tiene cuatro pasos: ¿existe? (`isAvailableAsync`), intervalo, `addListener` y `remove()` en la limpieza. En el simulador de iOS no hay sensores: se prueba en un teléfono real.",
+    "explicacion": [
+      "Desde la U04 aparece algo nuevo: el hardware **puede no estar**. El profe lo planteó al arrancar la unidad: hay que preparar la app para un teléfono que no tenga, por ejemplo, acelerómetro, y recordó que antes ciertos sensores eran solo de gama alta. `expo-sensors` reúne acelerómetro (g en x, y, z), giroscopio (rad/s), magnetómetro (μT, para una brújula), barómetro (hPa, no todos lo tienen), sensor de luz (solo Android), podómetro y `DeviceMotion`, que combina los tres primeros ya procesados.",
+      "Todos comparten la misma API y un **patrón de cuatro pasos**: comprobar que el sensor existe con `isAvailableAsync()`, fijar la frecuencia con `setUpdateInterval`, escuchar con `addListener` (que devuelve una suscripción) y soltarla con `remove()` en la limpieza del `useEffect`. Si no se libera, el sensor sigue leyendo después de salir de la pantalla. Las formas viejas ya no sirven: `activate()` y `deactivate()` no existen y `removeAllListeners()` está deprecado.",
+      "El ejemplo del material es detectar una sacudida. Se calcula el módulo del vector, `Math.sqrt(x*x + y*y + z*z)`, y si supera un umbral de 1.8 g (en reposo da cerca de 1) se dispara una háptica. El módulo no depende de cómo esté agarrado el teléfono. Ojo: en el simulador de iOS los sensores no existen, así que esto se prueba sí o sí en un teléfono real."
+    ],
+    "pasos": [
+      "Comprobar que el sensor existe con `isAvailableAsync()`.",
+      "Fijar la frecuencia de lectura con `setUpdateInterval(ms)`.",
+      "Suscribirse con `addListener(callback)` y guardar la suscripción.",
+      "Liberarla con `suscripcion.remove()` en la función de limpieza del `useEffect`."
+    ],
+    "comparacion": {
+      "titulo": "Qué trae `expo-sensors`",
+      "columnas": [
+        "Sensor",
+        "Mide",
+        "Para qué"
+      ],
+      "filas": [
+        [
+          "Acelerómetro",
+          "Aceleración en g (x, y, z)",
+          "Inclinación, sacudidas, pasos"
+        ],
+        [
+          "Giroscopio",
+          "Velocidad de rotación en rad/s",
+          "Orientación del dispositivo"
+        ],
+        [
+          "Magnetómetro",
+          "Campo magnético en μT",
+          "Brújula"
+        ],
+        [
+          "Barómetro",
+          "Presión en hPa",
+          "Altitud aproximada, clima (no todos lo tienen)"
+        ],
+        [
+          "LightSensor",
+          "Luz ambiente en lux",
+          "Solo Android"
+        ],
+        [
+          "Podómetro",
+          "Conteo de pasos",
+          "En vivo o histórico"
+        ],
+        [
+          "DeviceMotion",
+          "Los tres primeros combinados y procesados",
+          "El más práctico"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "No liberar la suscripción con `remove()`: el sensor sigue leyendo fuera de la pantalla.",
+        "ref": "[U04.T02 p.20]"
+      },
+      {
+        "texto": "Dar por hecho que el sensor existe en todos los teléfonos.",
+        "ref": "[U04-V1 1:05-2:07]"
+      },
+      {
+        "texto": "Probar en el simulador de iOS, donde los sensores no existen.",
+        "ref": "[U04.T02 p.19]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "// Patrón de cuatro pasos\nif (!(await Accelerometer.isAvailableAsync())) return; // 1 · ¿existe?\nAccelerometer.setUpdateInterval(100);                   // 2 · cada 100 ms\nsuscripcion = Accelerometer.addListener(setDatos);      // 3 · escuchar\nreturn () => suscripcion?.remove();                     // 4 · soltar\n\n// Sacudida: módulo del vector contra un umbral\nconst UMBRAL = 1.8; // en reposo el módulo ≈ 1\nif (Math.sqrt(x * x + y * y + z * z) > UMBRAL)\n  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);",
+      "ref": "[U04.T02 p.20-21]"
+    },
+    "aclaraciones": [
+      "En clase los sensores solo se mencionaron (que el hardware puede no estar y que figuraban en las diapositivas); el detalle sale del material [U04.T02 p.19-21]."
+    ],
+    "referencias": [
+      "[U04.T02 p.19-21]",
+      "[U04-V1 1:05-2:07]",
+      "[U04-V4 5:31]",
+      "[U04-V5 35:40]",
+      "[TFI p.2-3, req. 8]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado: el TP no usa `expo-sensors`, que ni siquiera está en `package.json`. La consigna acepta sensores **o** háptica, y el requisito 8 se cubre con la háptica del escáner. Si se quisiera sumar un sensor (hipotético), habría que aplicar el patrón de cuatro pasos dentro de un `useEffect`, con `remove()` en la limpieza.",
+      "archivos": [
+        {
+          "ruta": "package.json",
+          "nota": "sin `expo-sensors`; sí `expo-haptics` (`:16`)"
+        },
+        {
+          "ruta": "src/hooks/useHaptics.ts",
+          "lineas": "16-48",
+          "nota": "lo que cubre el requisito 8"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.15",
+      "2.16",
+      "4.25"
+    ],
+    "preguntasRelacionadas": [],
+    "preguntasRapidas": [
+      "¿Por qué háptica y no sensores?",
+      "¿Cómo detectarías una sacudida?",
+      "¿Qué pasa si no hacés `remove()`?"
+    ]
+  },
+  {
+    "id": "u04-video-expo-video",
+    "unidad": "U04",
+    "titulo": "Video: `expo-video`",
+    "prioridad": "media",
+    "enfasisClase": 1,
+    "fuenteTipo": "mixto",
+    "resumen": "`expo-av` se eliminó en SDK 55 y se partió en `expo-video` y `expo-audio`. Para video, `useVideoPlayer` crea el reproductor y `VideoView` lo dibuja. El reproductor no vive en el estado de React: para mostrar si está reproduciendo hay que escuchar sus eventos.",
+    "explicacion": [
+      "Mucho tutorial viejo usa `expo-av`, pero ese módulo **se eliminó en el SDK 55** y se partió en `expo-video` y `expo-audio`. El profe lo marcó al leer las cuestiones técnicas del PRD de ejemplo, y el PRD 05 lo repite entre las cosas que la documentación vieja de internet dice mal.",
+      "El patrón nuevo separa dos piezas: un **reproductor**, que es un objeto con el estado de la reproducción, y una **vista** que lo dibuja. `useVideoPlayer(fuente, p => { ... })` crea el reproductor y permite configurarlo al inicio (por ejemplo, `p.loop = true`). `<VideoView player={player} />` lo muestra, con opciones como pantalla completa o picture-in-picture.",
+      "El detalle conceptual es que el reproductor **no vive en el estado de React**: cambiarle una propiedad no re-renderiza nada. Si la interfaz tiene que mostrar «Pausar» o «Reproducir», hay que escuchar sus eventos, por ejemplo con `useEvent(player, 'playingChange', ...)`. La reproducción en segundo plano y el picture-in-picture tampoco se activan desde el código: van en el config plugin de `expo-video` y obligan a recompilar.",
+      "La consigna pide resolver con `expo-video` o `expo-audio` lo multimedia que pida el PRD, con controles de reproducción a la vista. En Reservas Deportivas es el video corto de cada cancha, de veinte o treinta segundos, para que la gente vea cómo está el piso."
+    ],
+    "definiciones": [
+      {
+        "termino": "`useVideoPlayer`",
+        "definicion": "Hook que crea el reproductor a partir de una fuente y una función de configuración inicial.",
+        "ref": "[U04.T02 p.32]"
+      },
+      {
+        "termino": "`VideoView`",
+        "definicion": "Vista que dibuja un reproductor ya creado; recibe `player`.",
+        "ref": "[U04.T02 p.32]"
+      },
+      {
+        "termino": "`useEvent`",
+        "definicion": "Hook de `expo` para escuchar un evento del reproductor (como `playingChange`) y reflejarlo en la interfaz.",
+        "ref": "[U04.T02 p.32]"
+      }
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Seguir un tutorial con `expo-av`, que ya no existe.",
+        "ref": "[U02-V2 41:18]; [U04.T02 p.31]"
+      },
+      {
+        "texto": "Esperar que la pantalla se actualice al cambiar una propiedad del reproductor: no es estado de React, hay que escuchar sus eventos.",
+        "ref": "[U04.T02 p.31]"
+      },
+      {
+        "texto": "Querer activar el picture-in-picture desde el código: va en el config plugin y pide recompilar.",
+        "ref": "[U04.T02 p.32]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "import { useEvent } from 'expo';\nimport { useVideoPlayer, VideoView } from 'expo-video';\n\nconst player = useVideoPlayer(fuente, p => { p.loop = true; p.play(); });\nconst { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });\n\n<VideoView player={player} fullscreenOptions={{ enable: true }} allowsPictureInPicture />\n<Button title={isPlaying ? 'Pausar' : 'Reproducir'}\n  onPress={() => isPlaying ? player.pause() : player.play()} />",
+      "ref": "[U04.T02 p.32]"
+    },
+    "aclaraciones": [
+      "En clase solo se mencionó que `expo-av` ya no existe y que se usan `expo-audio` y `expo-video` [U02-V2 41:18]; el resto del tema sale del material."
+    ],
+    "referencias": [
+      "[U04.T02 p.31-32]; [PRD05 p.5]; [U02-V2 41:18-43:25]",
+      "[TFI p.2-3, req. 9]",
+      "[PRD05 p.1-2]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`VideoViewer` (`src/componentes/VideoViewer.tsx:10-39`) crea el reproductor con `useVideoPlayer(videoUrl, p => { p.loop = true })` y lo muestra con `<VideoView player={player} />`, que trae los controles nativos; en web usa `<video controls>`. La ficha lo muestra solo si el espacio tiene `videoUrl` (`espacio/[id].tsx:133-140`), y en los mocks solo `esp-01` a `esp-03` lo tienen. Hay dos límites: el hook se llama después de un `return` condicional para web (`:11-26`), lo que rompe la regla de hooks aunque `Platform.OS` no cambie en ejecución, y el video se baja de internet, así que sin conexión no se ve (no se guarda con `expo-file-system`).",
+      "archivos": [
+        {
+          "ruta": "src/componentes/VideoViewer.tsx",
+          "lineas": "10-39",
+          "nota": "useVideoPlayer + VideoView; hook después de un return"
+        },
+        {
+          "ruta": "src/app/espacio/[id].tsx",
+          "lineas": "133-140",
+          "nota": "se muestra solo si hay videoUrl"
+        },
+        {
+          "ruta": "app.json",
+          "lineas": "48",
+          "nota": "plugin expo-video"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.17",
+      "2.21",
+      "4.20"
+    ],
+    "preguntasRelacionadas": [
+      "4.25"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué el player no está en un `useState`?",
+      "¿Qué regla de hooks rompe `VideoViewer`?",
+      "¿Se ve el video sin conexión?"
+    ]
+  },
+  {
+    "id": "u04-audio-expo-audio",
+    "unidad": "U04",
+    "titulo": "Audio: `expo-audio`",
+    "prioridad": "complementaria",
+    "enfasisClase": 1,
+    "fuenteTipo": "mixto",
+    "resumen": "`expo-audio` reemplaza la parte de audio de `expo-av`. `useAudioPlayer` sirve para reproducir; para grabar se usan `useAudioRecorder` y el permiso de grabación, que es sensible. La grabación queda en caché y hay que copiarla si tiene que persistir. El PRD 05 pide video, no audio.",
+    "explicacion": [
+      "`expo-audio` es la otra mitad de lo que era `expo-av` y sigue el mismo patrón de reproductor. Para **reproducir**, `useAudioPlayer(require('./assets/ok.mp3'))` devuelve un reproductor con métodos como `seekTo(0)` y `play()`, que sirve para sonidos cortos o para una audioguía.",
+      "Para **grabar** se usa `useAudioRecorder(RecordingPresets.HIGH_QUALITY)`, y `useAudioRecorderState` para seguir su estado. Grabar audio es un **permiso sensible** que hay que justificar, así que primero se pide con `AudioModule.requestRecordingPermissionsAsync()`. Después vienen `prepareToRecordAsync()`, `record()` y `stop()`, y el archivo queda en `grabador.uri`.",
+      "Igual que la foto de la cámara, la grabación queda por defecto en la **caché**, que el sistema puede vaciar. Si tiene que persistir, hay que copiarla con `expo-file-system` o pasar `directory: 'document'` en el preset.",
+      "La consigna pide multimedia solo cuando el PRD lo pide, y el profe fue flexible con el alcance: si no llegan a grabar un audio, alcanza con reproducirlo. El PRD 05 pide el video de la cancha, no audio."
+    ],
+    "definiciones": [
+      {
+        "termino": "`useAudioPlayer`",
+        "definicion": "Hook que crea un reproductor de audio a partir de un archivo; se controla con `play()`, `pause()` y `seekTo()`.",
+        "ref": "[U04.T02 p.33]"
+      },
+      {
+        "termino": "`useAudioRecorder`",
+        "definicion": "Hook que crea un grabador con un preset de calidad; el archivo resultante queda en `uri`.",
+        "ref": "[U04.T02 p.33]"
+      }
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Guardar la referencia a una grabación sin copiarla: queda en caché y el sistema la puede borrar.",
+        "ref": "[U04.T02 p.33]"
+      },
+      {
+        "texto": "Declarar permisos de grabación que no se usan: en Android conviene bloquearlos y solo declarar lo que se usa.",
+        "ref": "[U04-V3 6:06-7:07]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "// Reproducir\nconst sonido = useAudioPlayer(require('./assets/ok.mp3'));\nsonido.seekTo(0); sonido.play();\n\n// Grabar\nconst grabador = useAudioRecorder(RecordingPresets.HIGH_QUALITY);\nawait AudioModule.requestRecordingPermissionsAsync();\nawait grabador.prepareToRecordAsync();\ngrabador.record();\nawait grabador.stop(); // el archivo queda en grabador.uri (caché)",
+      "ref": "[U04.T02 p.33]"
+    },
+    "citasProfe": [
+      {
+        "texto": "Si no pueden grabar un audio… lo pueden reproducir",
+        "ref": "[U04-V4 1:40:38]"
+      }
+    ],
+    "aclaraciones": [
+      "El PRD 05 solo pide video (su tabla de capacidades nombra `expo-video` para multimedia), así que el audio no es obligatorio en este TP. Pero el README promete audioguías que no están, y eso puede dar pie a la pregunta."
+    ],
+    "referencias": [
+      "[U04.T02 p.33]; [TFI p.2-3, req. 9]",
+      "[U04-V3 6:06-7:07]",
+      "[U04-V4 1:40:38]",
+      "[PRD05 p.5]",
+      "[U02-V2 41:18]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado: `expo-audio` está en `package.json:9` y en los plugins (`app.json:49`), pero ningún archivo lo importa, y el README promete audioguías. Como el PRD 05 no pide audio, lo honesto es reconocer que es una dependencia sobrante y sacarla o implementarla. Hipotético: un `useAudioPlayer` con controles visibles para reproducir y pausar.",
+      "archivos": [
+        {
+          "ruta": "package.json",
+          "lineas": "9",
+          "nota": "dependencia sin uso"
+        },
+        {
+          "ruta": "app.json",
+          "lineas": "49",
+          "nota": "plugin declarado sin uso"
+        }
+      ]
+    },
+    "desafio": [
+      "9.17",
+      "3.11",
+      "3.6"
+    ],
+    "preguntasRelacionadas": [
+      "1B.17",
+      "7.A2",
+      "4.25"
+    ],
+    "preguntasRapidas": [
+      "¿Dónde usan `expo-audio`?",
+      "¿Lo pide el PRD 05?",
+      "¿Por qué quedó en los plugins?"
+    ]
+  },
+  {
+    "id": "u04-notificaciones-locales",
+    "unidad": "U04",
+    "titulo": "Notificaciones locales",
+    "prioridad": "alta",
+    "enfasisClase": 1,
+    "fuenteTipo": "mixto",
+    "resumen": "Las programa la propia app, sin servidor ni internet. El `trigger` lleva `type` (o `null` para mostrarla ya). Hay que guardar el id para poder cancelar; `setNotificationHandler` decide si se ven con la app abierta, y en Android el canal va antes del permiso. La consigna exige que las dispare un hecho real, y el permiso se pide en contexto.",
+    "explicacion": [
+      "Una notificación no es una pantalla de la app: la dibuja el sistema operativo, y la app solo aporta título, cuerpo y datos. Además es un permiso «caro», porque el usuario lo revoca a la primera molestia, y es el único canal que queda cuando la app está cerrada. En clase, el profe las distinguió por quién las dispara: las **locales** las genera la propia app por un cron o una acción local, como una alarma, sin ningún servidor. Funcionan en Expo Go.",
+      "Programarlas con `expo-notifications` lleva varias piezas. El **handler** (`setNotificationHandler`) se declara una vez, fuera de los componentes, y decide qué se muestra cuando la app está en primer plano. Por defecto no se muestra nada, y esa es la causa número uno del «no me llega». El **canal de Android** se crea antes de pedir el permiso, porque sin al menos un canal, en Android 13 o superior el cartel de permiso no aparece. Después se pide el permiso con `getPermissionsAsync` y, si hace falta, `requestPermissionsAsync`.",
+      "Por último se programa con `scheduleNotificationAsync`. `trigger: null` la muestra en el momento; un `trigger` con `type` `TIME_INTERVAL` o `DATE` la deja para más tarde (la forma suelta `{ seconds: 60 }` es la vieja). La función devuelve un **id** que hay que guardar, porque es lo único que permite cancelar una en particular, y reprogramar sin cancelar duplica los avisos. Cancelar (algo que todavía no se disparó) no es lo mismo que descartar (sacar de la bandeja algo que ya apareció). En `data` se puede mandar una ruta para abrirla cuando el usuario toca la notificación.",
+      "La consigna pide que las notificaciones las dispare un **hecho real** de la app, no un botón de prueba. El material agrega dos reglas para el TP: pedir el permiso recién cuando el usuario activa algo que lo necesita y darle una pantalla de ajustes para elegir qué avisos recibir. Conviene notificar algo que el usuario pidió, que lo involucra o que tiene un vencimiento real; no un «hace 3 días que no entrás» ni promociones. En Reservas Deportivas, el hecho real natural es crear la reserva, y el PRD pide el recordatorio dos horas antes del turno."
+    ],
+    "pasos": [
+      "Agregar el plugin `expo-notifications` en `app.json` (ícono y color de Android); tocarlo obliga a recompilar.",
+      "Declarar `setNotificationHandler` una vez, fuera de los componentes.",
+      "En Android, crear el canal con `setNotificationChannelAsync` antes de pedir el permiso.",
+      "Pedir el permiso en contexto: `getPermissionsAsync` y, si no está concedido, `requestPermissionsAsync`.",
+      "Programar con `scheduleNotificationAsync`, con un `trigger` con `type` (o `null`), y guardar el id que devuelve.",
+      "Si el hecho cambia, cancelar con `cancelScheduledNotificationAsync(id)`; escuchar el toque con `addNotificationResponseReceivedListener` y liberar el listener en la limpieza."
+    ],
+    "definiciones": [
+      {
+        "termino": "`setNotificationHandler`",
+        "definicion": "Decide qué hacer con una notificación que llega con la app en primer plano (banner, lista, sonido, badge). Sin handler no se muestra nada.",
+        "ref": "[U04.T03 p.7, 10]"
+      },
+      {
+        "termino": "Canal de Android",
+        "definicion": "Categoría de avisos que el usuario puede silenciar por separado; sin al menos uno, en Android 13+ no aparece el cartel de permiso.",
+        "ref": "[U04.T03 p.11]"
+      },
+      {
+        "termino": "`trigger`",
+        "definicion": "Cuándo se dispara: `null` (ya), o un objeto con `type` (`TIME_INTERVAL`, `DATE`, entre otros) de `SchedulableTriggerInputTypes`.",
+        "ref": "[U04.T03 p.12-13]"
+      },
+      {
+        "termino": "Cancelar frente a descartar",
+        "definicion": "`cancel…` borra algo que todavía no se disparó; `dismiss…` saca de la bandeja algo que ya se mostró.",
+        "ref": "[U04.T03 p.14]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Notificación local frente a push",
+      "columnas": [
+        "",
+        "Local",
+        "Push"
+      ],
+      "filas": [
+        [
+          "Quién la dispara",
+          "La propia app, en el dispositivo",
+          "Un servidor, en cualquier momento"
+        ],
+        [
+          "Qué necesita",
+          "Nada: ni internet ni servidor",
+          "Conexión, un token por dispositivo y credenciales"
+        ],
+        [
+          "Por dónde pasa",
+          "El sistema la guarda y la dispara aunque la app esté cerrada",
+          "Por Google (FCM) o Apple (APNs)"
+        ],
+        [
+          "Ejemplos",
+          "Recordatorios, alarmas, vencimientos",
+          "Mensajes nuevos, cambios de estado de un pedido"
+        ],
+        [
+          "Expo Go",
+          "Funciona",
+          "Necesita development build"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Probar con la app abierta y sin handler: parece que la notificación se perdió. Hay que probar con la app minimizada.",
+        "ref": "[U04.T03 p.7]"
+      },
+      {
+        "texto": "Escribir `trigger: { seconds: 60 }` sin `type`: es la forma vieja deprecada.",
+        "ref": "[U04.T03 p.13]"
+      },
+      {
+        "texto": "Reprogramar sin cancelar la anterior: si el usuario edita el recordatorio tres veces, recibe tres avisos.",
+        "ref": "[U04.T03 p.14]"
+      },
+      {
+        "texto": "Disparar la notificación con un botón de prueba en vez de con un hecho real de la app.",
+        "ref": "[TFI p.2-3, req. 6]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "Notifications.setNotificationHandler({\n  handleNotification: async () => ({\n    shouldShowBanner: true,  // el cartel que baja arriba\n    shouldShowList: true,    // queda en el centro de notificaciones\n    shouldPlaySound: true,\n    shouldSetBadge: false,   // el globito rojo sobre el ícono\n  }),\n});",
+      "ref": "[U04.T03 p.10]",
+      "nota": "Se declara una vez, fuera del componente. Sin esto, con la app abierta no se ve nada (el TP no lo tiene)."
+    },
+    "citasProfe": [
+      {
+        "texto": "son aquellas que se entregarían por algún cron o alguna acción local",
+        "ref": "[U02-V2 13:37]"
+      },
+      {
+        "texto": "tu propia aplicación es la que hace la push",
+        "ref": "[U02-V2 13:37-14:41]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase el profe usó «push» también para las locales («tu propia aplicación es la que hace la push»); en el material, push es la que manda un servidor [U04.T03 p.5-6].",
+      "Que las locales funcionan en Expo Go se dijo en clase [U04-V1 8:13] y lo confirma el material [U04.T03 p.2]; el TP igual las desactiva en Expo Go."
+    ],
+    "referencias": [
+      "[U04.T03 p.5-15, 27]; [TFI p.2-3, req. 6]; [U02-V2 13:37-15:47]",
+      "[U04.T03 p.2-4]",
+      "[U04-V1 8:13]",
+      "[PRD05 p.2]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Parcial. `programarRecordatorioTurno` pide el permiso y programa `trigger: { type: 'timeInterval', seconds: 5 }` al confirmar una reserva (`useNotifications.ts:44-72`, `disponibilidad.tsx:126-131`). El hecho real existe, pero el aviso llega a los 5 segundos y no 2 h antes, y como el id no se guarda, no se cancela al cancelar la reserva. `notificarCancelacion` (`trigger: null`) se dispara al cargar un bloqueo, y la recibe el propio admin en su teléfono (`admin/index.tsx:102`). No hay `setNotificationHandler` ni canal de Android, y `expo-notifications` no figura en los plugins. Además, `getNotificationsModule` devuelve `null` en Expo Go (`useNotifications.ts:4-25`), así que ahí no aparece ninguna, aunque las locales sí andan en Expo Go.",
+      "archivos": [
+        {
+          "ruta": "src/hooks/useNotifications.ts",
+          "lineas": "4-25, 44-72, 74-108",
+          "nota": "detección de Expo Go, recordatorio a 5 s y avisos inmediatos"
+        },
+        {
+          "ruta": "src/app/(tabs)/disponibilidad.tsx",
+          "lineas": "126-131",
+          "nota": "el hecho real: confirmar la reserva"
+        },
+        {
+          "ruta": "src/app/admin/index.tsx",
+          "lineas": "102, 126",
+          "nota": "avisos que recibe el propio admin"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.18",
+      "4.16",
+      "9.21"
+    ],
+    "preguntasRelacionadas": [
+      "2.19",
+      "8.5",
+      "3.9",
+      "5.15",
+      "7.C3",
+      "2.13"
+    ],
+    "preguntasRapidas": [
+      "¿Qué hecho real dispara la notificación?",
+      "¿Por qué a los 5 segundos?",
+      "¿Por qué podría no verse con la app abierta?"
+    ]
+  },
+  {
+    "id": "u04-notificaciones-push",
+    "unidad": "U04",
+    "titulo": "Notificaciones push",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "La app obtiene un `ExponentPushToken`, que identifica al dispositivo, y lo manda al backend, que lo asocia al usuario. Para avisar, el backend llama al Expo Push Service, que entrega por FCM o APNs: siempre hay un backend en el medio. El ticket dice «lo tomé» y el recibo, si llegó. Requiere development build.",
+    "explicacion": [
+      "Una **push** la dispara un servidor, no la app: un mensaje nuevo, un like, el cambio de estado de un pedido. Necesita conexión, un token por dispositivo y credenciales, y pasa sí o sí por los servicios del sistema operativo: Firebase Cloud Messaging (**FCM**) en Android y **APNs** en iOS. Expo unificó los dos detrás de un servicio propio, el **Expo Push Service**, que según el profe es gratis.",
+      "El recorrido tiene cuatro pasos. La app pide permiso y obtiene un `ExponentPushToken[...]` con `getExpoPushTokenAsync({ projectId })`. Ese token identifica al **dispositivo, no al usuario**, así que la app lo manda con un POST a su backend, que lo asocia al usuario logueado; el profe sugirió hacerlo cada vez que se abre la app, por si se borró. Cuando pasa algo, el backend busca los tokens del destinatario y llama al Expo Push Service, que decide si va por FCM o por APNs. Ese servicio es el único que puede entregar en el teléfono.",
+      "Por eso el profe insistió en que siempre hay un backend en el medio: la app no le puede mandar una push a otro teléfono, y el servicio de Expo solo debería estar conectado con tu servidor. En su ejemplo de chat, al guardar un mensaje el servidor busca el token del destinatario y envía la notificación. Para enviar se usa `expo-server-sdk`, que arma lotes (chunks) de 100, limita las conexiones en paralelo y valida el formato del token.",
+      "La respuesta llega en dos etapas. El **ticket** es inmediato, y `status: \"ok\"` solo significa «lo tomé». El **recibo** llega unos 15 minutos después y dice qué contestaron Google o Apple: es el único lugar donde aparece `DeviceNotRegistered`, que obliga a borrar ese token. Si nadie lee los recibos, se sigue mandando a teléfonos que desinstalaron la app y Expo limita por tasa de error.",
+      "Para probarlo hace falta una **development build** (desde SDK 53, Expo Go no sirve para push en Android), credenciales FCM y APNs, que gestiona `eas credentials`, y un dispositivo físico o un emulador compatible. En la cursada, el profe pidió completar la parte de servidor de notificaciones de la API de la cátedra. En el PRD 05, el aviso a los seis grupos el sábado de lluvia lo genera otra persona (el admin) y le llega a otros usuarios: es justo el tipo de caso que resuelve una push."
+    ],
+    "pasos": [
+      "La app comprueba que es un dispositivo real (`Device.isDevice`) y pide el permiso (con el canal en Android).",
+      "Lee el `projectId` de EAS y obtiene el token con `getExpoPushTokenAsync({ projectId })`.",
+      "Manda el token por POST a su servidor, que lo guarda asociado al usuario.",
+      "Cuando ocurre el hecho, el servidor arma el mensaje (`to`, `title`, `body`, `data`) y lo envía con `expo-server-sdk`.",
+      "El Expo Push Service lo deriva a FCM o APNs, que lo entregan al dispositivo.",
+      "El servidor lee los recibos y borra los tokens con `DeviceNotRegistered`."
+    ],
+    "definiciones": [
+      {
+        "termino": "`ExponentPushToken`",
+        "definicion": "Identificador de un dispositivo para Expo; se asocia a un usuario en la base del backend.",
+        "ref": "[U04.T03 p.17]; [U03-V5 5:22]"
+      },
+      {
+        "termino": "Expo Push Service",
+        "definicion": "Servicio de Expo que unifica FCM y APNs: recibe el mensaje del backend y decide por dónde entregarlo.",
+        "ref": "[U04.T03 p.17]"
+      },
+      {
+        "termino": "Development build",
+        "definicion": "Build propia de la app con sus módulos nativos; hace falta para probar push porque Expo Go no las soporta.",
+        "ref": "[U04.T03 p.20]; [U04-V1 8:13]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Ticket frente a recibo",
+      "columnas": [
+        "",
+        "Ticket",
+        "Recibo"
+      ],
+      "filas": [
+        [
+          "Cuándo llega",
+          "Inmediato, como respuesta de Expo",
+          "A los ~15 minutos"
+        ],
+        [
+          "Qué significa",
+          "«Lo tomé», no «llegó»",
+          "Qué contestaron Google o Apple"
+        ],
+        [
+          "Para qué sirve",
+          "Obtener el id para consultar después",
+          "Enterarse de que un token murió (`DeviceNotRegistered`)"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Intentar probar push en Expo Go: hace falta una development build.",
+        "ref": "[U04.T03 p.20]"
+      },
+      {
+        "texto": "Leer `status: \"ok\"` del ticket como «entregada»: solo el recibo dice si llegó.",
+        "ref": "[U04.T03 p.23]"
+      },
+      {
+        "texto": "Reintentar contra un token con `DeviceNotRegistered` en lugar de borrarlo.",
+        "ref": "[U04.T03 p.24]"
+      },
+      {
+        "texto": "Pensar que la app puede avisarle directamente a otro teléfono, sin un backend.",
+        "ref": "[U03-V5 11:41]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "async function registrarParaPush() {\n  if (!Device.isDevice) return null;            // expo-device\n  if (!(await pedirPermiso())) return null;     // permiso + canal\n  const projectId = Constants.expoConfig?.extra?.eas?.projectId;\n  if (!projectId) throw new Error('Falta el projectId de EAS');\n  const token = await Notifications.getExpoPushTokenAsync({ projectId });\n  // POST del token a tu servidor con fetch\n}",
+      "ref": "[U04.T03 p.18-19]",
+      "nota": "Reconstruido a partir de los cinco pasos de `registrarParaPush` que describe el material."
+    },
+    "citasProfe": [
+      {
+        "texto": "siempre pasa un backend antes en el medio",
+        "ref": "[U03-V5 11:41]"
+      },
+      {
+        "texto": "no por usuario, sino por dispositivo",
+        "ref": "[U03-V5 5:22]"
+      },
+      {
+        "texto": "Vos necesitas sí o sí saber qué usuario tiene, qué dispositivo o qué token",
+        "ref": "[U03-V5 8:27]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase se dijo que para push «van a tener que usar un development build» [U04-V1 8:13]; el material precisa que Expo Go no sirve para push en Android desde SDK 53 [U04.T03 p.20].",
+      "En clase se habló de los «recibos de error» que devuelve Expo; el material distingue el ticket inmediato del recibo posterior [U04.T03 p.23]."
+    ],
+    "referencias": [
+      "[U04.T03 p.17-25]; [U03-V5 4:14-14:43]",
+      "[U04-V1 8:13]",
+      "[U04-V4 13:08-14:13]",
+      "[U02-V2 12:32-14:41]",
+      "[U04-V5 1:00:24]",
+      "[PRD05 p.1-2]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado: no hay `getExpoPushTokenAsync`, ni tabla de tokens, ni backend (la app trabaja con mocks). Los avisos de suspensión y de turno liberado en un favorito son notificaciones locales que aparecen en el teléfono del admin que hace el cambio (`admin/index.tsx:102, 126`), así que los jugadores afectados no se enteran. Hipotético: registrar el token al iniciar sesión con un POST a la API, y que al cargar el bloqueo el servidor busque las reservas afectadas y mande la push por el Expo Push Service. Requiere development build y credenciales FCM y APNs.",
+      "archivos": [
+        {
+          "ruta": "src/hooks/useNotifications.ts",
+          "lineas": "74-108",
+          "nota": "solo locales: `notificarCancelacion` y `notificarFavoritoLiberado`"
+        },
+        {
+          "ruta": "src/app/admin/index.tsx",
+          "lineas": "92-133",
+          "nota": "bloqueo y desbloqueo disparan avisos locales al admin"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.19",
+      "8.12",
+      "9.20"
+    ],
+    "preguntasRelacionadas": [
+      "3.9",
+      "7.C3"
+    ],
+    "preguntasRapidas": [
+      "¿Cómo les avisarías a los seis grupos el día de lluvia?",
+      "¿Por qué no alcanza con una notificación local?",
+      "¿Qué diferencia hay entre ticket y recibo?"
+    ]
+  }
+]

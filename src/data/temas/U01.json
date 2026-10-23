@@ -1,0 +1,821 @@
+[
+  {
+    "id": "u01-enfoques-nativo-hibrido-y-web-pwa",
+    "unidad": "U01",
+    "titulo": "Enfoques nativo, híbrido y web/PWA",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "Hay tres enfoques: nativo (un código por plataforma, Kotlin/Swift), híbrido o multiplataforma (una base de código que se renderiza en una WebView o se traduce a componentes nativos reales; React Native está en la segunda técnica) y web/PWA (navegador). \"No hay uno mejor: hay uno adecuado para cada proyecto\"; antes, preguntarse si hace falta una app.",
+    "explicacion": [
+      "La primera decisión de un proyecto móvil no es qué framework usar sino **si hace falta una app** o alcanza con una web. Para la cátedra, una app se instala desde la tienda y accede a las capacidades del dispositivo: notificaciones, cámara, GPS, Bluetooth, biometría, y puede **funcionar sin conexión**. A cambio cuesta más: publicación, pruebas en muchos dispositivos y mantenimiento. Si el cliente solo quiere mirar un dashboard en el celular, con una web alcanza.",
+      "Hay tres enfoques. **Nativo** es un código fuente por plataforma, con el lenguaje y las herramientas de cada una: Kotlin/Java con Android Studio, Swift con Xcode. Da el máximo rendimiento, acceso a toda API nueva desde el primer día y una interfaz alineada con Material Design o Human Interface Guidelines. El costo son dos bases de código y, en general, dos equipos: en clase, cambiar un botón a rojo era un ticket para cada equipo. **Web/PWA** corre en el navegador: es barata y se actualiza al instante, y una PWA puede instalarse y andar sin conexión, pero el acceso al hardware es limitado y no aparece en las tiendas.",
+      "El enfoque **híbrido o multiplataforma** usa una sola base de código para Android e iOS, y acá está lo que más se pregunta: hay dos técnicas. En la primera, la app es una web empaquetada dentro de una **WebView** (Ionic con Capacitor, Apache Cordova). En la segunda, el framework traduce cada componente a una vista nativa del sistema y no hay navegador de por medio (React Native, Flutter, Kotlin Multiplatform). Cuando alguien dice que las híbridas andan lento, casi siempre habla de la primera técnica; React Native está en la segunda.",
+      "Cada enfoque equilibra rendimiento, costo y velocidad de desarrollo. La tabla de la cátedra lo baja a reglas: juegos, realidad aumentada o edición de video piden nativo; dos plataformas con equipo y presupuesto acotados, o un equipo web que necesita salir rápido, piden multiplataforma; contenido y formularios sin hardware específico alcanzan con web/PWA. Franco lo anunció como posible pregunta de parcial: te dan un caso, por ejemplo una startup sin plata, y tenés que elegir y justificar.",
+      "En Reservas Deportivas el PRD pide un QR que se vea en la puerta de la cancha, donde la señal es mala, cámara para escanearlo, recordatorios y uso en Android y iPhone. Lo primero justifica una app y no una web; lo segundo, un multiplataforma con una sola base de código. El matiz es el mapa: está hecho con Leaflet dentro de `react-native-webview`, es decir, una porción de la primera técnica dentro de una app que en todo lo demás usa componentes nativos."
+    ],
+    "definiciones": [
+      {
+        "termino": "Aplicación móvil",
+        "definicion": "Software diseñado para instalarse en teléfonos y tablets; a diferencia de una web, se descarga desde la tienda del sistema operativo y accede a las capacidades del dispositivo.",
+        "ref": "[01 Intro p.3]"
+      },
+      {
+        "termino": "App nativa",
+        "definicion": "Un código fuente por plataforma, con el lenguaje y las herramientas que esa plataforma requiere (Kotlin/Java en Android, Swift en iOS).",
+        "ref": "[01 Intro p.5]; [U01-V1 45:19]"
+      },
+      {
+        "termino": "Híbrida / multiplataforma",
+        "definicion": "Una sola base de código para desplegar en distintos sistemas operativos; según el framework se renderiza en una WebView o se mapea a componentes nativos reales.",
+        "ref": "[01 Intro p.5, p.7]; [U01-V1 44:12]"
+      },
+      {
+        "termino": "WebView",
+        "definicion": "Contenedor nativo que muestra contenido web dentro de la app (WKWebView en iOS, WebView en Android).",
+        "ref": "[01 Intro p.7]"
+      },
+      {
+        "termino": "PWA",
+        "definicion": "Aplicación web que se puede descargar al dispositivo, trabajar sin internet y usar algunas capacidades extra, como notificaciones; sigue corriendo en el navegador.",
+        "ref": "[U01-V1 31:37]; [01 Intro p.5]"
+      },
+      {
+        "termino": "SDK",
+        "definicion": "Kit de desarrollo: el conjunto de librerías y APIs que una plataforma pone a disposición para un lenguaje o hardware específico.",
+        "ref": "[U01-V1 51:42-52:44]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Los tres enfoques",
+      "columnas": [
+        "",
+        "Nativo",
+        "Híbrido / multiplataforma",
+        "Web / PWA"
+      ],
+      "filas": [
+        [
+          "Código",
+          "Uno por plataforma (Kotlin/Java, Swift)",
+          "Una sola base para Android e iOS",
+          "Una web que corre en el navegador"
+        ],
+        [
+          "Ejemplos",
+          "Spotify, Google Maps",
+          "WebView: Ionic + Capacitor, Cordova. Nativo real: React Native, Flutter, Kotlin Multiplatform",
+          "Sitios móviles; PWA instalable desde el navegador"
+        ],
+        [
+          "Rendimiento y hardware",
+          "Máximo; toda API nueva desde el día uno",
+          "Cercano al nativo si traduce a vistas nativas; las APIs nuevas tardan en llegar",
+          "Más lenta en apps complejas; acceso al hardware limitado"
+        ],
+        [
+          "Costo",
+          "Alto: doble código, perfiles especializados",
+          "Menor: un equipo, aprovecha lo que se sabe de web",
+          "Bajo, con tecnologías estándar"
+        ],
+        [
+          "Actualizar",
+          "Cada corrección pasa por la tienda",
+          "Puede actualizar el JS sin tienda, dentro de ciertos límites (OTA)",
+          "Al instante, sin tiendas"
+        ],
+        [
+          "Conviene si…",
+          "Juegos, AR, edición de video",
+          "Dos plataformas con presupuesto acotado, o equipo web que necesita salir rápido",
+          "Contenido y formularios sin hardware específico"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Decir que React Native es lento \"porque es híbrido\": la fama de lentitud viene de la técnica WebView, no de los frameworks que traducen a vistas nativas.",
+        "ref": "[01 Intro p.7]; [U01-V1 58:02]"
+      },
+      {
+        "texto": "Envolver una web entera en una WebView dentro de React Native: sigue dependiendo del servidor, no usa nada nativo, complica pasar el token del usuario logueado y las tiendas pueden rechazarla. Si se quiere eso, la cátedra sugiere directamente Ionic.",
+        "ref": "[U01-V1 33:47-35:54]"
+      },
+      {
+        "texto": "Asumir que todo proyecto necesita una app: si no aprovecha cámara, GPS, notificaciones ni uso offline, una web es más barata.",
+        "ref": "[U01-V1 40:08-44:12]; [01 Intro p.3]"
+      },
+      {
+        "texto": "Confundir una PWA con una app de tienda: aunque se instale, corre en el navegador y su acceso al hardware es limitado.",
+        "ref": "[01 Intro p.9]"
+      }
+    ],
+    "citasProfe": [
+      {
+        "texto": "siempre una aplicación mobile es un poco más cara que una aplicación web. Está bueno remarcar eso",
+        "ref": "[U01-V1 40:08]"
+      },
+      {
+        "texto": "cuando dicen que ... una híbrida anda lenta, es porque realmente usaron esto, la webview",
+        "ref": "[U01-V1 58:02]"
+      },
+      {
+        "texto": "Esto puede ser una pregunta de parcial",
+        "ref": "[U01-V1 1:01:14]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase se dijo que las actualizaciones OTA son solo para híbridos, con la aclaración de que había que revisarlo [U01-V1 1:02:17]; el material las presenta como una ventaja de las híbridas \"dentro de ciertos límites\" [01 Intro p.8], sin afirmar que lo nativo no tenga nada equivalente.",
+      "El PRD pide \"Android y iPhone, con mayoría de Android\" [PRD05 p.3]; la defensa de la elección multiplataforma se apoya en eso, no en un dato del tamaño del equipo, que el PRD no da."
+    ],
+    "referencias": [
+      "[01 Intro p.5-10]; [U01-V1 44:12-48:30]; [U01-V1 55:57-58:02]",
+      "[01 Intro p.3]",
+      "[U01-V1 26:21-44:12]",
+      "[U01-V1 1:01:14]",
+      "[PRD05 p.3]",
+      "[TFI p.3]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "La app es React Native + Expo SDK 57, o sea, la técnica que traduce componentes a vistas nativas. La excepción es el mapa: Leaflet dentro de `react-native-webview` (`src/app/(tabs)/mapa.tsx:45-126` arma el HTML y `:159-167` monta el WebView), una porción tipo WebView dentro de una app nativa. Eso tiene costos: ese mapa depende de internet (Leaflet y los mosaicos se bajan de la red) y la consigna pedía `react-native-maps`. La elección de app y no de web se justifica con el QR sin señal, la cámara y las notificaciones que pide el PRD.",
+      "archivos": [
+        {
+          "ruta": "package.json",
+          "lineas": "8, 35",
+          "nota": "`expo ~57.0.21` y `react-native 0.86.3`"
+        },
+        {
+          "ruta": "src/app/(tabs)/mapa.tsx",
+          "lineas": "45-126, 159-167",
+          "nota": "`generarLeafletHtml()` y el `<WebView>`"
+        },
+        {
+          "ruta": "package.json",
+          "lineas": "44",
+          "nota": "`react-native-webview 13.16.1`"
+        },
+        {
+          "ruta": "README.md",
+          "lineas": "11-13",
+          "nota": "problema: libreta y WhatsApp de la Dirección de Deportes"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.1",
+      "2.18",
+      "7.A9"
+    ],
+    "preguntasRelacionadas": [
+      "7.E3",
+      "5.1",
+      "1A.2",
+      "7.A8",
+      "3.6",
+      "5.5",
+      "9.15",
+      "6.9.5"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué una app y no una PWA para Villaguay?",
+      "¿En cuál de las dos técnicas híbridas está React Native?",
+      "¿El mapa en WebView no contradice esa ventaja?"
+    ]
+  },
+  {
+    "id": "u01-expo-go-vs-development-build",
+    "unidad": "U01",
+    "titulo": "Expo Go vs development build",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "Expo Go es un contenedor de tienda que trae compiladas solo las librerías del SDK de Expo: carga tu JS sin compilar. El development build es \"tu propia versión de Expo Go\", con tus librerías nativas; hace falta con código nativo fuera del SDK, config plugins que cambian lo nativo, permisos o íconos propios y notificaciones push.",
+    "explicacion": [
+      "**Expo Go** es una app que se baja de la tienda y funciona como contenedor: escaneás el QR que muestra `npx expo start` y carga tu proyecto sin compilar nada, con el teléfono y la computadora en la misma red (o con `--tunnel`). Sirve para iterar en lo básico: componentes, estilos, navegación y estado. Por eso la cursada arrancó ahí y la documentación de Expo lo describe como un espacio de juego para estudiantes.",
+      "El límite sale de cómo está hecho: Expo Go trae **compiladas solo las librerías del SDK** de Expo de su versión. Tu JavaScript puede cambiar todo lo que quieras, pero el código nativo que viene adentro es fijo. El día que el proyecto necesita código nativo que no está ahí, Expo Go deja de poder abrirlo. Según el material eso pasa con una librería nativa fuera del SDK, con un config plugin que modifica el proyecto nativo, al cambiar permisos, ícono o nombre, o cuando querés probar la app tal como la recibe el usuario. En clase aparecieron casos concretos: notificaciones push, `expo-maps`, Unistyles y BLE con `react-native-ble-plx`.",
+      "El **development build** es, en palabras de la cátedra, tu propia versión de Expo Go: una compilación de tu app que incluye `expo-dev-client`, las herramientas de desarrollo y todas tus librerías nativas. Se instala una vez y después se trabaja igual que antes: Metro sirve el JavaScript y recarga al guardar. Solo hay que recompilar cuando cambia lo nativo. Se genera en la nube con EAS Build, que permite hacerlo sin Mac, o localmente con `npx expo run:android`, que necesita Android Studio.",
+      "La recomendación práctica fue doble. Durante la cursada, elegir librerías que funcionen en Expo Go: Franco contó el caso de un grupo que metió login con Google y estuvo una semana para hacerlo andar. Y saber que Expo no recomienda Expo Go para apps que van a producción, así que se migra al development build cuando el integrador lo pida. Un detalle para la demo: en Expo Go los permisos pueden aparecer ya concedidos, porque son los de Expo Go; en el binario propio se piden de verdad.",
+      "En el TP, `useNotifications.ts` detecta si corre en Expo Go y devuelve `null`, así que ahí no sale ninguna notificación, ni siquiera las locales, que el material da como compatibles con Expo Go. Además `eas.json` tiene un perfil `development` con `developmentClient: true`, pero `expo-dev-client` no figura en las dependencias: para usar ese perfil habría que instalarlo antes con `npx expo install`."
+    ],
+    "pasos": [
+      "Instalar el cliente de desarrollo: `npx expo install expo-dev-client`.",
+      "Instalar la CLI de EAS e iniciar sesión: `npm install --global eas-cli && eas login`.",
+      "Compilar en la nube: `eas build --platform android --profile development`.",
+      "Instalar el binario en el teléfono o emulador (link, QR o `adb install`).",
+      "Trabajar como siempre con `npx expo start`; recompilar solo si cambia lo nativo."
+    ],
+    "definiciones": [
+      {
+        "termino": "Expo Go",
+        "definicion": "App de tienda que funciona como contenedor: carga tu proyecto sin que compiles nada; trae compiladas solo las librerías del SDK de Expo.",
+        "ref": "[01 Intro p.19-20]"
+      },
+      {
+        "termino": "Development build",
+        "definicion": "Tu propia versión de Expo Go: una compilación de tu app con las herramientas de desarrollo y todas tus librerías nativas; se instala una vez y se sigue trabajando igual.",
+        "ref": "[01 Intro p.21]; [U01-V1 1:25:36]"
+      },
+      {
+        "termino": "expo-dev-client",
+        "definicion": "Paquete que convierte una compilación propia en cliente de desarrollo (el que permite conectarse a Metro).",
+        "ref": "[01 Intro p.21]"
+      },
+      {
+        "termino": "Config plugin",
+        "definicion": "Función JS de una librería que configura el proyecto nativo (permisos, dependencias, recursos) a partir de `app.json`, sin escribir código nativo.",
+        "ref": "[U02.T02 p.27]; [U04.T01 p.12-13]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Expo Go frente a development build",
+      "columnas": [
+        "",
+        "Expo Go",
+        "Development build"
+      ],
+      "filas": [
+        [
+          "Qué es",
+          "App genérica de la tienda",
+          "Tu app compilada con cliente de desarrollo"
+        ],
+        [
+          "Instalación",
+          "Desde la tienda",
+          "Hay que compilar e instalar"
+        ],
+        [
+          "Código nativo",
+          "Solo el del SDK de Expo de esa versión",
+          "Cualquier librería nativa y config plugin"
+        ],
+        [
+          "Velocidad para empezar",
+          "Inmediata, no compila",
+          "Más lenta: requiere compilación"
+        ],
+        [
+          "Ejemplos que no corren",
+          "Push, `expo-maps`, BLE, Unistyles",
+          "Corren, compilando lo nativo"
+        ],
+        [
+          "Cuándo usarlo",
+          "Para arrancar y aprender fundamentos",
+          "Cuando el proyecto necesita algo nativo o va a producción"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Agregar una librería nativa o un plugin y seguir probando en Expo Go esperando que ande: Expo Go no puede incorporar código nativo nuevo.",
+        "ref": "[01 Intro p.20]; [U04-V2 9:11-10:13]"
+      },
+      {
+        "texto": "Confiar en que un permiso funciona porque en Expo Go no apareció el diálogo: puede estar concedido de antemano a Expo Go.",
+        "ref": "[U04-V4 1:12:36-1:13:40]"
+      },
+      {
+        "texto": "Dejar el development build para el final: si la app necesita push, tiene que estar hecho antes de la semana en que se usa.",
+        "ref": "[U04.T01 p.9]"
+      },
+      {
+        "texto": "Que el Expo Go del teléfono no soporte el SDK del proyecto: hay que alinear versiones (en clase se recomendó que todo el grupo use la misma).",
+        "ref": "[U01-V1 1:11:52-1:13:59]; [U03-V1 3:10-4:13]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "bash",
+      "fragmento": "# Pasar de Expo Go a un development build\nnpx expo install expo-dev-client\nnpm install --global eas-cli && eas login\neas build --platform android --profile development   # en la nube, sin Mac ni Android Studio\nnpx expo start",
+      "ref": "[01 Intro p.21]",
+      "nota": "La compilación ocurre en la nube; por eso se puede generar la versión de iOS desde Windows o Linux."
+    },
+    "citasProfe": [
+      {
+        "texto": "¿cuándo deja de alcanzar Expo Go? cuando necesitas una librería ... que usa código nativo fuera del SDK de Expo",
+        "ref": "[U01-V1 1:16:08]"
+      },
+      {
+        "texto": "tu propia versión de Expo Go ... compilar tu aplicación específica para un sistema operativo",
+        "ref": "[U01-V1 1:25:36]"
+      },
+      {
+        "texto": "traten ... no usar una librería que los obligue a usar código nativo",
+        "ref": "[U01-V1 1:16:08]"
+      }
+    ],
+    "aclaraciones": [
+      "En la primera clase se dijo que las notificaciones \"volvieron a andar\" en Expo Go desde el SDK 56, con un \"me parece\" [U01-V1 1:15:04]; el material es más preciso: las locales corren en Expo Go y las push no, desde el SDK 53 en Android [U04.T01 p.9], y así lo repitió el profe en U04 [U04-V1 8:13].",
+      "En U04 el development build se explicó asociado a las carpetas nativas y a CNG, y la transcripción de ese tramo es confusa [U04-V1 9:14-11:17]; la definición clara es la del material: tu propia versión de Expo Go con tus librerías nativas [01 Intro p.21].",
+      "En clase se habló de \"ejectar\" para usar librerías nativas [U01-V1 1:16:08-1:17:15]; con el flujo actual de Expo eso se resuelve con `prebuild` y development build, sin abandonar Expo [01 Intro p.23; U04.T01 p.11]."
+    ],
+    "referencias": [
+      "[01 Intro p.19-21]; [U02.T02 p.23]; [U01-V1 1:15:04-1:26:37]; [U04-V1 8:13]",
+      "[U02.T02 p.27]",
+      "[U04.T01 p.9]",
+      "[04 Instalación p.51-52]",
+      "[U04-V4 13:08-14:13]",
+      "[U04-V4 1:12:36-1:13:40]",
+      "[U06-V1 21:05]",
+      "[U03-V4 1:37:22]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "`eas.json:7-10` define un perfil `development` con `developmentClient: true`, pero `expo-dev-client` no está instalado. `useNotifications.ts:8-14` devuelve `null` si detecta Expo Go (`ExecutionEnvironment.StoreClient` o `appOwnership === 'expo'`), así que en Expo Go no sale ninguna notificación, aunque las locales sí correrían ahí. Para mostrar notificaciones en la defensa hay que usar el APK de `preview` o un development build.",
+      "archivos": [
+        {
+          "ruta": "eas.json",
+          "lineas": "7-10",
+          "nota": "perfil `development` con `developmentClient: true`"
+        },
+        {
+          "ruta": "src/hooks/useNotifications.ts",
+          "lineas": "4-25",
+          "nota": "`getNotificationsModule()`; detección de Expo Go en `:8-14`"
+        },
+        {
+          "ruta": "package.json",
+          "lineas": "5-45",
+          "nota": "no figura `expo-dev-client`"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.6",
+      "3.9",
+      "9.21"
+    ],
+    "preguntasRelacionadas": [
+      "7.C3",
+      "5.15",
+      "4.23",
+      "1B.3",
+      "7.C1",
+      "1B.2"
+    ],
+    "preguntasRapidas": [
+      "¿La app corre en Expo Go? ¿Qué parte no?",
+      "¿Por qué apagaron las notificaciones en Expo Go?",
+      "¿Qué es un development build?"
+    ]
+  },
+  {
+    "id": "u01-eas-build-y-perfil-preview",
+    "unidad": "U01",
+    "titulo": "EAS Build y perfil preview",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "La consigna pide el link de un APK de release generado con `eas build --platform android --profile preview`, instalable y usable sin Metro. EAS compila en la nube; el AAB es para Google Play y el APK para instalación directa. En release el JS va empaquetado, minificado y compilado a bytecode de Hermes.",
+    "explicacion": [
+      "Un **build** es el binario instalable de la app: APK o AAB en Android, IPA en iOS. **EAS Build** es el servicio de Expo que lo compila en sus servidores; en clase se lo definió como la manera que tiene Expo de hacer los buildeos en un servidor en la nube. La ventaja es que no necesitás nada instalado más que una cuenta de Expo, y es la única forma de generar la versión de iOS sin Mac. El plan gratuito tiene un **cupo mensual** de compilaciones.",
+      "Hay tres formas de compilar: en la nube con `eas build`, local con `eas build --local` (mismo resultado sin gastar cupo, pero con las herramientas nativas instaladas) y local sin EAS con `npx expo run:android`. Esta última primero ejecuta `npx expo prebuild`, que genera `android/` e `ios/` desde `app.json`, y después compila, instala y levanta Metro; sirve para iterar sobre código nativo, pero el resultado no está firmado y no sirve para publicar.",
+      "La diferencia que importa para la entrega es **debug frente a release**. En debug el JavaScript lo sirve Metro desde tu computadora, con recarga al guardar, menú de desarrollo y LogBox. En release el JS va **empaquetado** dentro de la app, minificado y compilado a bytecode de Hermes, sin herramientas de desarrollo. Por eso un APK de release se instala en cualquier teléfono y anda sin Metro ni la computadora de nadie, que es exactamente lo que pide la consigna.",
+      "Los perfiles viven en `eas.json`. Por defecto EAS genera un **AAB** (Android App Bundle), que es lo que exige Google Play; para un **APK**, que se instala directo, el perfil `preview` lleva `android.buildType: apk`. El comando de la consigna es `eas build --platform android --profile preview`. Al configurar EAS se pide además `android.package`, un identificador único con formato `com.tunombre.miapp` que no se cambia después.",
+      "La cátedra insistió en no dejarlo para el final. El primer build siempre falla por algo, sea un permiso, un asset o un identificador, y el cupo es limitado: en clase se habló de unos 15 builds por mes por sistema operativo. La consigna pide hacer el primer build de `preview` al menos una semana antes. En el TP el perfil está bien configurado; un riesgo concreto es que `assets/icon.png` es en realidad un JPEG con extensión `.png`, justo el tipo de problema de ícono que el profe dijo que traba un build."
+    ],
+    "pasos": [
+      "Instalar la CLI e iniciar sesión: `npm install -g eas-cli` y `eas login`.",
+      "Configurar: `eas build:configure` crea `eas.json` y pide `android.package`.",
+      "Definir el perfil `preview` con `\"android\": { \"buildType\": \"apk\" }`.",
+      "Compilar: `eas build --platform android --profile preview`.",
+      "Instalar el APK con el link o QR que devuelve EAS, o con `adb install -r`, y probarlo sin Metro."
+    ],
+    "definiciones": [
+      {
+        "termino": "EAS Build",
+        "definicion": "Servicio de Expo que compila la app en sus servidores; permite generar iOS sin Mac.",
+        "ref": "[U02.T02 p.22]; [U01-V1 1:25:36]"
+      },
+      {
+        "termino": "APK",
+        "definicion": "Paquete de Android para instalación directa en el dispositivo.",
+        "ref": "[04 Instalación p.53-63]"
+      },
+      {
+        "termino": "AAB (Android App Bundle)",
+        "definicion": "Formato que exige Google Play para publicar; es lo que EAS genera por defecto.",
+        "ref": "[04 Instalación p.53-63]"
+      },
+      {
+        "termino": "Release",
+        "definicion": "Build con el JS empaquetado dentro de la app, minificado y compilado a bytecode de Hermes, sin Metro ni herramientas de desarrollo.",
+        "ref": "[01 Intro p.24]"
+      },
+      {
+        "termino": "Hermes",
+        "definicion": "Motor JavaScript de Meta para móviles; compila a bytecode en el build, lo que da arranque más rápido y menos memoria. Es el motor por defecto desde SDK 56.",
+        "ref": "[U02.T02 p.17]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Tres formas de compilar",
+      "columnas": [
+        "Forma",
+        "Necesita",
+        "Cuándo conviene"
+      ],
+      "filas": [
+        [
+          "En la nube: `eas build`",
+          "Nada local, solo cuenta de Expo",
+          "Por defecto; única opción para iOS sin Mac (gasta cupo)"
+        ],
+        [
+          "Local con EAS: `eas build --local`",
+          "Herramientas nativas instaladas",
+          "Mismo resultado sin usar el cupo"
+        ],
+        [
+          "Local sin EAS: `npx expo run:android`",
+          "Android Studio (o Xcode en macOS)",
+          "Iterar sobre código nativo, sin internet ni cuenta; no queda firmado"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Hacer el primer build el último día: falla por un permiso, un asset o un identificador y el cupo mensual es limitado.",
+        "ref": "[TFI p.1-2]; [U02-V2 8:13]"
+      },
+      {
+        "texto": "Entregar un build de debug o un development build: depende de Metro y no corre solo en el teléfono del docente.",
+        "ref": "[TFI p.1]; [01 Intro p.24]"
+      },
+      {
+        "texto": "Esperar un APK sin configurar el perfil: por defecto EAS genera un AAB, que no se instala directo.",
+        "ref": "[04 Instalación p.53-63]"
+      },
+      {
+        "texto": "Medir el rendimiento en debug: debug hace trabajo extra; se mide en release.",
+        "ref": "[U02.T04 p.4]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "json",
+      "fragmento": "{\n  \"build\": {\n    \"preview\": {\n      \"android\": { \"buildType\": \"apk\" }\n    },\n    \"production\": {\n      \"android\": { \"buildType\": \"app-bundle\" }\n    }\n  }\n}",
+      "ref": "[04 Instalación p.53-63]",
+      "nota": "Se usa con `eas build --platform android --profile preview`; en el TP el perfil `preview` agrega `distribution: internal`."
+    },
+    "citasProfe": [
+      {
+        "texto": "la manera que tiene Expo para poder hacer los buildeos ... un servidor que tiene en la nube",
+        "ref": "[U01-V1 1:25:36]"
+      },
+      {
+        "texto": "traten de hacer el build apenas lo demos ... le falta un ícono ... no les va a dejar subir ese build",
+        "ref": "[U02-V2 8:13]"
+      }
+    ],
+    "aclaraciones": [
+      "En U01 se dijo que el build era un extra y \"no es necesario para la entrega final\" [U01-V1 43:10-44:12], y en U04 que era \"la cereza de la torta\" [U04-V4 1:41:44]; la consigna escrita, en cambio, exige el link del APK de `preview` como parte de la entrega [TFI p.1], y así se presentó en U02 [U02-V2 7:12-8:13]. Vale la consigna.",
+      "La consigna permite defender con Expo Go o con el APK: \"Lo que se mira es la app andando\" [TFI p.2]; pero lo que se entrega es el APK.",
+      "El material instala `eas-cli` con `npm install --global` [01 Intro p.21]: es una herramienta de línea de comandos, no una dependencia del proyecto, así que no contradice la regla de `npx expo install`. El README del TP usa `npx eas-cli`, que la ejecuta sin instalarla."
+    ],
+    "referencias": [
+      "[TFI p.1-2]; [04 Instalación p.53-63]; [01 Intro p.22-24]; [U02-V2 5:10-15:47]",
+      "[U02.T02 p.17, p.22]",
+      "[U02.T04 p.4]",
+      "[U01-V1 1:25:36-1:26:37]",
+      "[U02-V2 8:13]",
+      "[U04-V4 1:41:44]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`eas.json:11-16`: perfil `preview` con `distribution: internal` y `android.buildType: apk`; el comando figura en `README.md:129` (`npx eas-cli build --platform android --profile preview`). El repo no registra si el build se generó ni el link. A revisar antes de compilar: `assets/icon.png` (declarado en `app.json:7`) es un JPEG 1024×1024 con extensión `.png`, y la consigna pide PNG.",
+      "archivos": [
+        {
+          "ruta": "eas.json",
+          "lineas": "11-16",
+          "nota": "perfil `preview` (APK)"
+        },
+        {
+          "ruta": "README.md",
+          "lineas": "126-129",
+          "nota": "login y comando de build"
+        },
+        {
+          "ruta": "app.json",
+          "lineas": "7",
+          "nota": "`icon: ./assets/icon.png` (en realidad JPEG)"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.7",
+      "5.15",
+      "7.E6"
+    ],
+    "preguntasRelacionadas": [
+      "1A.4",
+      "7.C1",
+      "1B.3",
+      "1A.6"
+    ],
+    "preguntasRapidas": [
+      "¿Qué diferencia hay entre APK y AAB?",
+      "¿Por qué el APK de preview no necesita Metro?",
+      "¿Qué hace EAS que no hace `npx expo run:android`?"
+    ]
+  },
+  {
+    "id": "u01-npx-expo-install-vs-npm-install",
+    "unidad": "U01",
+    "titulo": "`npx expo install` vs `npm install`",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "`npx expo install` consulta qué versión corresponde al SDK del proyecto e instala esa; `npm install` trae la última publicada, que puede no ser compatible. Instalar un paquete de Expo con npm es \"la causa número uno de proyectos rotos\". Antes de entregar: `npx expo install --check` y `npx expo-doctor`.",
+    "explicacion": [
+      "Cada SDK de Expo es un conjunto de librerías probadas juntas, y Expo mantiene una **tabla de versiones compatibles por SDK**. `npm install expo-camera` ignora esa tabla y baja la última versión publicada, que puede estar pensada para otro SDK. `npx expo install expo-camera` en cambio consulta qué versión corresponde al SDK del proyecto, instala esa y avisa si algo quedó desfasado. Vale también para librerías de la comunidad, como `react-native-maps`.",
+      "Por qué importa tanto: detrás de cada librería de Expo hay una parte JavaScript que habla con un **módulo nativo** en Swift o Kotlin, y Expo prueba esas piezas juntas en cada release del SDK. Si instalás una versión pensada para otro SDK, se rompe esa coincidencia. El material lo dice sin vueltas: instalar con `npm install` un paquete de Expo es la **causa número uno de proyectos rotos** en los trabajos prácticos. Es de lo que más se repitió en la cursada: en U01, en U03 cuando un alumno respondió \"npx install\" y en U04 al instalar la cámara.",
+      "Hay dos comandos de control. `npx expo install --check` revisa el `package.json` entero y dice qué está fuera de rango; el material de U04 pide correrlo antes de entregar. `npx expo-doctor` revisa versiones, dependencias incompatibles y configuración, y es lo primero que hay que correr cuando algo no arranca.",
+      "Instalar con el comando correcto es el último paso de una decisión. Antes, la cátedra pide hacerse cuatro preguntas: en qué plataformas corre, si corre en Expo Go, si está viva y soporta la Nueva Arquitectura, y qué permisos arrastra. Lo último importa porque una librería instalada puede sumar permisos al manifiesto aunque no la uses.",
+      "En el TP las dependencias de Expo tienen rangos `~57.0.x` del SDK 57, que es lo que deja `npx expo install`. El punto débil son las dependencias sin uso: `react-native-maps` quedó en `package.json` después de reemplazar el mapa por Leaflet, y `expo-audio` está en dependencias y en los plugins de `app.json` sin una línea que lo importe."
+    ],
+    "definiciones": [
+      {
+        "termino": "npm",
+        "definicion": "Gestor de paquetes de Node: descarga e instala paquetes.",
+        "ref": "[U01-V1 1:07:37-1:08:41]"
+      },
+      {
+        "termino": "npx",
+        "definicion": "Ejecuta un paquete sin tenerlo instalado globalmente (por ejemplo, la CLI de Expo).",
+        "ref": "[U01-V1 1:07:37-1:08:41]"
+      },
+      {
+        "termino": "`npx expo install --check`",
+        "definicion": "Revisa todo el `package.json` y señala qué dependencias están fuera del rango del SDK.",
+        "ref": "[U04.T01 p.8]"
+      },
+      {
+        "termino": "`npx expo-doctor`",
+        "definicion": "Diagnóstico del proyecto: versiones, dependencias incompatibles y configuración.",
+        "ref": "[01 Intro p.26]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Dos formas de instalar",
+      "columnas": [
+        "",
+        "`npm install <paquete>`",
+        "`npx expo install <paquete>`"
+      ],
+      "filas": [
+        [
+          "Qué versión instala",
+          "La última publicada",
+          "La que corresponde al SDK del proyecto"
+        ],
+        [
+          "Compatibilidad",
+          "Puede no coincidir con el SDK",
+          "Consulta la tabla de Expo y avisa desfasajes"
+        ],
+        [
+          "Librerías de la comunidad",
+          "Igual: última versión",
+          "También elige versión compatible"
+        ],
+        [
+          "Uso según la cátedra",
+          "Nunca para paquetes de Expo",
+          "Siempre"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Instalar un paquete de Expo con `npm install`: es la causa número uno de proyectos rotos.",
+        "ref": "[01 Intro p.26]"
+      },
+      {
+        "texto": "Agregar el plugin en `app.json` sin haber instalado el módulo: en clase dio \"falló en resolver el plugin\" hasta que se corrió `npx expo install expo-image-picker`.",
+        "ref": "[U04-V4 1:03:11-1:16:50]"
+      },
+      {
+        "texto": "Dejar instaladas librerías que no se usan: una librería puede sumar permisos al manifiesto aunque no la pidas, y Apple rechaza apps que declaran permisos que no usan.",
+        "ref": "[U04.T01 p.7]"
+      },
+      {
+        "texto": "Entregar sin correr `npx expo install --check`.",
+        "ref": "[U04.T01 p.8]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "bash",
+      "fragmento": "npm install expo-camera             # última versión publicada: puede no ser compatible\nnpx expo install expo-camera        # la versión que corresponde al SDK 57\nnpx expo install react-native-maps  # también para librerías de la comunidad\nnpx expo install --check            # revisa todo el package.json\nnpx expo-doctor                     # versiones, dependencias y configuración",
+      "ref": "[U04.T01 p.8]; [01 Intro p.26]"
+    },
+    "citasProfe": [
+      {
+        "texto": "nunca nunca para instalar un paquete de expo usen npm install. Siempre usen `npx expo install`",
+        "ref": "[U01-V1 1:27:39]"
+      },
+      {
+        "texto": "Eso está bien, pero está mal. Está mal porque vos tenés que usar expo install.",
+        "ref": "[U03-V3 43:48]"
+      },
+      {
+        "texto": "revisa que esa librería sea compatible con tu SDK y te va a descargar la versión para ese SDK.",
+        "ref": "[U03-V3 43:48]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase se dijo \"`npx expo doctor`\" [U01-V1 1:27:39]; el material escribe `npx expo-doctor` [01 Intro p.26; U02.T02 p.25], que es la forma a usar.",
+      "Los números exactos de versión que hoy muestra `package.json` (por ejemplo `expo-image-picker ~57.0.20`) son cambios sin commitear del working tree; en el último commit figura `~57.0.16`. Los rangos `~57.0.x` valen igual, pero no conviene presentar esos números puntuales como trabajo del grupo."
+    ],
+    "referencias": [
+      "[01 Intro p.26]; [U04.T01 p.8]; [U01-V1 1:27:39]; [U03-V3 43:48]; [U04-V4 11:58-13:08]",
+      "[U02.T02 p.25]",
+      "[U04.T01 p.6-7]",
+      "[U04-V1 2:07-3:07, 8:13]",
+      "[U04-V4 13:08-14:13]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Las dependencias de Expo en `package.json` usan rangos `~57.0.x` del SDK 57 (`expo ~57.0.21`, `expo-router ~57.0.20`). Parcial: quedan dependencias instaladas sin uso, como `react-native-maps` (`package.json:37`, reemplazado por Leaflet en el commit `77f66e1`) y `expo-audio` (`package.json:9`, además declarado como plugin en `app.json`). No hay registro de que se haya corrido `--check` o `expo-doctor`.",
+      "archivos": [
+        {
+          "ruta": "package.json",
+          "lineas": "8, 24",
+          "nota": "`expo ~57.0.21`, `expo-router ~57.0.20`"
+        },
+        {
+          "ruta": "package.json",
+          "lineas": "37",
+          "nota": "`react-native-maps 1.27.2` sin importar"
+        },
+        {
+          "ruta": "package.json",
+          "lineas": "9",
+          "nota": "`expo-audio` sin uso"
+        },
+        {
+          "ruta": "app.json",
+          "lineas": "49",
+          "nota": "plugin `expo-audio` declarado"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.8",
+      "9.17",
+      "7.B2"
+    ],
+    "preguntasRelacionadas": [
+      "1B.2",
+      "3.11",
+      "2.18"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué se instala con `npx expo install`?",
+      "¿Qué revisa `--check`?",
+      "¿Para qué está `react-native-maps` si no se importa?"
+    ]
+  },
+  {
+    "id": "u01-git-commits-ramas-y-pull-requests",
+    "unidad": "U01",
+    "titulo": "Git: commits, ramas y pull requests",
+    "prioridad": "media",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Git es un control de versiones distribuido; una rama es un puntero a un commit. En el integrador cada integrante trabaja en su rama y abre un PR a `main`, con commits chicos y mensajes en presente que describen la intención, repartiendo por pantalla. El `.gitignore` de Expo excluye `node_modules`, `.expo`, `/ios`, `/android` y secretos.",
+    "explicacion": [
+      "Git es un **control de versiones distribuido**: cada persona tiene una copia completa del repositorio, por eso es rápido y funciona sin conexión. En equipo resuelve tres cosas: historial (qué cambió, cuándo y por qué), trabajo en paralelo y trazabilidad. En clase quedó clara la diferencia con GitHub: Git es la tecnología y GitHub, GitLab o Bitbucket son servicios que alojan una copia y suman pull requests, issues y permisos.",
+      "El ciclo diario va del working tree al stage con `git add` y del stage al historial con `git commit`. El mensaje de commit va **en presente y describe qué hace el cambio**, no qué archivos tocaste: el diff ya muestra los archivos, lo que no muestra es la intención. \"Agrega validación de email en el registro\" sirve; \"cambios\" o \"final final v2\", no.",
+      "Una **rama** no copia nada: es un puntero a un commit, por eso crearla es instantáneo. El flujo de la cátedra para el integrador es actualizar `main` con `git pull`, crear tu rama, hacer commits chicos y frecuentes, subirla y abrir un **pull request** para integrarla. El PR es una práctica de GitHub, no de Git. Al integrar, si `main` no avanzó hay fast-forward; si las dos ramas avanzaron, merge de tres vías con un commit de dos padres, y el conflicto aparece solo cuando tocaron las mismas líneas. Por eso conviene repartir el trabajo por pantalla y no por archivo compartido.",
+      "Para deshacer después de un commit, `git revert` crea un commit nuevo que revierte otro y deja el historial intacto: es lo seguro después del push. `git reset --hard` mueve el puntero y saca commits del historial local, y si ya estaban subidos rompe el repo de los compañeros.",
+      "El `.gitignore` de una app Expo excluye `node_modules` (se reconstruye con la instalación), `.expo`, los secretos y las carpetas `/ios` y `/android`, porque con CNG se generan desde `app.json`. En el TP el `.gitignore` está bien, pero el historial muestra 8 commits de un solo autor, solo en `main` y con casi toda la app en un único commit."
+    ],
+    "definiciones": [
+      {
+        "termino": "Commit",
+        "definicion": "Foto de los cambios preparados en el stage, guardada en el historial con un mensaje.",
+        "ref": "[02 GIT p.7]"
+      },
+      {
+        "termino": "Rama",
+        "definicion": "Puntero a un commit; no copia nada, por eso crearla es instantáneo.",
+        "ref": "[02 GIT p.11]"
+      },
+      {
+        "termino": "Pull Request",
+        "definicion": "Pedido en GitHub para integrar una rama a otra (por ejemplo, `mi-tarea` a `main`), donde se revisa antes de mergear. Es de GitHub, no de Git.",
+        "ref": "[02 GIT p.26]"
+      },
+      {
+        "termino": "Git frente a GitHub",
+        "definicion": "Git corre en tu máquina y funciona sin cuenta ni internet; GitHub aloja una copia remota y suma PRs, issues, permisos y CI.",
+        "ref": "[02 GIT p.22]; [U01-V2 51:53]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Deshacer después del commit",
+      "columnas": [
+        "Comando",
+        "Qué hace",
+        "Cuándo usarlo"
+      ],
+      "filas": [
+        [
+          "`git commit --amend`",
+          "Corrige el último commit",
+          "Solo antes del push"
+        ],
+        [
+          "`git revert <hash>`",
+          "Crea un commit nuevo que revierte otro; historial intacto",
+          "Seguro, incluso después del push"
+        ],
+        [
+          "`git reset --hard <hash>`",
+          "Mueve el puntero y borra commits del historial local",
+          "Peligroso: nunca sobre commits ya subidos"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Mensajes de commit que no dicen nada (\"cambios\", \"arreglo\", \"asdasd\") o que listan archivos en vez de la intención.",
+        "ref": "[02 GIT p.9]"
+      },
+      {
+        "texto": "Reescribir historial ya subido con `reset --hard`, `--amend` o `push --force`.",
+        "ref": "[02 GIT p.16, p.29]"
+      },
+      {
+        "texto": "Subir una clave: borrarla en otro commit no la saca del historial; el único arreglo real es rotarla.",
+        "ref": "[02 GIT p.18]"
+      },
+      {
+        "texto": "Commitear `android/` e `ios/` en un proyecto con CNG, o editarlas a mano: se regeneran con `prebuild` y lo manual se pierde.",
+        "ref": "[U04-V2 10:13-11:14]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "bash",
+      "fragmento": "git switch main\ngit pull\ngit switch -c mi-tarea\ngit add .\ngit commit -m \"Agrega pantalla de login\"\ngit push origin mi-tarea\n# después: abrir un Pull Request de mi-tarea a main en GitHub",
+      "ref": "[02 GIT p.7, p.26]"
+    },
+    "citasProfe": [
+      {
+        "texto": "para este proyecto en particular es super importante, si no es imposible trabajar",
+        "ref": "[U01-V1 24:11]"
+      },
+      {
+        "texto": "Git es la tecnología. GitHub es como el producto arriba",
+        "ref": "[U01-V2 51:53]"
+      },
+      {
+        "texto": "las carpetas de iOS y Android no se commitean",
+        "ref": "[U04-V2 11:14]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase Git se vio poco: la filmina \"sin mucho detalle\" y la diferencia Git/GitHub [U01-V1 1:30:56; U01-V2 49:50-53:58]; el flujo de ramas, PR, revert y reset sale del material [02 GIT p.9-28].",
+      "La entrega admite repositorio Git (preferido) o un .zip [TFI p.1]; el historial no permite saber quién hizo cada parte, así que cada integrante tiene que explicar la suya desde el código."
+    ],
+    "referencias": [
+      "[02 GIT p.9, 11, 26-28]; [U01-V2 49:50-53:58]; [U02-V1 24:41]",
+      "[02 GIT p.3, p.7, p.12, p.16-18, p.22]",
+      "[U01-V1 24:11]",
+      "[U04-V2 11:14]",
+      "[TFI p.1]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Remoto `ferm11n/Reservas-Deportivas-TPI`, solo rama `main`, 8 commits de un único autor, sin ramas ni pull requests; casi todo entró en `215b7f2` (75 archivos). `c292f48` es un ejemplo de commit acotado (barra de pestañas con safe area e ícono de vóley). `.gitignore` excluye `node_modules/`, `.expo/`, `.env*.local`, claves (`*.jks`, `*.p8`, `*.p12`, `*.key`) y las carpetas nativas `/ios` y `/android` (líneas 42-43), como pide CNG. Hay cambios sin commitear en `app.json`, `package.json` y `package-lock.json`.",
+      "archivos": [
+        {
+          "ruta": ".gitignore",
+          "lineas": "4, 7, 15-18, 34, 42-43",
+          "nota": "dependencias, Expo, claves, secretos y carpetas nativas"
+        },
+        {
+          "ruta": "historial git",
+          "nota": "`70ea2cf` inicial, `215b7f2` con casi toda la app, `c292f48` ajuste puntual, `77f66e1` mapa con Leaflet"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.9",
+      "3.3",
+      "3.10"
+    ],
+    "preguntasRelacionadas": [
+      "1B.3",
+      "7.B3",
+      "3.16"
+    ],
+    "preguntasRapidas": [
+      "¿Cómo se repartieron el trabajo en Git?",
+      "¿Por qué casi todo está en un solo commit?",
+      "¿Qué no se sube al repositorio y por qué?"
+    ]
+  }
+]

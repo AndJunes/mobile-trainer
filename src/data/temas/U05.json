@@ -1,0 +1,1286 @@
+[
+  {
+    "id": "u05-capa-de-servicios-y-mocks",
+    "unidad": "U05",
+    "titulo": "Capa de servicios y mocks",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Tipos en `src/tipos/`, datos falsos en `src/mocks/` y \"ninguna pantalla importa el mock directamente\": todo pasa por `src/servicios/reservas.ts`, asíncrono desde el primer día y con la forma `{ datos, meta }` o `{ error: { codigo, mensaje } }`. Cuando llegue la API cambia el cuerpo del servicio, no las pantallas.",
+    "explicacion": [
+      "La API la provee la cátedra y llega tarde en el cuatrimestre, así que el PRD lo dice sin vueltas: \"hasta entonces, la app se construye contra datos inventados\". En clase se explicó cómo: \"Los datos falsos van a ser el mock\", y el **servicio** importa ese mock y \"va a estar simulando la respuesta de la API\". La idea de fondo es que el cambio del mock a la API real sea barato.",
+      "Para eso el PRD fija reglas. Los tipos de las entidades se escriben una sola vez en `src/tipos/` y no se tocan cuando llegue la API. Los mocks van en `src/mocks/`, tipados con esos mismos tipos: si un mock no respeta el tipo, no compila. Y **ninguna pantalla importa el mock**: toda lectura y escritura pasa por la **capa de servicios**, que \"hoy devuelve el mock y mañana hace `fetch`\".",
+      "Los servicios son **asíncronos desde el primer día** aunque el mock esté en memoria. Si una pantalla hoy recibe un arreglo de forma sincrónica y mañana una promesa, hay que reescribirla; si desde el principio hace `await`, el día del cambio ni se entera. Simular la demora además obliga a diseñar el estado de carga ya. Es lo que se hizo en la demo de clase: `services/rutas.ts` devolvía las rutas del mock dentro de una `Promise` con `setTimeout`, \"después va a ser reemplazado por la llamada a la API\".",
+      "El servicio también imita el **contrato** de la respuesta: `{ datos, meta }` si sale bien y `{ error: { codigo, mensaje } }` si sale mal. Así la pantalla aprende a distinguir éxito de error con la misma forma que va a tener la API. Por eso el PRD pide que los mocks traigan \"los casos feos\" (un día bloqueado por lluvia, una grilla sin turnos libres, un espacio sin video, una reserva cancelada, una fija de todos los martes y un error de red): sin ellos, las pantallas de vacío y de error nunca se ven antes de la entrega.",
+      "Ejemplo del TP: `obtenerEspacios()` hoy hace `await delay()` y devuelve el arreglo en memoria con su `meta`. Con la API, ese cuerpo pasa a ser una llamada HTTP y la pantalla del catálogo sigue igual. Si una pantalla importa el mock directo, ese día también hay que tocarla."
+    ],
+    "pasos": [
+      "Escribir los tipos del PRD una sola vez en `src/tipos/`.",
+      "Crear los mocks en `src/mocks/`, tipados con esos tipos e incluyendo los casos feos.",
+      "Escribir el servicio con funciones `async` que devuelven el mock después de una demora simulada.",
+      "Devolver siempre `{ datos, meta }` o `{ error: { codigo, mensaje } }`.",
+      "Hacer que las pantallas llamen solo al servicio y manejen carga, vacío, error y dato.",
+      "Cuando llegue la API, reemplazar el cuerpo de cada función del servicio; tipos y pantallas no cambian."
+    ],
+    "definiciones": [
+      {
+        "termino": "Mock",
+        "definicion": "Datos falsos locales que imitan lo que va a devolver la API. En clase: \"Moqueado es que los datos son de mentira\".",
+        "ref": "[U01-V2 36:11]"
+      },
+      {
+        "termino": "Capa de servicios",
+        "definicion": "Funciones (`src/servicios/*.ts`) que encapsulan cómo se leen y escriben los datos; la pantalla no sabe si detrás hay un mock, `fetch` o Axios.",
+        "ref": "[PRD05 p.5]"
+      },
+      {
+        "termino": "Wireframe frente a mock",
+        "definicion": "El wireframe es un set de pantallas sin datos ni estilo; el mock son datos de mentira que sirven de guía para toda la app.",
+        "ref": "[U03-V3 1:34:05]"
+      }
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Importar el mock desde la pantalla: el día que llega la API hay que tocar cada pantalla en vez de un solo archivo.",
+        "ref": "[U02-V2 42:22]; [PRD05 p.5]"
+      },
+      {
+        "texto": "Escribir servicios sincrónicos porque el mock está en memoria: después hay que reescribir todas las pantallas.",
+        "ref": "[PRD 01 p.5]"
+      },
+      {
+        "texto": "Mocks con solo el caso feliz: la pantalla de error y la de vacío no se pueden mostrar.",
+        "ref": "[PRD05 p.5]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "json",
+      "fragmento": "// éxito\n{ \"datos\": [ ... ],\n  \"meta\": { \"total\": 11, \"pagina\": 1, \"porPagina\": 20 } }\n// error\n{ \"error\": { \"codigo\": \"TURNO_OCUPADO\",\n             \"mensaje\": \"Ese turno ya fue reservado.\" } }",
+      "ref": "[PRD05 p.5]",
+      "nota": "Es la forma que va a tener siempre la respuesta de la API; los servicios la imitan desde el primer día."
+    },
+    "citasProfe": [
+      {
+        "texto": "Moqueado es que los datos son de mentira",
+        "ref": "[U01-V2 36:11]"
+      },
+      {
+        "texto": "Hasta entonces la app se construye con datos inventados",
+        "ref": "[U02-V2 41:18]"
+      },
+      {
+        "texto": "después va a ser reemplazado por la llamada a la API",
+        "ref": "[U04-V4 45:52]"
+      }
+    ],
+    "aclaraciones": [
+      "U05 no tiene clase grabada. Este tema sale del PRD (leído en clase en U02-V2), de la mención de los datos mockeados en U01-V2 y de la demo de `services/rutas.ts` en U04-V4.",
+      "La frase \"si arrancan sincrónicos, después hay que reescribir todas las pantallas\" está en el PRD 01, no en el PRD 05; las reglas de la capa de servicios son las mismas en los dos."
+    ],
+    "referencias": [
+      "[PRD05 p.5]; [U02-V2 41:18-42:22]; [U04-V4 45:52-49:06]",
+      "[U01-V2 36:11]",
+      "[U03-V3 1:34:05]",
+      "[PRD 01 p.5]",
+      "[TFI p.2, req. 3]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "`src/servicios/reservas.ts` y `src/servicios/auth.ts` son asíncronos y simulan la red con `await delay(300)` (`reservas.ts:26`, `auth.ts:12`); devuelven `RespuestaApi<T>`, la unión de `{ datos, meta }` y `{ error }` (`src/tipos/index.ts:84-105`), y los mocks están en `src/mocks/index.ts`. Parcial: no consume la API de la cátedra; `mis-reservas.tsx` y `reserva/[id].tsx` importan `obtenerReservasOffline` directo de la capa `bd`, y `admin/index.tsx` importa `MOCK_RESERVAS_FIJAS` (`:20`) y lo copia en un `useState` (`:52`). De los casos feos faltan la grilla completa, la reserva cancelada inicial y el error de red: ningún servicio simula una falla.",
+      "archivos": [
+        {
+          "ruta": "src/servicios/reservas.ts",
+          "lineas": "19-34",
+          "nota": "stores en memoria, `delay` y `obtenerEspacios`"
+        },
+        {
+          "ruta": "src/servicios/auth.ts",
+          "lineas": "12",
+          "nota": "misma demora simulada"
+        },
+        {
+          "ruta": "src/tipos/index.ts",
+          "lineas": "84-105",
+          "nota": "contrato `RespuestaApi<T>`"
+        },
+        {
+          "ruta": "src/mocks/index.ts",
+          "nota": "datos falsos tipados"
+        },
+        {
+          "ruta": "src/app/(tabs)/mis-reservas.tsx",
+          "lineas": "12, 31-45",
+          "nota": "lee la base directo, saltea el servicio"
+        },
+        {
+          "ruta": "src/app/reserva/[id].tsx",
+          "lineas": "13",
+          "nota": "importa de `bd/sqlite`"
+        },
+        {
+          "ruta": "src/app/admin/index.tsx",
+          "lineas": "20, 52",
+          "nota": "importa el mock directamente"
+        }
+      ]
+    },
+    "desafio": [
+      "2.9",
+      "5.3",
+      "6.1.5"
+    ],
+    "preguntasRelacionadas": [
+      "10.2.5",
+      "3.4",
+      "3.2",
+      "2.10",
+      "6.1.1",
+      "6.1.2",
+      "6.1.3",
+      "3.13"
+    ],
+    "preguntasRapidas": [
+      "¿Qué cambia cuando llegue la API?",
+      "¿Por qué los servicios son `async` si devuelven un mock?",
+      "¿Alguna pantalla importa el mock directo?"
+    ]
+  },
+  {
+    "id": "u05-fetch-vs-axios",
+    "unidad": "U05",
+    "titulo": "Fetch vs Axios",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "`fetch` viene incluido, pero un 404 no rechaza la promesa (hay que chequear `response.ok`), no parsea JSON solo y no tiene timeout. Axios trae JSON automático, errores reales, `timeout` e interceptores para el token. En clase: axios \"es algún estándar ya hoy en día\" y \"cómo usar la librería de axios\" entra en la defensa.",
+    "explicacion": [
+      "En el teléfono la red no es confiable: se entra al ascensor o al subte, se pasa de Wi-Fi a datos a mitad de un request, y \"conectado\" no significa que haya internet (el portal cautivo del bar contesta a todo). Además no hay botón de recargar. Por eso la herramienta para pedir datos tiene que dejar ver bien cuándo algo falló.",
+      "`fetch` lo expone React Native como global, igual que el navegador: no se instala y funciona con `async/await`. En contra: no parsea JSON solo (hay que hacer `await r.json()`), no tiene tiempo de espera ni reintentos, y tiene **una trampa**: solo rechaza la promesa si no llegó a hablar con el servidor (sin red, DNS caído, TLS inválido). Un 404 o un 500 son respuestas exitosas para `fetch`, así que si no chequeás `response.ok` y tirás el error a mano, el `catch` nunca entra y la pantalla intenta mostrar un error como si fuera el dato.",
+      "Axios es \"lo mismo, con lo repetido ya resuelto\": `response.data` ya viene parseado, un 404 o un 500 sí rechazan, el `timeout` se configura y hay **interceptores**, un lugar único para tocar todas las peticiones y respuestas. Se arma un solo cliente con `axios.create({ baseURL, timeout })` y la URL del servidor aparece una vez en todo el proyecto: al pasar a producción se cambia una variable de entorno, no veinte archivos. El interceptor de request agrega `Authorization: Bearer <token>` leyendo el token de `expo-secure-store`, que es justo la convención del PRD; el de respuesta reacciona a un 401 cerrando la sesión en un solo lado.",
+      "El error de Axios tiene **tres formas**: `e.response` (llegó al servidor y contestó mal), `e.request` (salió y nunca volvió: sin red, servidor caído o timeout) y ninguna de las dos (ni salió: es un bug de configuración). Esa distinción permite mensajes útiles como \"no hay conexión\" o \"ese producto no existe\" en lugar de \"algo salió mal\". Los dos se cancelan con la misma `AbortController` del estándar, y cancelar no es fallar.",
+      "¿Cuál conviene? `fetch` alcanza para dos o tres requests sueltos, sin autenticación y sin querer dependencias. Axios conviene con una API propia con muchos endpoints, token y sesión que expira, y el mismo manejo de errores en toda la app: el caso de Reservas Deportivas con la API de la cátedra. Ninguno de los dos resuelve qué hacer con el dato una vez que llegó; eso es TanStack Query."
+    ],
+    "definiciones": [
+      {
+        "termino": "`response.ok`",
+        "definicion": "Booleano de la respuesta de `fetch` que es verdadero solo con estados 2xx; hay que revisarlo porque `fetch` no rechaza con 404 ni con 500.",
+        "ref": "[U05.T01 p.6]"
+      },
+      {
+        "termino": "Interceptor",
+        "definicion": "Función de Axios que corre antes de cada petición o después de cada respuesta; centraliza el token y la reacción a un 401.",
+        "ref": "[U05.T01 p.10, 12]"
+      },
+      {
+        "termino": "`AbortController`",
+        "definicion": "API estándar para cancelar un request en curso, por ejemplo en el cleanup del `useEffect`; el `AbortError` no se muestra como error.",
+        "ref": "[U05.T01 p.8]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "fetch frente a Axios",
+      "columnas": [
+        "Aspecto",
+        "fetch",
+        "Axios"
+      ],
+      "filas": [
+        [
+          "Instalación",
+          "global de React Native, no se instala",
+          "dependencia `axios`"
+        ],
+        [
+          "JSON",
+          "`await r.json()` a mano",
+          "`response.data` ya parseado"
+        ],
+        [
+          "404 o 500",
+          "respuesta exitosa: hay que chequear `response.ok`",
+          "rechaza la promesa"
+        ],
+        [
+          "Timeout",
+          "no tiene",
+          "`timeout` por configuración"
+        ],
+        [
+          "Token y 401",
+          "repetido en cada llamada",
+          "interceptores de request y de respuesta"
+        ],
+        [
+          "Cancelar",
+          "`AbortController`",
+          "la misma `AbortController`"
+        ],
+        [
+          "Conviene si…",
+          "dos o tres requests sueltos, sin autenticación",
+          "API propia, token que expira, errores iguales en toda la app"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "No chequear `response.ok` con `fetch`: con un 404 el código sigue como si hubiera datos y el `catch` nunca entra.",
+        "ref": "[U05.T01 p.6]"
+      },
+      {
+        "texto": "No cancelar el request al salir de la pantalla: la respuesta llega con el componente desmontado y, en una búsqueda, gana la respuesta más lenta.",
+        "ref": "[U05.T01 p.8]"
+      },
+      {
+        "texto": "Copiar el `if (401)` y el header del token en cada pantalla en lugar de usar interceptores.",
+        "ref": "[U05.T01 p.12]"
+      },
+      {
+        "texto": "Mostrar \"Algo salió mal\" para todo, sin distinguir `e.response` de `e.request`.",
+        "ref": "[U05.T01 p.13]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "api.interceptors.request.use(async (config) => {\n  const token = await leerToken();\n  if (token) config.headers.Authorization = `Bearer ${token}`;\n  return config;\n});\napi.interceptors.response.use(\n  (respuesta) => respuesta,\n  (error) => {\n    if (error.response?.status === 401) cerrarSesion();\n    return Promise.reject(error);\n  },\n);",
+      "ref": "[U05.T01 p.12]",
+      "nota": "`api` es el cliente creado con `axios.create`; el token sale de `expo-secure-store`."
+    },
+    "citasProfe": [
+      {
+        "texto": "es algún estándar ya hoy en día",
+        "ref": "[U03-V5 2:04]"
+      },
+      {
+        "texto": "cómo usar una flatlist, cómo programar, cómo usar un componente… cómo usar, no sé, la librería de axios",
+        "ref": "[U03-V5 2:04]"
+      },
+      {
+        "texto": "Un 404 o un 500 son respuestas exitosas desde su punto de vista: chequeá response.ok siempre.",
+        "ref": "[U05.T01 p.6]"
+      }
+    ],
+    "aclaraciones": [
+      "U05 no tiene clase grabada: la teoría sale del deck U05.T01. En clase solo se dijo que axios \"es algún estándar\" y que fetch \"mucho no se usa\", aunque viene incorporado, y se nombró axios entre lo que el profe va a preguntar.",
+      "El PRD dice que el servicio \"mañana hace `fetch`\"; el material y la clase sugieren Axios. Cualquiera de los dos va detrás de la capa de servicios, sin cambiar las pantallas."
+    ],
+    "referencias": [
+      "[U05.T01 p.5-14]; [U03-V5 2:04]",
+      "[U05.T01 p.4]",
+      "[U03-V5 2:04-3:14]",
+      "[PRD05 p.5-6]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado: no hay `fetch` ni `axios` en `src/` y `axios` no figura en `package.json`; los servicios devuelven mocks. Hipotético: un cliente único (por ejemplo `src/servicios/cliente.ts`) con `axios.create({ baseURL: process.env.EXPO_PUBLIC_API_URL, timeout })`, un interceptor que lea el token con `obtenerTokenDeSecureStore` (`src/bd/secureStore.ts:19`) y lo mande como `Authorization: Bearer`, otro que cierre la sesión ante un 401, y el cuerpo de cada función de `reservas.ts` y `auth.ts` reemplazado por una llamada a ese cliente.",
+      "archivos": [
+        {
+          "ruta": "src/servicios/reservas.ts",
+          "lineas": "26-34",
+          "nota": "donde hoy está el `delay` y el mock"
+        },
+        {
+          "ruta": "src/servicios/auth.ts",
+          "lineas": "14-37",
+          "nota": "login sin red"
+        },
+        {
+          "ruta": "src/bd/secureStore.ts",
+          "lineas": "19",
+          "nota": "lectura del token que usaría el interceptor"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.20",
+      "8.4",
+      "9.16"
+    ],
+    "preguntasRelacionadas": [
+      "9.8",
+      "2.11",
+      "1B.28",
+      "5.9",
+      "3.6"
+    ],
+    "preguntasRapidas": [
+      "¿Usarías fetch o axios para la API de la cátedra?",
+      "¿Dónde pondrías el `Authorization: Bearer`?",
+      "¿Qué hace `fetch` con un 404?"
+    ]
+  },
+  {
+    "id": "u05-estados-de-carga-vacio-y-error",
+    "unidad": "U05",
+    "titulo": "Estados de carga, vacío y error",
+    "prioridad": "alta",
+    "enfasisClase": 1,
+    "fuenteTipo": "mixto",
+    "resumen": "\"El estado de error y el de carga no son excepciones, son parte del diseño de la pantalla.\" Todo request tiene cargando, error con salida (Reintentar) y dato; la consigna suma el vacío y exige verlos en pantalla. En el TP solo el catálogo los tiene completos.",
+    "explicacion": [
+      "En la compu, si algo falla, el usuario recarga. En el teléfono la red se corta en el ascensor, cambia de Wi-Fi a datos a mitad de un request y no hay botón de recargar. La conclusión del material es que el error y la carga no son casos raros sino parte del diseño: \"una pantalla que solo contempla el caso feliz está a medio hacer\".",
+      "Cualquier request pasa por **tres estados**: cargando, error con salida (un botón **Reintentar**) y dato. \"Las tres se diseñan. La del medio es la que siempre falta\", y es justo la que el usuario ve cuando más la necesita.",
+      "La consigna del TP agrega el **vacío**: \"los estados de carga, vacío y error tienen que verse en pantalla\". El vacío no es un error: la lista llegó bien pero no tiene elementos, por ejemplo un filtro que no encuentra canchas.",
+      "A mano se arma con tres `useState` (dato, cargando, error) y un `useEffect` que carga al montar. Es lo que se hizo en la demo de clase con las rutas: `setLoading(true)` al empezar y un `finally` que lo apaga, haya error o datos. Sobre esa base, el `catch` guarda un mensaje y la vista muestra un botón que vuelve a llamar a la función de carga.",
+      "El mensaje tiene que decir qué pasó (\"no hay conexión\", \"esa cancha no existe\"); \"algo salió mal\" no le sirve a nadie. Si el usuario sale de la pantalla antes de que llegue la respuesta, el request se cancela con `AbortController` en el cleanup, y esa cancelación no se muestra como error.",
+      "Un detalle del TP: los servicios devuelven el error como valor (`{ error }`) y no lo tiran, así que no alcanza con `try/catch`: hay que revisar `'error' in res`. Si una pantalla no revisa el resultado, muestra un éxito que no ocurrió. Y para ver el estado de error antes de la API hacen falta mocks con \"un error de red\", como pide el PRD, o probar en modo avión: si la app queda colgada en un spinner, falta trabajo."
+    ],
+    "pasos": [
+      "Declarar tres estados: dato, cargando y error.",
+      "Al empezar la carga, poner cargando en `true` y limpiar el error.",
+      "Llamar al servicio; si devuelve `{ error }` o tira una excepción, guardar un mensaje que diga qué pasó.",
+      "En el `finally`, apagar cargando, haya error o dato.",
+      "Renderizar cuatro ramas: cargando, error con botón Reintentar, vacío y dato.",
+      "Probar el error de verdad: mock con error de red o modo avión."
+    ],
+    "definiciones": [
+      {
+        "termino": "Error con salida",
+        "definicion": "Estado de error que le da al usuario una acción para seguir, típicamente un botón Reintentar.",
+        "ref": "[U05.T01 p.7]"
+      },
+      {
+        "termino": "Estado vacío",
+        "definicion": "La respuesta llegó bien pero sin elementos; la consigna exige mostrarlo, distinto del error.",
+        "ref": "[TFI p.2, req. 3]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Los cuatro estados en el catálogo del TP",
+      "columnas": [
+        "Estado",
+        "Qué ve el usuario",
+        "En `(tabs)/index.tsx`"
+      ],
+      "filas": [
+        [
+          "Cargando",
+          "indicador y texto mientras llega la respuesta",
+          "`ActivityIndicator` y \"Cargando canchas de Villaguay...\" (`:152-158`)"
+        ],
+        [
+          "Error con salida",
+          "mensaje claro y botón para reintentar",
+          "mensaje de error y \"Reintentar\", que llama a `cargarDatos` (`:160-169`)"
+        ],
+        [
+          "Vacío",
+          "aviso de que no hay resultados",
+          "`ListEmptyComponent`: \"No se encontraron canchas con los filtros seleccionados.\" (`:192-197`)"
+        ],
+        [
+          "Dato",
+          "la lista",
+          "`FlatList` de canchas (`:172-198`)"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Diseñar solo el caso feliz: la pantalla de error es la que siempre falta.",
+        "ref": "[U05.T01 p.4, 7]"
+      },
+      {
+        "texto": "Olvidar el `finally` y dejar el indicador de carga prendido cuando hay error.",
+        "ref": "[U04-V4 50:10-52:15]"
+      },
+      {
+        "texto": "Ignorar el resultado de un servicio que devuelve el error como valor y mostrar éxito igual.",
+        "ref": "[U05.T01 p.13]"
+      },
+      {
+        "texto": "Que en modo avión la app quede colgada en un spinner.",
+        "ref": "[U05.T02 p.27]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "const [datos, setDatos] = useState(null);\nconst [cargando, setCargando] = useState(true);\nconst [error, setError] = useState(null);\nuseEffect(() => {\n  const c = new AbortController();\n  setCargando(true);\n  api.get('/productos', { signal: c.signal })\n    .then(r => setDatos(r.data))\n    .catch(e => { if (e.name !== 'CanceledError') setError(e); })\n    .finally(() => setCargando(false));\n  return () => c.abort();\n}, []);",
+      "ref": "[U05.T01 p.17]",
+      "nota": "Versión \"a mano\" del deck: los tres estados, `finally` para apagar la carga y cancelación en el cleanup. Es el mismo patrón de la demo de rutas en clase."
+    },
+    "citasProfe": [
+      {
+        "texto": "el estado de error y el de carga no son excepciones, son parte del diseño de la pantalla",
+        "ref": "[U05.T01 p.4]"
+      },
+      {
+        "texto": "Las tres se diseñan. La del medio es la que siempre falta",
+        "ref": "[U05.T01 p.7]"
+      }
+    ],
+    "aclaraciones": [
+      "U05 no tiene clase grabada: los tres estados salen del deck U05.T01. En clase solo apareció el `loading` con `finally` en la demo de `services/rutas.ts`.",
+      "El deck habla de tres estados (cargando, error, dato); la consigna exige además el vacío."
+    ],
+    "referencias": [
+      "[U05.T01 p.4, 7]; [TFI p.2, req. 3]; [U04-V4 50:10-52:15]",
+      "[U05.T01 p.8, 13, 17]",
+      "[U05.T02 p.27]",
+      "[PRD05 p.5]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Solo `CatalogScreen` tiene los cuatro casos: carga (`(tabs)/index.tsx:152-158`), error con \"Reintentar\" que vuelve a llamar a `cargarDatos` (`:160-169`) y vacío con `ListEmptyComponent` (`:192-197`). `cargarDatos` revisa `'error' in resEsp` y además usa `try/catch/finally` (`:34-57`). Pide espacios y deportes en serie (`:38-39`); no consta por qué: con `Promise.all` irían en paralelo. En el resto, `crearReserva` muestra un `Alert`; `cancelarReserva` no se revisa y la UI siempre dice \"cancelada\" (`mis-reservas.tsx:61-62`, `reserva/[id].tsx:61-62`), y `actualizarPrecioEspacio` tampoco se revisa. Como ningún mock simula el error de red, el estado de error del catálogo no se puede mostrar en la demo.",
+      "archivos": [
+        {
+          "ruta": "src/app/(tabs)/index.tsx",
+          "lineas": "34-57, 152-169, 192-197",
+          "nota": "carga, error con Reintentar y vacío"
+        },
+        {
+          "ruta": "src/app/(tabs)/mis-reservas.tsx",
+          "lineas": "47-67",
+          "nota": "`handleCancelar` no revisa el resultado"
+        },
+        {
+          "ruta": "src/app/reserva/[id].tsx",
+          "lineas": "61-62",
+          "nota": "mismo problema al cancelar"
+        },
+        {
+          "ruta": "src/app/admin/index.tsx",
+          "lineas": "156-166",
+          "nota": "`handleCambiarPrecio` ignora el resultado"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.21",
+      "6.1.4",
+      "3.13"
+    ],
+    "preguntasRelacionadas": [
+      "4.8",
+      "2.10",
+      "4.23",
+      "5.9",
+      "6.1.1",
+      "5.18"
+    ],
+    "preguntasRapidas": [
+      "¿En qué pantallas se ve el estado de error?",
+      "¿Qué pasa si `cancelarReserva` falla?",
+      "¿Por qué el catálogo pide espacios y deportes en serie y no con `Promise.all`?"
+    ]
+  },
+  {
+    "id": "u05-tanstack-query",
+    "unidad": "U05",
+    "titulo": "TanStack Query",
+    "prioridad": "media",
+    "enfasisClase": 0,
+    "fuenteTipo": "pdf",
+    "resumen": "\"El dato del servidor no es estado de tu app: es una copia.\" `useQuery` lee y cachea por `queryKey` (con `staleTime`, `gcTime` y reintentos); `useMutation` escribe y termina con `invalidateQueries`. En React Native hay que conectar `AppState` con `focusManager`.",
+    "explicacion": [
+      "`fetch` y Axios traen el dato, pero no dicen dónde se guarda, cuándo está viejo ni quién lo vuelve a pedir. Para eso el material separa dos clases de estado. El **estado del cliente** (el texto de un formulario, si un modal está abierto, el tema) es tuyo, sincrónico y es la verdad. El **estado del servidor** (productos, perfil, pedidos) tiene otro dueño: vos tenés una copia que envejece, que llega de forma asincrónica y que puede fallar.",
+      "Meter el estado del servidor en un `useState` \"es el error de diseño más común\": funciona, pero después hay que escribir a mano caché, reintentos, invalidación y refresco, y dos pantallas hacen dos requests con dos copias que se desincronizan. `useQuery` es la herramienta para leer: la `queryKey` es la identidad en la caché, y todo lo que cambie el resultado va adentro, como en `['productos', categoria, pagina]`.",
+      "La `queryFn` devuelve el dato o tira un error (con Axios ya tira; con `fetch` hay que tirarlo a mano). A cambio trae caché compartida, reintentos (3 por defecto), refresco en segundo plano y deduplicación. Dos opciones se confunden siempre: **`staleTime`** (por defecto 0) es cuánto vale la copia antes de salir a chequear, \"lo muestro igual, pero salgo a chequear\"; **`gcTime`** (por defecto 5 minutos) es cuánto sobrevive en memoria lo que nadie mira, \"lo borro de memoria\".",
+      "`useMutation` es para escribir (POST, PUT, DELETE). No corre sola: se dispara con `.mutate(datos)`, no se cachea y no reintenta por su cuenta, porque repetirla crea dos veces. Una mutación que sale bien deja la caché vieja, así que su último paso es `invalidateQueries({ queryKey })`, que lleva un objeto. Con **actualización optimista** se pinta el cambio antes de la respuesta (`onMutate`) y se vuelve atrás si falla (`onError`): sin ese `onError`, \"la pantalla miente\".",
+      "Se monta con un `QueryClient` y `QueryClientProvider` en `app/_layout.tsx`. En React Native no hay \"foco de ventana\", así que hay que conectar `AppState` con `focusManager`; si no, el refresco al volver a la app no se dispara nunca. Llevado al TP, la grilla sería una query con clave `['grilla', espacioId, fecha]` y reservar, una mutación que la invalida."
+    ],
+    "definiciones": [
+      {
+        "termino": "Estado del servidor",
+        "definicion": "Dato cuyo dueño es otro; la app tiene una copia asincrónica que puede fallar y quedar vieja sin avisar.",
+        "ref": "[U05.T01 p.16]"
+      },
+      {
+        "termino": "`queryKey`",
+        "definicion": "Identidad del dato en la caché; cambiar la clave es pedir otra cosa.",
+        "ref": "[U05.T01 p.18]"
+      },
+      {
+        "termino": "`staleTime`",
+        "definicion": "Cuánto se considera fresca la copia antes de volver a chequear; por defecto 0.",
+        "ref": "[U05.T01 p.18]"
+      },
+      {
+        "termino": "`gcTime`",
+        "definicion": "Cuánto sobrevive en memoria un dato que ya nadie mira; por defecto 5 minutos.",
+        "ref": "[U05.T01 p.18]"
+      },
+      {
+        "termino": "`focusManager`",
+        "definicion": "Objeto de TanStack Query al que se le avisa, desde `AppState`, si la app está activa, para refrescar al volver.",
+        "ref": "[U05.T01 p.22]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "useQuery frente a useMutation",
+      "columnas": [
+        "",
+        "useQuery (leer)",
+        "useMutation (escribir)"
+      ],
+      "filas": [
+        [
+          "Cuándo corre",
+          "sola, cuando el componente se monta",
+          "cuando la disparás con `.mutate(datos)`"
+        ],
+        [
+          "Caché",
+          "guarda bajo su `queryKey` y la comparte con toda la app",
+          "no se cachea: confirma un efecto"
+        ],
+        [
+          "Reintentos",
+          "reintenta y refresca en segundo plano",
+          "no reintenta: repetirla crea dos veces"
+        ],
+        [
+          "Verbo HTTP",
+          "GET",
+          "POST, PUT o DELETE"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Guardar en `useState` la lista que trae la API y escribir a mano caché, reintentos y refresco.",
+        "ref": "[U05.T01 p.16]"
+      },
+      {
+        "texto": "Confundir `staleTime` con `gcTime`.",
+        "ref": "[U05.T01 p.18]"
+      },
+      {
+        "texto": "Actualización optimista sin `onError`: si falla, la pantalla queda mostrando algo que no pasó.",
+        "ref": "[U05.T01 p.21]"
+      },
+      {
+        "texto": "No conectar `AppState` con `focusManager`: en móvil nunca refresca al volver a la app.",
+        "ref": "[U05.T01 p.22]"
+      },
+      {
+        "texto": "Persistir a mano en SQLite o kv-store lo que TanStack Query ya cachea: es trabajo doble.",
+        "ref": "[U05.T02 p.4]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "import { useMutation, useQueryClient } from '@tanstack/react-query';\nconst queryClient = useQueryClient();\nconst crear = useMutation({\n  mutationFn: (nuevo) => api.post('/productos', nuevo).then(r => r.data),\n  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['productos'] }),\n  onError: (e) => mostrarError(e),\n});\n<Button title=\"Guardar\" onPress={() => crear.mutate({ nombre, precio })} />",
+      "ref": "[U05.T01 p.20]",
+      "nota": "Así se enganchan los dos hooks: la mutación invalida la query para que se vuelva a pedir sola."
+    },
+    "citasProfe": [
+      {
+        "texto": "El dato del servidor no es estado de tu app: es una copia.",
+        "ref": "[U05.T01 p.15]"
+      },
+      {
+        "texto": "Stale = «lo muestro igual, pero salgo a chequear». gc = «lo borro de memoria».",
+        "ref": "[U05.T01 p.18]"
+      },
+      {
+        "texto": "La parte que casi nadie escribe es onError: sin volver atrás, la pantalla miente.",
+        "ref": "[U05.T01 p.21]"
+      }
+    ],
+    "aclaraciones": [
+      "U05 no tiene clase grabada y TanStack Query no se nombró en ninguna clase: todo sale del deck U05.T01. Lo más cercano es que el profe, hablando de Redux y Zustand, dijo que \"hay librerías para pegarle a las APIs que ya hacen eso… optimistic\", sin nombrar cuál [U03-V5 1:15:29-1:19:44]."
+    ],
+    "referencias": [
+      "[U05.T01 p.15-22]",
+      "[U05.T01 p.14]",
+      "[U05.T02 p.4]",
+      "[U03-V5 1:15:29-1:19:44]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado: `@tanstack/react-query` no está en las dependencias. El estado del servidor (espacios, grilla, reservas) se guarda en `useState` en cada pantalla y se vuelve a pedir a mano (`cargarDatos`, `cargarGrilla`); como no se usa `useFocusEffect`, Turnos y Mis Reservas no se refrescan al volver al tab. Hipotético: `useQuery` con clave `['grilla', espacioId, fecha]` en `disponibilidad.tsx`, reservar como `useMutation` que invalida esa grilla y las reservas, y una `queryFn` que convierta el `{ error }` de los servicios en un `throw`, porque hoy el error viene como valor.",
+      "archivos": [
+        {
+          "ruta": "src/app/(tabs)/disponibilidad.tsx",
+          "lineas": "40-44, 74-77",
+          "nota": "efecto que dispara `cargarGrilla` y llamada a `obtenerGrillaTurnos`"
+        },
+        {
+          "ruta": "src/app/(tabs)/index.tsx",
+          "lineas": "34-57",
+          "nota": "`cargarDatos` con `useState`"
+        },
+        {
+          "ruta": "src/app/(tabs)/mis-reservas.tsx",
+          "lineas": "27-45",
+          "nota": "recarga por efecto, sin refresco al volver al tab"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.22",
+      "5.8",
+      "5.2"
+    ],
+    "preguntasRelacionadas": [
+      "1B.26",
+      "3.6",
+      "5.9",
+      "10.2.1"
+    ],
+    "preguntasRapidas": [
+      "¿Qué te daría TanStack Query en la grilla?",
+      "¿Por qué meter la lista de la API en `useState` es \"el error de diseño más común\"?",
+      "¿Qué query invalidarías después de reservar?"
+    ]
+  },
+  {
+    "id": "u05-clave-valor-expo-sqlite-kv-store",
+    "unidad": "U05",
+    "titulo": "Clave-valor: `expo-sqlite/kv-store`",
+    "prioridad": "alta",
+    "enfasisClase": 1,
+    "fuenteTipo": "mixto",
+    "resumen": "Hay cuatro lugares para guardar: kv-store, SQLite, SecureStore y archivos. `expo-sqlite/kv-store` reemplaza a AsyncStorage con la misma API y suma lecturas sincrónicas (`getItemSync`); solo guarda texto y no está cifrado: sirve para preferencias, nunca para tokens. La consigna lo pide para preferencias.",
+    "explicacion": [
+      "El material arranca por una pregunta de diseño: cada dato va a uno de **cuatro lugares**, y cada uno resuelve un problema distinto. `expo-sqlite/kv-store` para preferencias y poco dato sin consultas; `expo-sqlite` para muchos registros con relaciones y trabajo sin conexión de verdad; `expo-secure-store` para tokens y claves, cifrados por el sistema; `expo-file-system` para fotos, PDF y adjuntos. La lista que trae la API no va en ninguno: es caché del estado del servidor. El criterio que repitió la clase de seguridad es preguntarse si el dato es sensible o si lo puede leer cualquiera.",
+      "**kv-store** es el reemplazo de AsyncStorage. Tiene la misma API (`setItem`, `getItem`, `removeItem`), así que migrar es cambiar el `import`; viene incluido con `expo-sqlite`, una dependencia menos; y suma **lecturas sincrónicas**, `getItemSync()` y `setItemSync()`, que AsyncStorage no tiene. Eso importa para lo que se lee al arrancar: con `useState(() => Storage.getItemSync('tema') ?? 'claro')` el valor correcto está en el primer render, sin parpadeo con el tema equivocado ni estado de carga.",
+      "Solo guarda texto. Un objeto se guarda con `JSON.stringify` y se lee con `JSON.parse`, y `getItem` devuelve `string | null`. El error clásico: `JSON.parse(null)` devuelve `null`, pero `JSON.parse('')` revienta, y un número guardado vuelve como string. La costumbre sana es envolverlo una vez en `guardar()` y `leer()` con el JSON y el `try/catch` adentro.",
+      "Lo que **no** va en kv-store: tokens y contraseñas (no está cifrado y con root se lee entero: van a SecureStore), listas largas (no hay consultas ni índices: van a SQLite) e imágenes en base64 (inflan la base: se guarda el archivo y acá, a lo sumo, la ruta). \"Guardar el token de sesión en almacenamiento común es el hallazgo más frecuente en los TP\", y es lo que la Unidad 6 marca como vulnerabilidad.",
+      "Hay una tensión en los documentos: la consigna pide `kv-store` \"para preferencias y sesión\" y el PRD dice que el token va en SecureStore, \"nunca en kv-store\". Se resuelve separando qué es la sesión: el token va a SecureStore; en kv-store puede ir, como mucho, un dato no sensible como \"si ya inició sesión\", que el material pone como ejemplo de lectura sincrónica al arrancar. En el TP, los favoritos del catálogo serían un candidato natural para kv-store."
+    ],
+    "definiciones": [
+      {
+        "termino": "`expo-sqlite/kv-store`",
+        "definicion": "Almacenamiento clave-valor de texto que viene con `expo-sqlite`; misma API que AsyncStorage más métodos sincrónicos.",
+        "ref": "[U05.T02 p.6]"
+      },
+      {
+        "termino": "`getItemSync`",
+        "definicion": "Lectura sincrónica de kv-store; permite tener el valor en el primer render.",
+        "ref": "[U05.T02 p.6-7]"
+      },
+      {
+        "termino": "`expo-secure-store`",
+        "definicion": "Almacenamiento cifrado por el sistema (Keystore en Android, Keychain en iOS) para tokens y credenciales; solo cadenas.",
+        "ref": "[U06-V2 14:25]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Los cuatro lugares (y lo que no va en ninguno)",
+      "columnas": [
+        "Lugar",
+        "Paquete",
+        "Qué va",
+        "Qué no va"
+      ],
+      "filas": [
+        [
+          "Clave-valor",
+          "`expo-sqlite/kv-store`",
+          "preferencias, último filtro, si ya vio el tutorial",
+          "tokens, listas largas, imágenes en base64"
+        ],
+        [
+          "Base relacional",
+          "`expo-sqlite`",
+          "muchos registros con relaciones y consultas; trabajo sin conexión",
+          "cuatro preferencias"
+        ],
+        [
+          "Secretos",
+          "`expo-secure-store`",
+          "tokens, claves, credenciales (cifrado por el sistema)",
+          "volúmenes grandes"
+        ],
+        [
+          "Archivos",
+          "`expo-file-system`",
+          "fotos, PDF, adjuntos; en la base solo la ruta",
+          "datos que hay que consultar"
+        ],
+        [
+          "Lista de la API",
+          "caché de TanStack Query",
+          "estado del servidor",
+          "persistirla a mano"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Guardar el token de sesión en kv-store o AsyncStorage.",
+        "ref": "[U05.T02 p.9]"
+      },
+      {
+        "texto": "Hacer `JSON.parse('')`: revienta; además, un número guardado vuelve como string.",
+        "ref": "[U05.T02 p.8]"
+      },
+      {
+        "texto": "Guardar imágenes en base64 o listas largas en clave-valor.",
+        "ref": "[U05.T02 p.9]"
+      },
+      {
+        "texto": "Seguir el apunte viejo con `@react-native-async-storage/async-storage`.",
+        "ref": "[U05.T02 p.6]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "import Storage from 'expo-sqlite/kv-store';\nconst [tema, setTema] = useState(\n  () => Storage.getItemSync('tema') ?? 'claro'\n);\n// Guardar un objeto: hay que serializarlo.\nawait Storage.setItem('usuario', JSON.stringify({ id: 7, nombre: 'Ana' }));\n// Leerlo: puede no estar. getItem devuelve string | null.\nconst crudo = await Storage.getItem('usuario');\nconst usuario = crudo ? JSON.parse(crudo) : null;",
+      "ref": "[U05.T02 p.7-8]",
+      "nota": "La lectura sincrónica evita el parpadeo del primer render; el resto es la misma API de AsyncStorage."
+    },
+    "citasProfe": [
+      {
+        "texto": "Guardar el token de sesión en almacenamiento común es el hallazgo más frecuente en los TP.",
+        "ref": "[U05.T02 p.9]"
+      },
+      {
+        "texto": "¿los datos que vamos a guardar son sensibles o lo puede acceder cualquiera?",
+        "ref": "[U06-V2 15:26]"
+      },
+      {
+        "texto": "los tokens van a ir en Secure Store, nunca en [Async] Store",
+        "ref": "[U06-V2 41:01]"
+      }
+    ],
+    "aclaraciones": [
+      "U05 no tiene clase grabada: kv-store sale del deck U05.T02. En clase el tema apareció en la clase de seguridad (U06-V2), donde la transcripción está confusa (\"nunca en C Store\"); las notas lo interpretan como AsyncStorage. Sea AsyncStorage o kv-store, el punto es el mismo: almacenamiento sin cifrar.",
+      "En U03-V5 se sugirió persistir el token JWT \"en la base local (SQLite o 'KB Store')\" para seguir logueado al reabrir [U03-V5 1:23:58-1:25:00]. El material de U05 y U06, el PRD y la consigna dicen que el token va en `expo-secure-store`.",
+      "La consigna dice \"kv-store para preferencias y sesión\" [TFI p.2-3, req. 7] y el PRD, \"el token nunca en kv-store\" [PRD05 p.6]: el token va a SecureStore."
+    ],
+    "referencias": [
+      "[U05.T02 p.4-9]; [TFI p.2-3, req. 7]; [PRD05 p.5]",
+      "[PRD05 p.6]",
+      "[U06-V2 14:25-17:28]",
+      "[U06-V2 41:01]",
+      "[U03-V5 1:23:58-1:25:00]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado: `src/bd/kvStore.ts` (`setKVItem`, `getKVItem`, `removeKVItem`) no se importa en ningún archivo, aunque el README dice que se usa para preferencias. Los favoritos solo cambian el usuario en el contexto (`(tabs)/index.tsx:64-72`) y se pierden al reiniciar. [POSIBLE] El archivo llama a `setItemAsync`, que puede no existir en la API de kv-store (que usa `setItem`/`getItem`); si no existe, `setKVItem` no guarda nada y no avisa (`kvStore.ts:12-16`). El token y el usuario sí van a SecureStore (`src/bd/secureStore.ts`), como pide el PRD. Hipotético: guardar los favoritos con `Storage.setItem('favoritos', JSON.stringify(ids))` y leerlos con `getItemSync` al montar el catálogo.",
+      "archivos": [
+        {
+          "ruta": "src/bd/kvStore.ts",
+          "lineas": "12-16",
+          "nota": "código sin uso; llama a `setItemAsync`"
+        },
+        {
+          "ruta": "src/app/(tabs)/index.tsx",
+          "lineas": "64-72",
+          "nota": "`toggleFavorito` no persiste"
+        },
+        {
+          "ruta": "src/bd/secureStore.ts",
+          "nota": "token y usuario en SecureStore"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.23",
+      "9.13",
+      "9.18"
+    ],
+    "preguntasRelacionadas": [
+      "5.4",
+      "7.C5",
+      "2.11",
+      "1B.28",
+      "10.2.3"
+    ],
+    "preguntasRapidas": [
+      "¿Para qué usan kv-store?",
+      "¿Dónde guardarías los favoritos?",
+      "¿Por qué el token no va ahí?"
+    ]
+  },
+  {
+    "id": "u05-sqlite-expo-sqlite",
+    "unidad": "U05",
+    "titulo": "SQLite: `expo-sqlite`",
+    "prioridad": "alta",
+    "enfasisClase": 0,
+    "fuenteTipo": "pdf",
+    "resumen": "Base relacional dentro del teléfono para muchos registros, consultas y trabajo sin conexión. API async: `execAsync` (solo esquema), `runAsync`, `getFirstAsync`, `getAllAsync`; parámetros `?` siempre (es la defensa contra la inyección); migraciones con `PRAGMA user_version`; `withTransactionAsync`; `SQLiteProvider` para una sola conexión.",
+    "explicacion": [
+      "SQLite es \"una base relacional entera adentro del teléfono\". Hace falta cuando la app tiene que funcionar sin conexión (no solo mostrar una caché), cuando hay cientos o miles de registros, cuando hay que filtrar, ordenar, agrupar o cruzar tablas, o cuando los datos tienen relaciones. No hace falta para cuatro preferencias, para una copia de la API con internet siempre disponible ni para un solo objeto que se lee entero: \"una base sin consultas es un archivo de texto caro\". La ventaja para el TP es que es SQL: `CREATE TABLE`, `WHERE`, `JOIN` e índices, como en Bases de Datos.",
+      "La API moderna usa un proveedor y un hook. `<SQLiteProvider databaseName=\"app.db\" onInit={migrar}>` va en `app/_layout.tsx` y abre **una sola conexión** para toda la app; `useSQLiteContext()` la lee desde cualquier pantalla. `onInit` corre antes de que se renderice nada adentro, así que cuando una pantalla consulta, las tablas ya existen.",
+      "Hay **cuatro métodos**: `execAsync` ejecuta varias sentencias de una y sirve para crear el esquema, pero no escapa parámetros: nunca con datos del usuario. `runAsync` es para `INSERT`, `UPDATE` y `DELETE` y devuelve `lastInsertRowId` y `changes`. `getFirstAsync` trae una fila o `null`; `getAllAsync`, un array de objetos. Todos tienen un gemelo sincrónico que bloquea el hilo de JS y se nota como tirones al hacer scroll.",
+      "**Parámetros, siempre.** Si se interpola la entrada en el texto (`WHERE nombre = '${entrada}'`), alguien puede escribir `'; DROP TABLE usuarios; --`. Con `?` o con nombrados como `$id`, SQLite recibe la consulta y los valores por separado, así que el texto del usuario no puede convertirse en instrucción: \"es la defensa, no una ayuda\".",
+      "La base **sobrevive a la actualización** de la app. Por eso hacen falta **migraciones**: se guarda la versión del esquema en `PRAGMA user_version` y, al iniciar, se aplican los pasos que falten. Si agregás una columna sin migración, a quien ya tenía la app le explota, y en tu teléfono, que reinstalaste, anda perfecto.",
+      "Las **transacciones** (`withTransactionAsync`) hacen que entre todo o nada: sin ellas, una app que se cierra a mitad de un bucle deja un pedido sin ítems. Además son más rápidas: mil `INSERT` sueltos son mil escrituras a disco y en una transacción, una. En Reservas Deportivas, SQLite es lo que guarda la reserva y su QR para verlos sin señal."
+    ],
+    "pasos": [
+      "Leer la versión actual con `getFirstAsync('PRAGMA user_version')`.",
+      "Si ya está al día, salir.",
+      "Si es 0, crear el esquema con `execAsync`.",
+      "Agregar un bloque `if (actual === N)` por cada cambio futuro, por ejemplo una columna nueva.",
+      "Guardar la versión nueva con `PRAGMA user_version = VERSION`.",
+      "Pasar esa función como `onInit` de `SQLiteProvider` para que corra antes de cualquier consulta."
+    ],
+    "definiciones": [
+      {
+        "termino": "Consulta parametrizada",
+        "definicion": "Consulta con `?` o `$nombre` en lugar de los valores; SQLite recibe consulta y valores por separado.",
+        "ref": "[U05.T02 p.14]"
+      },
+      {
+        "termino": "`PRAGMA user_version`",
+        "definicion": "Número de versión del esquema guardado en la propia base; lo usa la función de migración para saber qué pasos faltan.",
+        "ref": "[U05.T02 p.15]"
+      },
+      {
+        "termino": "Transacción",
+        "definicion": "Grupo de operaciones que entra completo o no entra; en `expo-sqlite`, `withTransactionAsync`.",
+        "ref": "[U05.T02 p.16]"
+      },
+      {
+        "termino": "`SQLiteProvider`",
+        "definicion": "Proveedor que abre una sola conexión, corre `onInit` antes de renderizar a sus hijos y la comparte con `useSQLiteContext()`.",
+        "ref": "[U05.T02 p.12]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Los cuatro métodos",
+      "columnas": [
+        "Método",
+        "Para qué",
+        "Detalle"
+      ],
+      "filas": [
+        [
+          "`execAsync(sql)`",
+          "varias sentencias; crear el esquema",
+          "no escapa parámetros: nunca con datos del usuario"
+        ],
+        [
+          "`runAsync(sql, params)`",
+          "`INSERT`, `UPDATE`, `DELETE`",
+          "devuelve `lastInsertRowId` y `changes`"
+        ],
+        [
+          "`getFirstAsync(sql, params)`",
+          "buscar por id, contar",
+          "una fila o `null`"
+        ],
+        [
+          "`getAllAsync(sql, params)`",
+          "la lista que va a la pantalla",
+          "un array de objetos"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Interpolar la entrada del usuario en el SQL o usar `execAsync` con datos del usuario.",
+        "ref": "[U05.T02 p.13-14]"
+      },
+      {
+        "texto": "Agregar una columna sin migración: falla en los teléfonos que ya tenían la app.",
+        "ref": "[U05.T02 p.15]"
+      },
+      {
+        "texto": "Insertar en un bucle sin transacción: filas rotas si la app se cierra a mitad y mil escrituras a disco.",
+        "ref": "[U05.T02 p.16]"
+      },
+      {
+        "texto": "Usar los métodos sincrónicos sobre tablas grandes: bloquean el hilo de JS.",
+        "ref": "[U05.T02 p.13]"
+      },
+      {
+        "texto": "Usar SQLite para cuatro preferencias.",
+        "ref": "[U05.T02 p.11]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "async function migrar(db: SQLiteDatabase) {\n  const VERSION = 1;\n  let { user_version: actual } = await db.getFirstAsync('PRAGMA user_version');\n  if (actual >= VERSION) return;\n  if (actual === 0) {\n    await db.execAsync(`PRAGMA journal_mode = 'wal';\n      CREATE TABLE tareas (id INTEGER PRIMARY KEY NOT NULL, titulo TEXT NOT NULL, hecha INTEGER NOT NULL DEFAULT 0);`);\n    actual = 1;\n  }\n  // if (actual === 1) { …la próxima migración va acá… }\n  await db.execAsync(`PRAGMA user_version = ${VERSION}`);\n}",
+      "ref": "[U05.T02 p.15]",
+      "nota": "Es la función que se pasa como `onInit` a `SQLiteProvider`. Acá `execAsync` es correcto porque no lleva datos del usuario."
+    },
+    "citasProfe": [
+      {
+        "texto": "Una base sin consultas es un archivo de texto caro.",
+        "ref": "[U05.T02 p.11]"
+      },
+      {
+        "texto": "Es la defensa, no una ayuda.",
+        "ref": "[U05.T02 p.14]"
+      },
+      {
+        "texto": "O entra todo o no entra nada.",
+        "ref": "[U05.T02 p.16]"
+      }
+    ],
+    "aclaraciones": [
+      "U05 no tiene clase grabada y SQLite no se explicó en ninguna clase: todo sale del deck U05.T02. En clase solo se nombró como opción de base local [U03-V5 1:23:58].",
+      "El ejemplo de migración del material incluye `PRAGMA journal_mode = 'wal'`, pero el deck no explica qué hace ese modo."
+    ],
+    "referencias": [
+      "[U05.T02 p.11-16]",
+      "[PRD05 p.3]",
+      "[U03-V5 1:23:58]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Tabla única `reservas`, creada con `PRAGMA journal_mode = WAL` y `CREATE TABLE IF NOT EXISTS` dentro de `execAsync` (`sqlite.ts:14-28`). Escribe con `INSERT OR REPLACE` parametrizado vía `runAsync` (`:46-62`) y lee con `SELECT * FROM reservas WHERE usuarioId = ?` vía `getAllAsync` (`:74-77`) y por `codigoQr = ?` (`:94`): usa `?` en todas las consultas con datos. No usa `SQLiteProvider`: abre la base con `openDatabaseAsync` en una variable del módulo, desde un `useEffect` sin `await` (`_layout.tsx:11-13`), así que nada garantiza que esté lista antes de la primera consulta. No hay `PRAGMA user_version` ni migraciones (una columna nueva rompería a quien ya la tiene instalada) ni transacciones. Si la tabla no tiene filas del usuario, `obtenerReservasOffline` devuelve el arreglo en memoria (`:78-84`). Sobreviven al cierre las reservas con su código QR.",
+      "archivos": [
+        {
+          "ruta": "src/bd/sqlite.ts",
+          "lineas": "8-33",
+          "nota": "apertura y esquema"
+        },
+        {
+          "ruta": "src/bd/sqlite.ts",
+          "lineas": "35-66",
+          "nota": "`guardarReservaOffline` con `INSERT OR REPLACE` y `?`"
+        },
+        {
+          "ruta": "src/bd/sqlite.ts",
+          "lineas": "68-102",
+          "nota": "lecturas parametrizadas y caída a memoria"
+        },
+        {
+          "ruta": "src/app/_layout.tsx",
+          "lineas": "11-13",
+          "nota": "inicialización sin esperar"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.24",
+      "2.20",
+      "4.13"
+    ],
+    "preguntasRelacionadas": [
+      "4.7",
+      "4.14",
+      "9.14",
+      "3.7",
+      "5.16"
+    ],
+    "preguntasRapidas": [
+      "¿Cómo evitan la inyección SQL?",
+      "¿Qué pasa si agregás una columna en la próxima versión?",
+      "¿Qué datos sobreviven a cerrar la app?"
+    ]
+  },
+  {
+    "id": "u05-offline-y-expo-network",
+    "unidad": "U05",
+    "titulo": "Offline y `expo-network`",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "`isConnected` no es lo mismo que `isInternetReachable` (\"el que importa es el segundo\"). Al leer, mostrar lo último guardado; al escribir, guardar como pendiente y sincronizar después. Caché no es offline. La prueba es el modo avión, y el PRD pide el QR visible sin señal.",
+    "explicacion": [
+      "Desde la primera clase quedó planteado que hay que \"hacer la aplicación lo más inteligente posible para que funcione sin internet\". El ejemplo fue el del campo: abrir la app sin señal, ver los datos de la semana pasada, guardar y sincronizar cuando haya Wi-Fi; y entre lo que se iba a evaluar se nombró el guardado sin señal y la sincronización. El PRD lo baja al caso: el QR se muestra en la puerta de la cancha, donde la señal es mala, así que la reserva y su código tienen que estar guardados en el teléfono.",
+      "Para saber si hay red está `expo-network`, con el hook `useNetworkState()`. La trampa es que `isConnected` no es lo mismo que `isInternetReachable`: el Wi-Fi del bar que te pide iniciar sesión da `isConnected: true` y no pasa ningún dato. \"El que importa es el segundo.\" El mismo estado trae el `type`, que permite avisar, por ejemplo, que se están usando datos móviles.",
+      "Saber que no hay red sirve si la app hace algo al respecto. **Al leer**: mostrar lo último que tenés avisando que es viejo, nunca una pantalla en blanco, y que el reintento sea un botón. **Al escribir**: guardar local, marcar como pendiente, sincronizar cuando vuelva la red y decir con claridad qué se envió y qué no. Para eso sirve SQLite: una tabla de pendientes y un proceso que la vacía cuando `isInternetReachable` vuelve a ser `true`.",
+      "En clase se dijo lo mismo con otras palabras: preguntar si hay internet y, según eso, ir a la API o a lo local; y copiar las fotos a una carpeta propia de la app para subirlas cuando vuelva la señal. Y sobre los ids de lo que se sincroniza, aclaró: \"No es necesario porque el ID se lo da la API\".",
+      "El profe insistió en no confundir **caché** con **offline**. La caché es una memoria volátil que dura lo que decide el componente (por ejemplo, la de imágenes); lo offline \"tiene que estar siempre guardado en el celular… hasta que algo pase\". La prueba que pide el material es concreta: poné el teléfono en modo avión y usá la app; si queda colgada en un spinner, falta trabajo. El emulador también permite simular sin señal o con poca señal."
+    ],
+    "pasos": [
+      "Detectar la red con `expo-network` y decidir con `isInternetReachable`.",
+      "Avisar el estado con una barra, sin bloquear la pantalla.",
+      "Al leer, mostrar lo último guardado en el teléfono y avisar que puede estar viejo.",
+      "Al escribir, guardar local en SQLite marcado como pendiente.",
+      "Cuando `isInternetReachable` vuelva a `true`, vaciar la cola y decir qué se envió.",
+      "Probar en modo avión: si queda un spinner colgado, falta trabajo."
+    ],
+    "definiciones": [
+      {
+        "termino": "`isConnected`",
+        "definicion": "Indica que el dispositivo está conectado a una red; no garantiza que haya internet.",
+        "ref": "[U05.T02 p.26]"
+      },
+      {
+        "termino": "`isInternetReachable`",
+        "definicion": "Indica si realmente se llega a internet; es el valor que importa para decidir.",
+        "ref": "[U05.T02 p.26]"
+      },
+      {
+        "termino": "Portal cautivo",
+        "definicion": "Wi-Fi que pide iniciar sesión (el del bar): hay conexión a la red pero no pasan datos.",
+        "ref": "[U05.T01 p.4]; [U05.T02 p.26]"
+      },
+      {
+        "termino": "Cola de pendientes",
+        "definicion": "Tabla de SQLite con lo que se escribió sin red y su estado, que se vacía al volver la conexión.",
+        "ref": "[U05.T02 p.27]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Caché frente a persistencia offline (como se explicó en clase)",
+      "columnas": [
+        "",
+        "Caché",
+        "Offline"
+      ],
+      "filas": [
+        [
+          "Duración",
+          "volátil: queda un tiempo y desaparece",
+          "queda guardado en el teléfono hasta que algo pase"
+        ],
+        [
+          "Quién decide",
+          "el componente (por ejemplo, el de imágenes)",
+          "el programador"
+        ],
+        [
+          "Para qué",
+          "no volver a descargar lo que se ve muchas veces",
+          "que la app siga sirviendo sin red"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Decidir con `isConnected` y dar por hecho que hay internet.",
+        "ref": "[U05.T02 p.26]"
+      },
+      {
+        "texto": "Dejar la app colgada en un spinner o en una pantalla en blanco sin red.",
+        "ref": "[U05.T02 p.27]"
+      },
+      {
+        "texto": "Confundir caché con manejo offline.",
+        "ref": "[U03-V4 8:28-10:37]"
+      },
+      {
+        "texto": "Escribir sin red y no decir qué quedó pendiente y qué se envió.",
+        "ref": "[U05.T02 p.27]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "import { useNetworkState, NetworkStateType } from 'expo-network';\nexport function AvisoDeRed() {\n  const red = useNetworkState();\n  if (red.isInternetReachable === false) {\n    return <Barra texto=\"Sin conexión. Vas a ver datos guardados.\" />;\n  }\n  if (red.type === NetworkStateType.CELLULAR) {\n    return <Barra texto=\"Estás usando datos móviles.\" />;\n  }\n  return null;\n}",
+      "ref": "[U05.T02 p.26]",
+      "nota": "Usa el hook, que se actualiza solo, y compara con `=== false`: mientras el valor no se conoce, no muestra el aviso."
+    },
+    "citasProfe": [
+      {
+        "texto": "hacer la aplicación lo más inteligente posible para que funcione sin internet",
+        "ref": "[U01-V1 28:23]"
+      },
+      {
+        "texto": "Caché es… una memoria volátil o algo que queda guardado por un tiempo X y después desaparece. No es lo mismo que manejo offline",
+        "ref": "[U03-V4 10:37]"
+      },
+      {
+        "texto": "poné el teléfono en modo avión y usá tu app. Si queda colgada en un spinner, falta trabajo.",
+        "ref": "[U05.T02 p.27]"
+      }
+    ],
+    "aclaraciones": [
+      "U05 no tiene clase grabada: `expo-network` y la estrategia de leer y escribir sin red salen del deck U05.T02. Lo offline sí se nombró en varias clases (U01-V1, U01-V2, U03-V4, U04-V4).",
+      "En una clase la lista de tecnologías del PRD de ejemplo quedó transcripta como \"Expo network para preferencias\" [U03-V3 11:49]. `expo-network` informa el estado de la red; las preferencias van en kv-store."
+    ],
+    "referencias": [
+      "[U05.T02 p.26-27]; [PRD05 p.3]; [U01-V1 28:23]; [U03-V4 1:50:07]",
+      "[U01-V1 29:29]",
+      "[U01-V2 20:05-22:20, 40:20]",
+      "[U03-V4 6:23-11:38]",
+      "[U03-V4 1:50:07-1:55:32]",
+      "[U04-V4 34:08-37:18]",
+      "[U05.T01 p.4]",
+      "[U03-V3 11:49]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "`NetworkProvider` consulta `getNetworkStateAsync` al montar y cada 10 s con `setInterval` (limpiado en el cleanup) y calcula `Boolean(isConnected && isInternetReachable)` (`NetworkContext.tsx:17-35`); `BannerOffline`, montado en el layout raíz (`_layout.tsx:20`), muestra la barra roja (`BannerOffline.tsx:6-19`). El QR se dibuja en el teléfono a partir del `codigoQr` guardado en SQLite (`QrViewer.tsx`), así que se ve sin señal. Como toda la \"API\" es local, catálogo, grilla y reservas andan en modo avión; no andan imágenes, video ni mapa, que vienen de internet. No hay cola de pendientes porque no hay servidor, y el encargado solo puede validar QR guardados en su propio teléfono (`reservas.ts:236`). Usa polling en lugar de `useNetworkState`; [POSIBLE] si `isInternetReachable` arranca en `null`, el banner puede aparecer un instante.",
+      "archivos": [
+        {
+          "ruta": "src/context/NetworkContext.tsx",
+          "lineas": "14-40",
+          "nota": "polling cada 10 s y cálculo de `conectado`"
+        },
+        {
+          "ruta": "src/componentes/BannerOffline.tsx",
+          "lineas": "6-19",
+          "nota": "aviso sin conexión"
+        },
+        {
+          "ruta": "src/app/_layout.tsx",
+          "lineas": "20",
+          "nota": "banner por encima del Stack"
+        },
+        {
+          "ruta": "src/componentes/QrViewer.tsx",
+          "lineas": "10-27",
+          "nota": "QR generado en el teléfono"
+        },
+        {
+          "ruta": "src/servicios/reservas.ts",
+          "lineas": "231-285",
+          "nota": "el escaneo busca el QR en la base local"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.25",
+      "4.12",
+      "9.10"
+    ],
+    "preguntasRelacionadas": [
+      "2.6",
+      "8.3",
+      "5.12",
+      "5.18",
+      "4.23"
+    ],
+    "preguntasRapidas": [
+      "¿Qué pasa en modo avión?",
+      "¿Por qué polling y no `useNetworkState`?",
+      "¿Por qué el QR se ve sin señal?"
+    ]
+  },
+  {
+    "id": "u05-estado-global-zustand",
+    "unidad": "U05",
+    "titulo": "Estado global: Zustand",
+    "prioridad": "media",
+    "enfasisClase": 1,
+    "fuenteTipo": "mixto",
+    "resumen": "Antes de una librería: `useState` para una pantalla, Context para lo que cambia poco, TanStack Query para el dato del servidor. Zustand es para estado del cliente que cambia seguido y tocan pantallas no emparentadas: el store es un hook y se suscribe con selectores. En clase: \"capaz que es muy overkill\"; recomendó un Provider propio.",
+    "explicacion": [
+      "El problema de fondo es compartir estado entre pantallas. Pasar props hacia abajo obliga a que los componentes del medio reenvíen lo que no usan (**prop drilling**). Context resuelve eso, pero cuando cambia el valor se vuelven a renderizar todos los que lo consumen, aunque usen una sola parte: \"Context entrega el valor entero; no hay forma de suscribirse a un pedazo\". Por eso Context sigue siendo lo correcto para lo que casi no cambia: el tema, el idioma, la sesión.",
+      "Antes de agregar una librería, el material propone una escala: `useState` si el dato lo usa una pantalla y sus hijos directos, que es la mayoría de los casos; **Context** si lo leen muchas pantallas pero cambia poco; **TanStack Query** si el dato viene del servidor, porque su caché ya es global; y **Zustand** si es estado del cliente, cambia seguido y lo tocan pantallas que no son parientes. El error más común, según el deck, es \"meter en el estado global la lista que trae la API\".",
+      "En Zustand, `create` devuelve un hook: no hay proveedor que envolver, ni reducer, ni acciones; el estado y las funciones que lo cambian están en el mismo objeto. La ventaja concreta sobre Context es el **selector**: `useCarrito(s => s.items.length)` solo vuelve a renderizar cuando cambia la cantidad, mientras que desestructurar todo el store re-renderiza ante cualquier cambio. El ejemplo es el ícono del carrito en el encabezado, que se actualiza sin tocar el resto de la pantalla. Con el middleware `persist` y `createJSONStorage(() => Storage)` el store se guarda solo en kv-store, y `partialize` evita persistir las funciones.",
+      "En clase un alumno preguntó por Zustand. El profe dijo que \"capaz que es muy overkill\" y que si lo querían usar, lo usaran, pero recomendó un Provider propio para aprender las bases y no depender de lo que está de moda; de Redux opinó que no tiene sentido usarlo. También criticó guardar en un store las listas de la API \"porque pensaba que podría llegar a usarlo en otros componentes y nunca lo terminas usando\"."
+    ],
+    "definiciones": [
+      {
+        "termino": "Prop drilling",
+        "definicion": "Pasar una propiedad desde un padre muy arriba hasta un hijo muy abajo a través de componentes que no la usan.",
+        "ref": "[U03-V5 17:01]; [U05.T02 p.18]"
+      },
+      {
+        "termino": "Store",
+        "definicion": "En Zustand, un hook creado con `create` que contiene el estado y las funciones que lo cambian.",
+        "ref": "[U05.T02 p.22]"
+      },
+      {
+        "termino": "Selector",
+        "definicion": "Función que elige un pedazo del store (`s => s.items.length`); el componente solo se re-renderiza cuando ese pedazo cambia.",
+        "ref": "[U05.T02 p.23]"
+      },
+      {
+        "termino": "`partialize`",
+        "definicion": "Opción de `persist` que elige qué parte del estado se guarda; evita serializar funciones.",
+        "ref": "[U05.T02 p.24]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Dónde va cada estado",
+      "columnas": [
+        "Herramienta",
+        "Cuándo",
+        "Ejemplo"
+      ],
+      "filas": [
+        [
+          "`useState`",
+          "el dato lo usa una pantalla y sus hijos directos (la mayoría de los casos)",
+          "el texto de un formulario"
+        ],
+        [
+          "Context",
+          "lo leen muchas pantallas pero cambia poco",
+          "tema, idioma, sesión"
+        ],
+        [
+          "TanStack Query",
+          "el dato viene del servidor; su caché ya es global",
+          "la lista de productos"
+        ],
+        [
+          "Zustand",
+          "estado del cliente que cambia seguido y tocan pantallas no emparentadas",
+          "el carrito con su ícono en el encabezado"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Desestructurar todo el store sin selector: el componente se re-renderiza ante cualquier cambio.",
+        "ref": "[U05.T02 p.23]"
+      },
+      {
+        "texto": "Meter en el estado global la lista que trae la API.",
+        "ref": "[U05.T02 p.19]; [U03-V5 1:15:29-1:19:44]"
+      },
+      {
+        "texto": "Usar Context para datos que cambian muy seguido, como el texto de un `TextInput`.",
+        "ref": "[U03-V5 25:23]"
+      },
+      {
+        "texto": "Persistir el store entero, funciones incluidas, sin `partialize`.",
+        "ref": "[U05.T02 p.24]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "import { create } from 'zustand';\nexport const useCarrito = create<Carrito>((set, get) => ({\n  items: [],\n  agregar: (item) => set((s) => ({ items: [...s.items, item] })),\n  quitar: (id) => set((s) => ({ items: s.items.filter(i => i.id !== id) })),\n  total: () => get().items.reduce((a, i) => a + i.precio * i.cantidad, 0),\n}));\n// BIEN: un selector por dato\nconst cantidad = useCarrito(s => s.items.length);\nconst agregar = useCarrito(s => s.agregar);",
+      "ref": "[U05.T02 p.22-23]",
+      "nota": "El store es un hook; los selectores hacen que cada componente escuche solo lo que usa."
+    },
+    "citasProfe": [
+      {
+        "texto": "capaz que es muy overkill… si quieres usarlo, usalo",
+        "ref": "[U03-V5 1:15:29]"
+      },
+      {
+        "texto": "traten de usar un provider para saber cómo se hace",
+        "ref": "[U03-V5 1:16:33]"
+      },
+      {
+        "texto": "para mí Redux no tiene ningún sentido usarlo",
+        "ref": "[U03-V5 1:17:38]"
+      }
+    ],
+    "aclaraciones": [
+      "U05 no tiene clase grabada: Zustand sale del deck U05.T02. En clase solo se habló de él cuando un alumno lo preguntó [U03-V5 1:15:29-1:19:44].",
+      "Las fuentes no se contradicen: el deck reserva Zustand para estado del cliente que cambia seguido, y el profe lo vio excesivo para el tamaño de un TP.",
+      "En la guía la cita aparece en dos versiones (\"capaz que muy overkill\" y \"capaz que es muy overkill\"); las notas de clase registran \"capaz que es muy overkill\"."
+    ],
+    "referencias": [
+      "[U05.T02 p.18-24]; [U03-V5 1:15:29-1:19:44]",
+      "[U03-V5 17:01]",
+      "[U03-V5 25:23]",
+      "[U05.T01 p.16]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado: `zustand` no está en las dependencias. El estado global son dos Context separados, `AuthContext` (usuario y token restaurados desde SecureStore) y `NetworkContext` (`conectado`), anidados en `_layout.tsx:16-40`; el resto es `useState` en cada pantalla. Encaja con el criterio del material, porque sesión y red cambian poco, y con el pedido del profe de usar un Provider propio. Costo: el `value` de `AuthContext` es un objeto nuevo en cada render y no hay selectores, así que todos los consumidores de `useAuth()` se vuelven a renderizar ante cualquier cambio (aceptable a esta escala). Hipotético: un store se justificaría con estado del cliente que cambie seguido y compartan pantallas no emparentadas, por ejemplo filtros que usaran a la vez el catálogo y el mapa.",
+      "archivos": [
+        {
+          "ruta": "src/context/AuthContext.tsx",
+          "lineas": "5-82",
+          "nota": "sesión en Context"
+        },
+        {
+          "ruta": "src/context/NetworkContext.tsx",
+          "lineas": "4-49",
+          "nota": "estado de red en Context"
+        },
+        {
+          "ruta": "src/app/_layout.tsx",
+          "lineas": "16-40",
+          "nota": "providers anidados"
+        }
+      ]
+    },
+    "desafio": [
+      "1B.26",
+      "6.6.5",
+      "10.2.1"
+    ],
+    "preguntasRelacionadas": [
+      "2.5",
+      "10.2.2",
+      "1A.32",
+      "7.E4",
+      "3.6",
+      "4.11"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué no usaron Zustand?",
+      "¿Qué ventaja tiene un selector frente a Context?",
+      "¿Qué dato de la app justificaría un store?"
+    ]
+  }
+]

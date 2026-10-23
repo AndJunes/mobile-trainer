@@ -1,0 +1,158 @@
+[
+  {
+    "id": "u07-identidad-de-la-app-icono-splash-y-nombre",
+    "unidad": "U07",
+    "titulo": "Identidad de la app: ícono, splash y nombre",
+    "prioridad": "media",
+    "enfasisClase": 1,
+    "fuenteTipo": "mixto",
+    "resumen": "La consigna pide ícono y pantalla de presentación propios y el nombre del producto; el ícono va en PNG cuadrado de 1024×1024 sin transparencias. Todo se declara en `app.json`. `android.package` y `ios.bundleIdentifier` identifican la app en cada tienda: \"se definen una vez y no se cambian\". El splash es la pantalla con el logo mientras carga la app.",
+    "explicacion": [
+      "La identidad es el requisito mínimo 10 del integrador: ícono y pantalla de presentación propios, y nombre del producto; el ícono va en PNG cuadrado de 1024×1024, sin transparencias [TFI p.2-3, req. 10]. Como los otros nueve requisitos, se verifica sobre la app entregada, que es un APK de release generado con el perfil `preview` y que tiene que instalarse y andar sin Metro y sin la computadora de nadie [TFI p.1].",
+      "Todo eso se declara en `app.json`, la configuración central del proyecto [U02.T02 p.27; U02-V1 41:35]. `name` es el nombre del producto, `slug` identifica al proyecto, `version` se sube al desplegar, `icon` apunta a la imagen del ícono y el splash define imagen y color de fondo. En la sección de Android, `adaptiveIcon` agrega la imagen de primer plano y su color de fondo; iOS tiene su propia sección [U01-V1 1:21:30].",
+      "Los identificadores son otra cosa: `ios.bundleIdentifier` y `android.package` son los que identifican la app en cada tienda, y por eso **se definen una vez y no se cambian** [U02.T02 p.27]. En el ejemplo de la cátedra los dos valen `ar.edu.uner.miapp`. El `slug`, según se explicó en clase, también sirve para identificar a la app de forma única [U02-V1 41:35].",
+      "El **splash** es la pantalla con el logo que se ve mientras la app carga [U01-V1 59:07]. En clase se mostró que ese tiempo no se desperdicia: las apps con OTA lo aprovechan para buscar una actualización del JavaScript. Pero el ícono y el nombre no viajan por OTA: cambiarlos requiere un build nuevo y volver a la tienda [U02.T02 p.22].",
+      "Por eso la cátedra insiste en hacer el build temprano. La consigna pide el primer build de preview al menos una semana antes, porque \"siempre falla por algo\" (un permiso, un asset, un identificador) y el cupo mensual es limitado [TFI p.1]; en clase se avisó que a veces falta un ícono o una imagen y el build no se puede subir [U02-V2 8:13]. Para no armar cada tamaño a mano, hay sitios que generan todos los íconos de iOS y Android a partir de uno [U02-V2 13:37]."
+    ],
+    "definiciones": [
+      {
+        "termino": "Splash screen",
+        "definicion": "Pantalla con el logo que se muestra mientras la app carga.",
+        "ref": "[U01-V1 59:07]"
+      },
+      {
+        "termino": "`android.package` / `ios.bundleIdentifier`",
+        "definicion": "Identificadores de la app en Google Play y en la App Store; se definen una vez y no se cambian.",
+        "ref": "[U02.T02 p.27]"
+      },
+      {
+        "termino": "Ícono adaptativo (`adaptiveIcon`)",
+        "definicion": "Configuración del ícono de Android con una imagen de primer plano y un color de fondo.",
+        "ref": "[U02.T02 p.27; U01-V1 1:21:30]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Campos de identidad en `app.json`",
+      "columnas": [
+        "Campo",
+        "Para qué",
+        "En el TP"
+      ],
+      "filas": [
+        [
+          "`name`",
+          "Nombre del producto",
+          "\"Reservas Deportivas Villaguay\""
+        ],
+        [
+          "`slug`",
+          "Identifica al proyecto",
+          "`reservas-deportivas-villaguay`"
+        ],
+        [
+          "`icon`",
+          "Ícono de la app",
+          "`./assets/icon.png` (JPEG con extensión .png)"
+        ],
+        [
+          "splash",
+          "Imagen y color mientras carga",
+          "plugin `expo-splash-screen`, fondo `#121212`"
+        ],
+        [
+          "`android.package` / `ios.bundleIdentifier`",
+          "Identidad en cada tienda",
+          "`com.villaguay.reservasdeportivas`"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Dejar el primer build para el final: suele fallar por un ícono, un permiso o un identificador, y el cupo es limitado.",
+        "ref": "[TFI p.1; U02-V2 8:13]"
+      },
+      {
+        "texto": "Cambiar el `package` o el `bundleIdentifier` después de publicar.",
+        "ref": "[U02.T02 p.27]"
+      },
+      {
+        "texto": "Entregar un ícono que no es PNG cuadrado de 1024×1024 o que tiene transparencias.",
+        "ref": "[TFI p.2-3, req. 10]"
+      },
+      {
+        "texto": "Pensar que un cambio de ícono o de nombre se manda por OTA.",
+        "ref": "[U02.T02 p.22]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "json",
+      "fragmento": "{\n  \"expo\": {\n    \"name\": \"MiApp\",\n    \"slug\": \"mi-app\",\n    \"version\": \"1.0.0\",\n    \"icon\": \"./assets/icon.png\",\n    \"splash\": { \"image\": \"./assets/splash.png\", \"backgroundColor\": \"#0B3A5D\" },\n    \"ios\": { \"bundleIdentifier\": \"ar.edu.uner.miapp\", \"supportsTablet\": true },\n    \"android\": { \"package\": \"ar.edu.uner.miapp\",\n      \"adaptiveIcon\": { \"foregroundImage\": \"./assets/adaptive.png\" } }\n  }\n}",
+      "ref": "[U02.T02 p.27]",
+      "nota": "Recortado: sin `orientation` ni `plugins`, y con `splash` en una sola línea."
+    },
+    "citasProfe": [
+      {
+        "texto": "a veces pasa que le falta un ícono, una imagen o algo y no les va a dejar subir ese build",
+        "ref": "[U02-V2 8:13]"
+      },
+      {
+        "texto": "¿Saben a qué me refiero? El splash screen",
+        "ref": "[U01-V1 59:07]"
+      }
+    ],
+    "aclaraciones": [
+      "El ejemplo del material configura el splash con la clave `splash` [U02.T02 p.27]; la plantilla recorrida en clase lo trae dentro de `plugins` [U01-V1 1:21:30], y el TP lo configura con el plugin `expo-splash-screen`.",
+      "No hubo una clase dedicada a la identidad: en U02-V2 se dijo que íconos y splash se verían con EAS y el despliegue [U02-V2 13:37], y la tabla del material solo la cubre en U02.T02 p.27."
+    ],
+    "referencias": [
+      "[TFI p.2-3, req. 10]; [U02.T02 p.27]; [U02-V2 13:37]; [U01-V1 59:07]",
+      "[TFI p.1]",
+      "[U02.T02 p.22]",
+      "[U02-V2 8:13]",
+      "[U01-V1 1:21:30]",
+      "[U02-V1 41:35]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "`app.json` declara el nombre \"Reservas Deportivas Villaguay\" (`:3`), el `slug` (`:4`), `icon` (`:7`), `scheme` `reservasdeportivas` (`:8`), `package` (`:11`) y `bundleIdentifier` (`:25`) `com.villaguay.reservasdeportivas`, `adaptiveIcon` con fondo `#121212` (`:12-15`) y el plugin `expo-splash-screen` con fondo `#121212`, `./assets/icon.png` y ancho 120 (`:38-45`). La misma imagen sirve de ícono, ícono adaptativo, splash y favicon. Parcial: `assets/icon.png` es en realidad un JPEG de 1024×1024 con extensión `.png` (cuadrado y sin canal de transparencia, pero no PNG; [POSIBLE] aviso o error en prebuild), y `package.json:2` todavía dice `\"temp-app\"`. El perfil `preview` de `eas.json` genera APK (`:11-16`).",
+      "archivos": [
+        {
+          "ruta": "app.json",
+          "lineas": "3-15, 25, 36-45",
+          "nota": "nombre, identificadores, ícono y splash"
+        },
+        {
+          "ruta": "assets/icon.png",
+          "nota": "JPEG 1024×1024 con extensión .png"
+        },
+        {
+          "ruta": "package.json",
+          "lineas": "2",
+          "nota": "nombre de plantilla \"temp-app\""
+        },
+        {
+          "ruta": "eas.json",
+          "lineas": "11-16",
+          "nota": "perfil preview con buildType apk"
+        }
+      ]
+    },
+    "desafio": [
+      "7.E6",
+      "4.25",
+      "5.15"
+    ],
+    "preguntasRelacionadas": [
+      "1A.5",
+      "1A.7",
+      "1B.4",
+      "3.11",
+      "1B.3"
+    ],
+    "preguntasRapidas": [
+      "¿Qué requisitos tiene el ícono?",
+      "¿Por qué no se puede cambiar el `package` después de publicar?",
+      "¿Qué pasa mientras se ve el splash?"
+    ]
+  }
+]

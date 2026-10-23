@@ -1,0 +1,1476 @@
+[
+  {
+    "id": "u02-typescript-interfaces",
+    "unidad": "U02",
+    "titulo": "TypeScript: interfaces",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "TypeScript agrega a JavaScript tipos que se chequean mientras escribís y desaparecen al compilar. La interfaz describe la forma de un objeto (propiedades, tipos y opcionales con `?`) y su uso número uno en React es tipar las props de cada componente: documenta y valida al mismo tiempo.",
+    "explicacion": [
+      "**TypeScript** es un superconjunto de JavaScript: todo JavaScript válido es TypeScript válido, y le suma un sistema de tipos que se verifica antes de ejecutar y después se borra, así que al teléfono llega JavaScript común [U02.T01 p.4]. En clase la razón para usarlo en móvil la dio un alumno y el profe la tomó: en el celular no podemos ver los logs. El material agrega que un error de tipos cierra la app y el arreglo tiene que pasar por la tienda; TypeScript lo corre al momento más barato, mientras escribís [U02-V1 49:48; U02.T01 p.5].",
+      "No hace falta anotar todo: TS hace **inferencia** a partir del valor (`let nombre = 'Ana'` ya es `string`). Lo que conviene anotar siempre son los parámetros de las funciones y la forma de los datos que vienen de afuera, como una API, porque ahí no tiene de dónde inferir [U02.T01 p.6]. En la demo, una variable inferida como número rechazó un string con error en el editor [U02-V1 1:03:31].",
+      "Para tipos complejos se usa la **interfaz**. En clase se armó `interface Persona` con nombre, apellido y fecha de nacimiento, y el profe aclaró que con eso básico se trabaja en React Native, sin clases [U02-V1 52:58-54:01]. Un `?` vuelve opcional una propiedad. La convención que pidió: interfaces y clases en mayúscula, variables en minúscula y camelCase [U02-V1 1:07:02]. Otra ventaja que mostró: al pasar el mouse sobre algo importado de otro archivo, el editor muestra su tipo [U02-V1 1:05:32].",
+      "El caso central son las **props**. En la demo del componente `Titulo` se definió `interface TituloProps { titulo: string }`: si el padre no pasaba `titulo`, TS marcaba el error, y con `titulo?` dejaba de quejarse [U02-V1 1:18:50-1:23:00]. El material lo resume así: escribir la interfaz es documentar el componente y validarlo a la vez, con una `interface Props` por componente [U02.T01 p.7, 18].",
+      "Un detalle que se discutió en U03: la interfaz de las props de un componente no es el tipo de la entidad que devuelve la API, aunque se parezcan [U03-V1 1:31:41]. En el TP se ve esa separación: las entidades del PRD (`Espacio`, `Turno`, `Reserva`, `Usuario`) viven en `src/tipos/index.ts`, y cada componente declara su propia `interface Props` que las usa; por ejemplo, `TarjetaEspacio` recibe `espacio: Espacio` y un `deporte?: Deporte` opcional."
+    ],
+    "definiciones": [
+      {
+        "termino": "TypeScript",
+        "definicion": "Superconjunto de JavaScript con tipado estático; los tipos se verifican antes de ejecutar y se borran al compilar.",
+        "ref": "[U02.T01 p.4]"
+      },
+      {
+        "termino": "Inferencia",
+        "definicion": "TS deduce el tipo a partir del valor asignado, sin anotarlo.",
+        "ref": "[U02-V1 50:54-51:56]"
+      },
+      {
+        "termino": "Interfaz",
+        "definicion": "Describe la forma de un objeto: qué propiedades tiene y de qué tipo.",
+        "ref": "[U02.T01 p.7]"
+      },
+      {
+        "termino": "Propiedad opcional (`?`)",
+        "definicion": "Propiedad que puede faltar sin que TS marque error.",
+        "ref": "[U02-V1 1:22:00]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "JavaScript frente a TypeScript",
+      "columnas": [
+        "",
+        "JavaScript",
+        "TypeScript"
+      ],
+      "filas": [
+        [
+          "Cuándo aparece un error de tipos",
+          "En ejecución, en el teléfono",
+          "Al escribir o compilar"
+        ],
+        [
+          "Tipos",
+          "Dinámicos",
+          "Estáticos, inferidos o anotados"
+        ],
+        [
+          "Qué llega al dispositivo",
+          "JavaScript",
+          "JavaScript (los tipos se borran)"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Usar la interfaz de la entidad de la API como props del componente: son dos contratos distintos.",
+        "ref": "[U03-V1 1:31:41]"
+      },
+      {
+        "texto": "Dejar sin tipo justo lo que viene de afuera (parámetros, respuesta de la API), donde TS no puede inferir.",
+        "ref": "[U02.T01 p.6]"
+      },
+      {
+        "texto": "Callar el error de una prop faltante en vez de pasarla, o de marcarla con `?` si de verdad es opcional.",
+        "ref": "[U02-V1 1:22:00]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "interface Producto {\n  id: number;\n  nombre: string;\n  precio: number;\n  descripcion?: string;\n}\ninterface PropsTarjeta {\n  producto: Producto;\n  alTocar: (id: number) => void;\n}\nfunction Tarjeta({ producto, alTocar }: PropsTarjeta) { /* ... */ }",
+      "ref": "[U02.T01 p.7]",
+      "nota": "La entidad (`Producto`) y las props del componente (`PropsTarjeta`) son interfaces separadas."
+    },
+    "citasProfe": [
+      {
+        "texto": "Mobile usa TypeScript, no podemos escapar de eso",
+        "ref": "[U02-V1 49:48]"
+      },
+      {
+        "texto": "Por eso es muy importante usar tipos. Traten de usarlos ... acostúmbrense a hacer eso",
+        "ref": "[U02-V1 1:05:32]"
+      },
+      {
+        "texto": "con esto básico vamos a trabajar con React en React Native ... no vamos a usar clases",
+        "ref": "[U02-V1 54:01]"
+      }
+    ],
+    "referencias": [
+      "[U02.T01 p.7]; [U02-V1 52:58-54:01]; [U03-V1 1:29:29-1:32:49]",
+      "[U02.T01 p.4-6, 18]",
+      "[U02-V1 47:46-51:56]",
+      "[U02-V1 1:05:32-1:07:02]",
+      "[U02-V1 1:18:50-1:23:00]",
+      "[U01-V2 56:04]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "Modelos del PRD en `src/tipos/index.ts:1-82` (`Espacio`, `Turno`, `Reserva`, `ReservaFija`, `Usuario`), con `strict: true` en `tsconfig.json:4`. Cada componente propio declara su `interface Props`: `GrillaTurnos.tsx:6`, `QrViewer.tsx:5`, `TarjetaEspacio.tsx:7`, `VideoViewer.tsx:5`. Las props usan las entidades (`turnos: Turno[]`, `espacio: Espacio`) y marcan con `?` lo opcional (`deporte?`, `onToggleFavorito?`).",
+      "archivos": [
+        {
+          "ruta": "src/tipos/index.ts",
+          "lineas": "1-82",
+          "nota": "entidades del PRD"
+        },
+        {
+          "ruta": "src/componentes/GrillaTurnos.tsx",
+          "lineas": "6-10",
+          "nota": "`turnoSeleccionadoId?` y `onSeleccionarTurno?` opcionales"
+        },
+        {
+          "ruta": "src/componentes/TarjetaEspacio.tsx",
+          "lineas": "7-12"
+        },
+        {
+          "ruta": "tsconfig.json",
+          "lineas": "4",
+          "nota": "`strict: true`"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.10",
+      "3.2",
+      "7.B11"
+    ],
+    "preguntasRelacionadas": [
+      "1A.11",
+      "2.8",
+      "2.10",
+      "4.22"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué los tipos están en `src/tipos`?",
+      "¿Qué props recibe `GrillaTurnos` y cuáles son opcionales?",
+      "¿Qué pasa si no le paso una prop requerida?"
+    ]
+  },
+  {
+    "id": "u02-typescript-uniones-discriminadas",
+    "unidad": "U02",
+    "titulo": "TypeScript: uniones discriminadas",
+    "prioridad": "media",
+    "enfasisClase": 1,
+    "fuenteTipo": "mixto",
+    "resumen": "Una unión dice que un valor es de un tipo o de otro: de un conjunto cerrado de literales, o de varios objetos con un campo que los distingue. Al chequear ese campo, TS estrecha el tipo (narrowing) y sabe qué propiedades existen. Los estados cargando, listo y error son el caso típico.",
+    "explicacion": [
+      "En clase las **uniones** se mencionaron al pasar, junto con los enumerados, como el tipo para \"cuando vos no sabés de qué tipo va a ser\" [U02-V1 1:08:02-1:09:08]; el desarrollo está en el material [U02.T01 p.8].",
+      "Hay dos usos. La unión de literales (`'libre' | 'reservado'`) limita un valor a una lista cerrada: cualquier otro no compila. La **unión discriminada** junta objetos que comparten un campo con valores distintos, como `fase: 'cargando' | 'listo' | 'error'`. Después de preguntar por ese campo, TS hace **narrowing**: en la rama `'listo'` sabe que existe `productos` y en `'error'`, `mensaje`. Por eso el material dice que los tres estados de una pantalla que pide datos son un caso perfecto para una unión: el compilador no te deja olvidarte de uno.",
+      "En el TP, `EstadoTurno`, `EstadoReserva`, `Rol` y el `dia` de `ReservaFija` (de 0 a 6) son uniones de literales. `RespuestaApi<T>` es la unión de una respuesta exitosa (`datos`) y una de error (`error`), y las pantallas la estrechan con `'error' in res`: en el `else`, TS ya sabe que existe `res.datos`."
+    ],
+    "definiciones": [
+      {
+        "termino": "Unión",
+        "definicion": "Tipo que admite uno de varios tipos o valores (`A | B`).",
+        "ref": "[U02.T01 p.8]"
+      },
+      {
+        "termino": "Narrowing",
+        "definicion": "Después de un chequeo, TS reduce la unión al caso posible en esa rama.",
+        "ref": "[U02.T01 p.8]"
+      }
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Modelar un estado con `string` libre: un typo como `'reservdo'` compila y falla en ejecución.",
+        "ref": "[U02.T01 p.8]"
+      },
+      {
+        "texto": "Castear con `as any` un valor que debería respetar la unión: se pierde la garantía (pasa con el día de la reserva fija en el admin).",
+        "ref": "admin/index.tsx:416"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "type Estado =\n  | { fase: 'cargando' }\n  | { fase: 'listo'; productos: Producto[] }\n  | { fase: 'error'; mensaje: string };\n\nif (estado.fase === 'listo') {\n  // acá TS sabe que existe estado.productos\n}",
+      "ref": "[U02.T01 p.8]",
+      "nota": "El `if` final ilustra el narrowing que describe la diapositiva; no está en ella."
+    },
+    "aclaraciones": [
+      "Estrictamente, `RespuestaApi<T>` no tiene un campo discriminante literal como `fase`: sus dos casos se distinguen por qué propiedad existe y se estrechan con el operador `in`. El efecto (narrowing) es el mismo."
+    ],
+    "referencias": [
+      "[U02.T01 p.8]; [U02-V1 1:08:02-1:09:08]",
+      "[U01-V2 56:04-59:13]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`EstadoTurno`, `EstadoReserva` y `Rol` (`tipos/index.ts:30, 44, 71`) y `dia: 0 | 1 | ... | 6` en `ReservaFija` (`:63`); `RespuestaApi<T>` como unión de éxito y error (`:84-105`), estrechada con `'error' in res` (`login.tsx:34`) o `'datos' in res` (`(tabs)/index.tsx:48`). Dos límites: el estado `ausente` está en la unión pero el código nunca lo asigna, y el día de la reserva fija se castea `as any` (`admin/index.tsx:416`), lo que deja pasar valores fuera de 0-6.",
+      "archivos": [
+        {
+          "ruta": "src/tipos/index.ts",
+          "lineas": "30, 44, 63, 71, 91-105"
+        },
+        {
+          "ruta": "src/app/(auth)/login.tsx",
+          "lineas": "34-38",
+          "nota": "narrowing con `'error' in res`"
+        },
+        {
+          "ruta": "src/app/admin/index.tsx",
+          "lineas": "416",
+          "nota": "`as any` sobre el día"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.11",
+      "2.10",
+      "8.11"
+    ],
+    "preguntasRelacionadas": [
+      "1B.21",
+      "4.1",
+      "1A.12"
+    ],
+    "preguntasRapidas": [
+      "¿Qué gana `EstadoTurno` frente a un `string`?",
+      "¿Cómo sabe TS que `res.datos` existe?",
+      "¿Por qué el estado `ausente` nunca se asigna?"
+    ]
+  },
+  {
+    "id": "u02-typescript-genericos",
+    "unidad": "U02",
+    "titulo": "TypeScript: genéricos",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "Un genérico pasa el tipo como parámetro (`Respuesta<T>`, `traer<T>()`): se escribe la estructura una vez y cada uso dice qué tipo lleva adentro, sin repetir interfaces ni caer en `any`. El profe lo marcó como muy importante para las respuestas de API.",
+    "explicacion": [
+      "El problema se armó en vivo: modelando respuestas de API aparecieron `RespuestaUsuarios`, `RespuestaLugares` y `RespuestaCodigosQR`, todas con la misma `paginacion`, y solo cambiaba el tipo del arreglo `data`. El profe preguntó qué se repetía y refactorizó a una sola interfaz, `Respuesta<T>` [U02-V1 56:07-1:02:27].",
+      "Un **genérico** es un tipo que recibe otro tipo como parámetro. La `T` es un nombre de lugar y en cada uso decís cuál es: `Respuesta<Usuario>` solo acepta usuarios, y en la demo, con `Respuesta<number>`, solo se aceptaron arreglos de números; asignar un `3` donde se esperaba un `Usuario` dio el error \"el tipo número no puede ser asignado al tipo usuario\" [U02-V1 1:00:12-1:02:27]. La misma interfaz sirve para cualquier entidad y el chequeo no se pierde. El material lo muestra en una función, `traer<T>(url): Promise<T>`: sin genéricos queda escribir una función por tipo o resignarse a `any` y perder la ayuda del editor [U02.T01 p.9].",
+      "Los usás aunque no los declares: `useState<Producto[]>([])`, `useRef<TextInput>(null)` y `createContext<ThemeContextType | null>(null)` son genéricos [U02.T01 p.22, 25; U03-V5 35:08-39:22]. En la clase del ThemeProvider se explicó por qué hacen falta ahí: si el valor inicial es `null`, TS no puede inferir qué va a contener, y hay que pasarle el tipo entre los signos de mayor y menor [U03-V5 39:22].",
+      "En el TP, el PRD fija un formato único para la API (`{ datos, meta }` o `{ error }`), y el genérico permite escribir ese contrato una sola vez: `RespuestaApiExito<T>` tiene `datos: T`, y cada servicio dice qué es `T`. `obtenerEspacios()` devuelve `Promise<RespuestaApi<Espacio[]>>` y `crearReserva`, `Promise<RespuestaApi<Reserva>>`. Las pantallas que usan esos servicios reciben `datos` ya tipado.",
+      "Ojo con una diferencia fina: en el ejemplo de clase `data: T[]`, así que `T` es el tipo de cada elemento; en el TP `datos: T`, así que `T` es el contenido entero (por eso se escribe `RespuestaApi<Espacio[]>` y no `RespuestaApi<Espacio>` para una lista). Las dos formas son válidas; conviene saber explicar cuál se eligió."
+    ],
+    "definiciones": [
+      {
+        "termino": "Genérico (parámetro de tipo)",
+        "definicion": "Tipo o función que recibe un tipo como parámetro, escrito entre `< >`.",
+        "ref": "[U02-V1 1:00:12]"
+      },
+      {
+        "termino": "`T`",
+        "definicion": "Nombre convencional del tipo que se pasa; se reemplaza en cada uso.",
+        "ref": "[U02.T01 p.9]"
+      }
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Repetir una interfaz por cada tipo de respuesta en lugar de un `Respuesta<T>`.",
+        "ref": "[U02-V1 56:07]"
+      },
+      {
+        "texto": "Usar `any` cuando lo que falta es un genérico.",
+        "ref": "[U02.T01 p.9]"
+      },
+      {
+        "texto": "Iniciar un estado o un contexto con `null` sin pasar el tipo: TS no puede inferir qué va a contener.",
+        "ref": "[U03-V5 35:08-39:22]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "interface Paginacion { pagina: number; cantidad: number; }\n\n// antes: RespuestaUsuarios, RespuestaLugares, RespuestaCodigosQR...\ninterface Respuesta<T> {\n  data: T[];\n  paginacion: Paginacion;\n}\n\nlet respuestaApi: Respuesta<Usuario>;",
+      "ref": "[U02-V1 59:11-1:02:27]",
+      "nota": "Reconstruido de la demo de clase; en el TP el campo es `datos: T`."
+    },
+    "citasProfe": [
+      {
+        "texto": "Y esto es muy importante",
+        "ref": "[U02-V1 1:02:27]"
+      },
+      {
+        "texto": "Esto lo vamos a usar mucho en las listas de respuesta ... de API",
+        "ref": "[U01-V2 59:13]"
+      },
+      {
+        "texto": "es muy raro esto y a veces cuesta entenderlo",
+        "ref": "[U02-V1 1:01:20]"
+      }
+    ],
+    "aclaraciones": [
+      "En U03-V5 el profe dijo no saber el nombre técnico de la sintaxis con mayor y menor; se llama genérico o parámetro de tipo, el mismo concepto que presentó en U02-V1 [U03-V5 40:24]."
+    ],
+    "referencias": [
+      "[U02.T01 p.9]; [U02-V1 59:11-1:02:27]; [U03-V5 35:08-39:22]",
+      "[U02-V1 56:07-59:11]",
+      "[U02.T01 p.22, 25]",
+      "[U01-V2 59:13]",
+      "[U03-V1 1:43:19]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`RespuestaApiExito<T>` y `RespuestaApi<T>` (`tipos/index.ts:91-105`); los servicios devuelven `Promise<RespuestaApi<...>>` (`src/servicios/reservas.ts:28, 36, 47, 60, 165`); estados tipados con genérico como `useState<Espacio[]>([])` (`(tabs)/index.tsx:21`) y `useRef<WebView>(null)` (`mapa.tsx:19`).",
+      "archivos": [
+        {
+          "ruta": "src/tipos/index.ts",
+          "lineas": "91-105"
+        },
+        {
+          "ruta": "src/servicios/reservas.ts",
+          "lineas": "28, 36, 47, 60, 165",
+          "nota": "firmas `Promise<RespuestaApi<...>>`"
+        },
+        {
+          "ruta": "src/app/(tabs)/index.tsx",
+          "lineas": "21-28",
+          "nota": "`useState` con genéricos"
+        },
+        {
+          "ruta": "src/app/(tabs)/mapa.tsx",
+          "lineas": "19"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.12",
+      "10.2.5",
+      "9.16"
+    ],
+    "preguntasRelacionadas": [
+      "2.10",
+      "1A.11",
+      "6.6.1"
+    ],
+    "preguntasRapidas": [
+      "¿Qué representa la `T` de `RespuestaApi<T>`?",
+      "¿Qué tipo devuelve `obtenerEspacios()`?",
+      "¿Cómo tiparías un `useState` que arranca como lista vacía?"
+    ]
+  },
+  {
+    "id": "u02-typescript-any",
+    "unidad": "U02",
+    "titulo": "TypeScript: `any`",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "`any` le dice a TypeScript que una variable puede ser cualquier cosa: apaga el chequeo y la ayuda del editor. El profe no lo quiere ver en ningún lado; solo lo tolera al principio, cuando todavía no se sabe qué devuelve la API. También entra escondido con `as any` y con `require()` dinámico.",
+    "explicacion": [
+      "El profe definió `any` como el tipo que te deja decir que una variable va a ser de cualquier tipo porque no sabés qué viene [U02-V1 1:02:27-1:03:31]. En la demo, `let cualquierTipo: any` aceptó un número y después un string sin ninguna queja; sin `any`, la variable inferida como número rechazó el string con el error \"tipo string no puede ser asignado al tipo número\" [U02-V1 1:03:31-1:04:31].",
+      "Se evita porque desactiva justo lo que justificaba usar TypeScript en móvil: el error vuelve a aparecer recién en el teléfono. El argumento de clase fue el tamaño: con 500 líneas de código ya no sabés qué se le asigna a qué. La única tolerancia es al arrancar, cuando no conocés la forma de la respuesta; apenas la conocés, se escribe la **interfaz** o se usa un **genérico** [U02-V1 1:02:27-1:05:32; U02.T01 p.9].",
+      "No siempre aparece escrito como `: any`. Un **cast** `as any` apaga el chequeo de esa expresión, y un `require()` dinámico devuelve un valor sin tipo, así que las llamadas que siguen tampoco se verifican. Son las formas más comunes en que se cuela.",
+      "En el TP conviven las dos cosas: `strict: true` en `tsconfig.json`, pero varios agujeros. `dbInstance: any` en SQLite y `handleMessage(event: any)` en el mapa. Además, casi todas las navegaciones llevan `as any`, y eso anula `typedRoutes`, que está activado en `app.json`: si una ruta se escribe mal, el compilador no avisa. En el admin, el día de la reserva fija se castea `as any`, así que pasa cualquier número aunque el tipo sea `0 | 1 | ... | 6`. Y los módulos de Expo que se cargan con `require()` dentro de `try/catch` (`expo-sqlite`, `expo-network`, `expo-haptics` y otros) pierden el tipado.",
+      "Para la defensa conviene tener la corrección pensada (hipotética, no está hecha): tipar el evento del mapa con `WebViewMessageEvent`, que exporta `react-native-webview`, y navegar con objetos tipados, como `router.push({ pathname: '/espacio/[id]', params: { id } })`, en lugar de castear."
+    ],
+    "definiciones": [
+      {
+        "termino": "`any`",
+        "definicion": "Tipo que acepta cualquier valor y desactiva el chequeo de TS sobre esa variable.",
+        "ref": "[U02-V1 1:02:27]"
+      },
+      {
+        "termino": "Cast `as any`",
+        "definicion": "Fuerza a TS a tratar una expresión como `any`; silencia el error sin resolverlo."
+      }
+    ],
+    "comparacion": {
+      "titulo": "Alternativas a `any`",
+      "columnas": [
+        "Opción",
+        "Qué chequea TS",
+        "Cuándo"
+      ],
+      "filas": [
+        [
+          "`any`",
+          "Nada",
+          "Solo provisorio, al empezar sin conocer la API"
+        ],
+        [
+          "Tipo inferido",
+          "El del valor inicial",
+          "Variables locales con valor claro"
+        ],
+        [
+          "Interfaz",
+          "La forma del objeto",
+          "Datos de la API, props"
+        ],
+        [
+          "Genérico",
+          "El tipo que se pasa",
+          "Contenedores reutilizables, como `Respuesta<T>`"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Poner `as any` en `router.push` para sacarse de encima el error de tipos: anula `typedRoutes`.",
+        "ref": "app.json:71-73"
+      },
+      {
+        "texto": "Tipar parámetros de eventos como `any` (`event: any`) en vez de usar el tipo que trae la librería.",
+        "ref": "mapa.tsx:128"
+      },
+      {
+        "texto": "Cargar módulos con `require()` y no notar que todo lo que devuelven queda sin tipo."
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "let cualquierTipo: any = 3;\ncualquierTipo = 'hola';   // sin error: any acepta todo\n\nlet numero = 3;           // TS infiere number\nnumero = 'hola';          // error: el tipo string no puede\n                          // ser asignado al tipo number",
+      "ref": "[U02-V1 1:03:31-1:04:31]",
+      "nota": "Reconstrucción de la demo de clase."
+    },
+    "citasProfe": [
+      {
+        "texto": "yo no lo quiero ver en ningún lado",
+        "ref": "[U02-V1 1:02:27]"
+      },
+      {
+        "texto": "cuando tengan 500 líneas de código no van a saber a quién estarán asignando, a qué",
+        "ref": "[U02-V1 1:04:31]"
+      }
+    ],
+    "referencias": [
+      "[U02-V1 1:02:27-1:04:31]; [U02.T01 p.9]",
+      "[U02-V1 1:04:31-1:05:32]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Parcial: `strict: true` (`tsconfig.json:4`), pero hay `dbInstance: any` (`sqlite.ts:5`), `handleMessage(event: any)` (`mapa.tsx:128`), `as any` en casi todas las navegaciones (p. ej. `login.tsx:38`, `TarjetaEspacio.tsx:26`), lo que anula `typedRoutes` (`app.json:71-73`), y en el día de la reserva fija (`admin/index.tsx:416`); los `require()` dinámicos también quedan sin tipo. Corrección posible (hipotética): `WebViewMessageEvent` para el mapa y `router.push({ pathname, params })` sin cast.",
+      "archivos": [
+        {
+          "ruta": "src/bd/sqlite.ts",
+          "lineas": "5",
+          "nota": "`dbInstance: any`"
+        },
+        {
+          "ruta": "src/app/(tabs)/mapa.tsx",
+          "lineas": "128-134",
+          "nota": "`event: any` y `as any` en la ruta"
+        },
+        {
+          "ruta": "src/app/(auth)/login.tsx",
+          "lineas": "38"
+        },
+        {
+          "ruta": "src/app/admin/index.tsx",
+          "lineas": "416"
+        },
+        {
+          "ruta": "app.json",
+          "lineas": "71-73",
+          "nota": "`typedRoutes: true`"
+        }
+      ]
+    },
+    "desafio": [
+      "4.22",
+      "4.21",
+      "3.8"
+    ],
+    "preguntasRelacionadas": [
+      "1A.12",
+      "1A.10",
+      "2.10"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué hay `as any` en las rutas?",
+      "¿Qué tipo le pondrías a `handleMessage`?",
+      "¿Qué perdés al usar `require()` en lugar de `import`?"
+    ]
+  },
+  {
+    "id": "u02-props-vs-estado",
+    "unidad": "U02",
+    "titulo": "Props vs estado",
+    "prioridad": "alta",
+    "enfasisClase": 3,
+    "fuenteTipo": "mixto",
+    "resumen": "Las props vienen del padre y son de solo lectura; el estado vive adentro del componente y cambia con su `set...`, lo que dispara un nuevo render. El hijo avisa al padre llamando a una función que recibió por props: \"los datos bajan, los eventos suben\". Lo que se puede calcular no se guarda en estado.",
+    "explicacion": [
+      "Para la cátedra, un **componente** es la unidad visual más chica: por dentro tiene un tag y su estilo, y se reutiliza en la app. Hoy se escriben como funciones, no como clases, y **componentizar** es partir uno grande en otros más chicos para depurar y mantener mejor [U02-V1 1:16:38-1:18:50]. Esos componentes se comunican de dos maneras, que el profe presentó como lo básico de cualquier componente de React Native.",
+      "Del padre al hijo van las **props**, propiedades que se pasan por parámetro: se tipan con una interfaz, se desestructuran (`{ titulo }`) y pueden tener valor por defecto [U02-V1 1:18:50-1:23:00; U02.T01 p.14]. Son de **solo lectura**: un componente nunca modifica lo que recibe; si necesita cambiar algo, le avisa al padre.",
+      "Del hijo al padre se usa una función. El padre la pasa como prop y el hijo la llama cuando pasa algo. En la demo, `Titulo` recibió `presionado?: () => void` (opcional, porque al hijo no le importa si el padre escucha); al tocarlo se logueó primero el manejador del hijo y después el mensaje del padre [U02-V1 1:34:39-1:39:50]. El material lo resume en una frase: los datos bajan, los eventos suben [U02.T01 p.15].",
+      "El **estado** es distinto: vive adentro del componente, se cambia con su función `set...` y cambiarlo dispara un nuevo render; las props, en cambio, cambian cuando el padre las cambia [U02.T01 p.16]. La regla práctica: si un dato se puede calcular a partir de las props o de otro estado, no se guarda en estado, se calcula en el render, porque dos fuentes de verdad para el mismo dato terminan desincronizadas.",
+      "En el TP el ejemplo más claro es `GrillaTurnos`: no tiene estado propio, recibe `turnos` y `turnoSeleccionadoId`, y cuando tocás un turno libre llama a `onSeleccionarTurno`. La pantalla de Turnos guarda la selección con `useState` y le pasa `(t) => setTurnoSeleccionado(t)`. `TarjetaEspacio` trae `esFavorito = false` por defecto y solo dibuja la estrella si el padre le pasa `onToggleFavorito`. Y el catálogo calcula `espaciosFiltrados` y `complejosDisponibles` en cada render, a partir de la lista, la búsqueda y los chips, en vez de guardarlos en otro estado."
+    ],
+    "definiciones": [
+      {
+        "termino": "Props",
+        "definicion": "Propiedades que el padre pasa por parámetro al hijo; de solo lectura.",
+        "ref": "[U02-V1 1:19:55]"
+      },
+      {
+        "termino": "Desestructurar",
+        "definicion": "Sacar propiedades del objeto de props: `{ titulo }` equivale a `const titulo = propiedades.titulo`.",
+        "ref": "[U02-V1 1:21:00-1:22:00]"
+      },
+      {
+        "termino": "Estado",
+        "definicion": "Dato que vive dentro del componente; cambiarlo con su `set...` provoca un nuevo render.",
+        "ref": "[U02.T01 p.16]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Props frente a estado",
+      "columnas": [
+        "Props",
+        "Estado"
+      ],
+      "filas": [
+        [
+          "Vienen de afuera, las manda el padre",
+          "Vive adentro del componente"
+        ],
+        [
+          "Solo lectura",
+          "Se cambia con su función `set...`"
+        ],
+        [
+          "Cambian cuando el padre las cambia",
+          "Cambiarlo dispara un nuevo render"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Modificar una prop desde el hijo en lugar de avisar al padre con un callback.",
+        "ref": "[U02.T01 p.14]"
+      },
+      {
+        "texto": "Guardar en estado algo que se puede calcular (por ejemplo, la lista filtrada): dos fuentes de verdad.",
+        "ref": "[U02.T01 p.16]"
+      },
+      {
+        "texto": "Repetir el mismo estilo en varios componentes: es la señal de que falta un componente.",
+        "ref": "[U02-V1 1:29:19]"
+      },
+      {
+        "texto": "Olvidar el `export default` y no poder importar el componente.",
+        "ref": "[U02-V1 1:31:31]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "// Lista (padre): el estado vive acá\nconst borrar = (id: number) =>\n  setItems(xs => xs.filter(x => x.id !== id));\n\n{items.map(item => <Fila key={item.id} item={item} aBorrar={borrar} />)}\n\n// Fila (hijo): no borra, avisa\n<Button title=\"Borrar\" onPress={() => aBorrar(item.id)} />",
+      "ref": "[U02.T01 p.15]"
+    },
+    "citasProfe": [
+      {
+        "texto": "Esto en realidad [es] lo básico que tienen que saber para cualquier componente de React Native",
+        "ref": "[U02-V1 1:39:50]"
+      },
+      {
+        "texto": "del hijo al padre se lo usa una función con eventos",
+        "ref": "[U02-V1 1:34:39]"
+      },
+      {
+        "texto": "si usás el estilo title en más de un componente ... necesitás crear un componente título",
+        "ref": "[U02-V1 1:29:19]"
+      }
+    ],
+    "referencias": [
+      "[U02.T01 p.14-16]; [U02-V1 1:18:50-1:23:00]; [U02-V1 1:34:39-1:39:50]",
+      "[U02-V1 1:16:38-1:18:50]",
+      "[U02.T01 p.18]",
+      "[U01-V2 59:13-1:01:15]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`GrillaTurnos` recibe `turnos` y avisa al padre con `onSeleccionarTurno` (`GrillaTurnos.tsx:6-16`); la pantalla guarda la selección y pasa `(t) => setTurnoSeleccionado(t)` (`disponibilidad.tsx:30, 213-216`). `TarjetaEspacio` tiene `esFavorito = false` y `onToggleFavorito` opcional (`TarjetaEspacio.tsx:7-19`). El filtrado del catálogo se calcula en el render (`(tabs)/index.tsx:74-84`).",
+      "archivos": [
+        {
+          "ruta": "src/componentes/GrillaTurnos.tsx",
+          "lineas": "6-16"
+        },
+        {
+          "ruta": "src/app/(tabs)/disponibilidad.tsx",
+          "lineas": "30, 213-216",
+          "nota": "estado de la selección en el padre"
+        },
+        {
+          "ruta": "src/componentes/TarjetaEspacio.tsx",
+          "lineas": "7-19"
+        },
+        {
+          "ruta": "src/app/(tabs)/index.tsx",
+          "lineas": "74-84",
+          "nota": "valores derivados en el render"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.13",
+      "2.8",
+      "7.C7"
+    ],
+    "preguntasRelacionadas": [
+      "6.6.5",
+      "7.B4",
+      "1A.15"
+    ],
+    "preguntasRapidas": [
+      "¿Cómo se entera `AvailabilityScreen` del turno elegido?",
+      "¿Por qué el filtrado no está en un `useState`?",
+      "¿Puede `GrillaTurnos` modificar `turnos`?"
+    ]
+  },
+  {
+    "id": "u02-usestate",
+    "unidad": "U02",
+    "titulo": "`useState`",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "Un componente se ejecuta entero en cada render y pierde sus variables locales. `useState` le pide a React que guarde un valor entre renders y devuelve el valor y su función para cambiarlo. El valor nuevo se ve recién en el render siguiente: para sumar dos veces se usa la actualización funcional.",
+    "explicacion": [
+      "El problema se mostró en U03: React, ante cada cambio, vuelve a ejecutar la función del componente, y una variable común (`let hola = ...`) vuelve a su valor original. Un `TextInput` con `value=\"hola\"` directamente no dejaba escribir, y guardar lo tipeado en una variable común tampoco servía por el re-render [U03-V1 45:48-57:37]. El material lo dice igual: el componente es una función que se ejecuta entera en cada render y pierde sus variables locales [U02.T01 p.20].",
+      "La solución es un **hook**: una función que empieza con `use` y le pide algo a React, que guarda el estado por fuera del componente y se lo devuelve en cada llamada [U02.T01 p.20]. Tiene dos reglas: llamarlos siempre en el nivel superior (nunca dentro de un `if`, un bucle o después de un `return`) y solo desde componentes o hooks propios, porque React identifica cada hook por el orden en que se llama [U02.T01 p.21].",
+      "`useState` devuelve un arreglo de dos posiciones: el estado y la función que lo cambia [U03-V1 46:52-54:21]. En la demo quedó `const [email, setEmail] = useState('')` con `value={email}` y `onChangeText={setEmail}`: un **componente controlado**, porque el valor vive en el estado y vuelve al input por `value`.",
+      "Dentro de un render el estado es una constante: el valor nuevo se ve en el render siguiente. Por eso dos `setCantidad(cantidad + 1)` seguidos suman 1, y para sumar 2 se usa la **actualización funcional**, `setCantidad(c => c + 1)` [U02.T01 p.22]. Si el valor inicial es una lista vacía o `null`, se le pasa el tipo con un genérico.",
+      "Dos límites. Si hay muchas transiciones repartidas en muchos manejadores, el material propone `useReducer`, que junta la lógica en una función aparte [U02.T01 p.28]; en clase quedó como algo para casos específicos, sin forzarlo [U02-V2 52:58]. Y lo que se muestra en pantalla va en `useState`, no en `useRef` [U02.T01 p.25].",
+      "En el TP, el login usa estado controlado con email y clave precargados (`login.tsx:20-22`); Turnos tiene 8 `useState` y el panel admin, 17. Las reglas se cumplen en el admin, que llama todos sus hooks antes del `return` condicional por rol, pero `VideoViewer` llama a `useVideoPlayer` después de un `return` temprano para web, lo que rompe la primera regla aunque `Platform.OS` no cambie en ejecución."
+    ],
+    "definiciones": [
+      {
+        "termino": "Hook",
+        "definicion": "Función que empieza con `use` y le pide algo a React (estado, efectos, contexto).",
+        "ref": "[U02.T01 p.20]"
+      },
+      {
+        "termino": "Componente controlado",
+        "definicion": "Input cuyo valor vive en un estado y se le devuelve por `value`.",
+        "ref": "[U03-V1 34:10]"
+      },
+      {
+        "termino": "Actualización funcional",
+        "definicion": "Pasarle al `set...` una función que recibe el valor anterior: `setX(x => x + 1)`.",
+        "ref": "[U02.T01 p.22]"
+      }
+    ],
+    "comparacion": {
+      "titulo": "Dónde guardar un valor dentro de un componente",
+      "columnas": [
+        "",
+        "Variable `let`",
+        "`useState`",
+        "`useRef`"
+      ],
+      "filas": [
+        [
+          "Sobrevive entre renders",
+          "No",
+          "Sí",
+          "Sí"
+        ],
+        [
+          "Cambiarlo redibuja",
+          "No",
+          "Sí",
+          "No"
+        ],
+        [
+          "Uso",
+          "Cálculo temporal del render",
+          "Lo que se muestra en pantalla",
+          "Valores que no se muestran o referencias"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Poner `value` fijo en un `TextInput` sin `onChangeText`: no deja escribir.",
+        "ref": "[U03-V1 45:48-57:37]"
+      },
+      {
+        "texto": "Llamar dos veces `setX(x + 1)` esperando que sume 2.",
+        "ref": "[U02.T01 p.22]"
+      },
+      {
+        "texto": "Llamar un hook dentro de un `if` o después de un `return` temprano.",
+        "ref": "[U02.T01 p.21]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "ts",
+      "fragmento": "const [cantidad, setCantidad] = useState(0);\nconst [productos, setProductos] = useState<Producto[]>([]);\n\nsetCantidad(cantidad + 1);\nsetCantidad(cantidad + 1);   // suma 1, no 2\n\nsetCantidad(c => c + 1);\nsetCantidad(c => c + 1);     // actualización funcional: suma 2",
+      "ref": "[U02.T01 p.22]"
+    },
+    "citasProfe": [
+      {
+        "texto": "un use state no es nada más que un hook",
+        "ref": "[U03-V1 46:52]"
+      },
+      {
+        "texto": "useState y useEffect son los que más se van a usar",
+        "ref": "[U02-V2 52:58]"
+      },
+      {
+        "texto": "No hay que forzar el uso de algo si es que no entienden cómo usarlo",
+        "ref": "[U02-V2 52:58]"
+      }
+    ],
+    "aclaraciones": [
+      "Una versión de la guía dice que el panel admin tiene 16 `useState`; el código tiene 17 (`admin/index.tsx`, líneas 31 a 58). La pregunta rápida conserva la cifra original."
+    ],
+    "referencias": [
+      "[U02.T01 p.22]; [U03-V1 45:48-57:37]; [U02-V2 51:53-54:00]",
+      "[U02.T01 p.20-21, 25, 28]",
+      "[U03-V1 34:10]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`useState('emiliano@mail.com')` y `useState('123456')` precargados en el login (`login.tsx:20-21`), con `value` y `onChangeText`; 17 `useState` en `admin/index.tsx` y 8 en `disponibilidad.tsx`. `VideoViewer.tsx:11-26` llama a `useVideoPlayer` después de un `return` para web, contra la regla de hooks.",
+      "archivos": [
+        {
+          "ruta": "src/app/(auth)/login.tsx",
+          "lineas": "20-22"
+        },
+        {
+          "ruta": "src/app/admin/index.tsx",
+          "lineas": "31-58",
+          "nota": "17 estados, todos antes del `return` por rol"
+        },
+        {
+          "ruta": "src/app/(tabs)/disponibilidad.tsx",
+          "lineas": "24-33",
+          "nota": "8 estados"
+        },
+        {
+          "ruta": "src/componentes/VideoViewer.tsx",
+          "lineas": "11-26",
+          "nota": "hook después de un `return`"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.15",
+      "6.2.1",
+      "7.C6"
+    ],
+    "preguntasRelacionadas": [
+      "6.2.2",
+      "1A.14",
+      "4.20",
+      "7.B9",
+      "6.2.5",
+      "1A.20"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué no alcanza con una variable `let`?",
+      "¿Qué pasa si llamás dos veces `setX(x + 1)`?",
+      "¿No convendría `useReducer` para los 16 estados del admin?"
+    ]
+  },
+  {
+    "id": "u02-useeffect",
+    "unidad": "U02",
+    "titulo": "`useEffect`",
+    "prioridad": "alta",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "`useEffect` corre código después del render para sincronizar con algo externo. Con `[]` corre una vez al montar; con `[a, b]`, al montar y cuando cambian; sin arreglo, después de cada render. El `return` es la limpieza (timers, suscripciones) y corre antes de repetir el efecto y al desmontar.",
+    "explicacion": [
+      "En clase se presentó como el hook que dispara una función en base a lo que le pasás, y se distinguió de `useState`: uno guarda, el otro reacciona a cambios [U03-V3 1:24:31]. El material lo enmarca en el ciclo de vida: montaje, actualización y desmontaje; los hooks no son métodos de ciclo de vida, son la herramienta para reaccionar a esos momentos [U02.T01 p.33].",
+      "Todo depende del **arreglo de dependencias**. Con `[]` corre una vez, al montarse. Con `[a, b]` corre al montarse y cada vez que cambia `a` o `b`, limpiando antes. Sin arreglo corre después de cada render, y el material advierte que casi nunca es lo que querés [U02.T01 p.23]. En el ejemplo de clase, `[id]` hizo que el título de la pantalla se actualizara al cambiar el parámetro de la ruta [U03-V3 1:24:31-1:28:50].",
+      "La función que devuelve el efecto es la **limpieza**: sin ella, un `setInterval` queda vivo para siempre. Antes, con clases, montar y desmontar eran métodos separados; ahora quedan juntos, y es difícil olvidarse de limpiar algo que está tres líneas más abajo [U02.T01 p.23, 34]. Conviene pensar el efecto como empezar y dejar de sincronizar: si `salaId` pasa de 'a' a 'b', React primero cancela 'a' y después se suscribe a 'b' [U02.T01 p.36]. En desarrollo, StrictMode monta, desmonta y vuelve a montar a propósito: si ves dos pedidos, falta la limpieza [U02.T01 p.37].",
+      "El patrón de clase para cargar datos combina estados de datos y `loading` con un efecto al montar: `getRutas().then(setRutas).finally(() => setLoading(false))`. El profe remarcó que `.then(setRutas)` equivale a `.then(rutas => setRutas(rutas))` [U04-V4 50:10-52:15]. En la práctica de ubicación, el pedido de ubicación se pasó a un efecto con `[]` para no hacer esperar al usuario al guardar [U04-V5 42:52-47:06].",
+      "Dos errores del material: sacar dependencias para que no se ejecute de más, que deja al efecto leyendo valores viejos, y usar un efecto para derivar estado, que se calcula en el render [U02.T01 p.42]. `npx expo lint` avisa la dependencia faltante con la regla `react-hooks/exhaustive-deps` [U02.T03 p.19].",
+      "En el TP están los tres usos típicos: el catálogo carga con `[]`, Turnos recarga la grilla con `[espacioIdSeleccionado, fechaSeleccionada]` y `NetworkContext` arranca un `setInterval` de 10 s y lo limpia con `clearInterval`."
+    ],
+    "comparacion": {
+      "titulo": "Arreglo de dependencias",
+      "columnas": [
+        "Forma",
+        "Cuándo corre",
+        "En el TP"
+      ],
+      "filas": [
+        [
+          "Sin arreglo",
+          "Después de cada render",
+          "No se usa"
+        ],
+        [
+          "`[]`",
+          "Una vez, al montar",
+          "`(tabs)/index.tsx:31-33`"
+        ],
+        [
+          "`[a, b]`",
+          "Al montar y cuando cambia `a` o `b`",
+          "`disponibilidad.tsx:40-44`"
+        ],
+        [
+          "`return () => ...`",
+          "Antes de repetir el efecto y al desmontar",
+          "`NetworkContext.tsx:17-21`"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Efecto sin limpieza: timers, suscripciones y listeners se acumulan.",
+        "ref": "[U02.T01 p.42]"
+      },
+      {
+        "texto": "Sacar dependencias del arreglo para que no corra de más: lee valores viejos.",
+        "ref": "[U02.T01 p.42]"
+      },
+      {
+        "texto": "Usar un efecto más otro `useState` para un valor derivado en vez de calcularlo.",
+        "ref": "[U02.T01 p.42]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "useEffect(() => {\n  getRutas()\n    .then(setRutas)          // = .then(rutas => setRutas(rutas))\n    .finally(() => setLoading(false));\n}, []);",
+      "ref": "[U04-V4 50:10-52:15]",
+      "nota": "Patrón de la práctica: datos y loading en estado, efecto al montar."
+    },
+    "citasProfe": [
+      {
+        "texto": "Si le pasamos un parámetro ID, solamente se dispara cuando ID cambia.",
+        "ref": "[U03-V3 1:24:31]"
+      },
+      {
+        "texto": "useState y useEffect son los que más se van a usar",
+        "ref": "[U02-V2 52:58]"
+      }
+    ],
+    "aclaraciones": [
+      "En clase se dijo que sin arreglo el efecto \"se dispara apenas se carga el componente\" [U03-V3 1:24:31-1:25:37]. Lo correcto: sin arreglo corre después de cada render; el que corre solo al montar es el de `[]`."
+    ],
+    "referencias": [
+      "[U02.T01 p.23, 35-36, 42]; [U03-V3 1:24:31-1:28:50]; [U04-V4 50:10-52:15]",
+      "[U02.T01 p.33-34, 37]",
+      "[U02.T03 p.19]",
+      "[U04-V5 42:52-48:09]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`useEffect([])` llama a `cargarDatos` (`(tabs)/index.tsx:31-33`); `[espacioIdSeleccionado, fechaSeleccionada]` dispara `cargarGrilla` (`disponibilidad.tsx:40-44`); Mis Reservas usa `[usuario, tabActiva]` (`mis-reservas.tsx:27-29`); el polling de red se limpia con `clearInterval` (`NetworkContext.tsx:17-21`); el layout raíz inicializa SQLite con `[]` (`_layout.tsx:11-13`).",
+      "archivos": [
+        {
+          "ruta": "src/app/(tabs)/index.tsx",
+          "lineas": "31-33"
+        },
+        {
+          "ruta": "src/app/(tabs)/disponibilidad.tsx",
+          "lineas": "35-44"
+        },
+        {
+          "ruta": "src/app/(tabs)/mis-reservas.tsx",
+          "lineas": "27-29"
+        },
+        {
+          "ruta": "src/context/NetworkContext.tsx",
+          "lineas": "17-21",
+          "nota": "`setInterval` con limpieza"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.16",
+      "7.B7",
+      "4.12"
+    ],
+    "preguntasRelacionadas": [
+      "10.2.4",
+      "7.B4",
+      "7.B9",
+      "6.1.1",
+      "6.1.2"
+    ],
+    "preguntasRapidas": [
+      "¿Cuándo corre un efecto con `[]` y uno sin arreglo?",
+      "¿Para qué está el `return` en `NetworkContext`?",
+      "¿Qué pasa si sacás una dependencia?"
+    ]
+  },
+  {
+    "id": "u02-usememo",
+    "unidad": "U02",
+    "titulo": "`useMemo`",
+    "prioridad": "media",
+    "enfasisClase": 2,
+    "fuenteTipo": "mixto",
+    "resumen": "`useMemo` memoriza un valor y lo recalcula solo si cambian sus dependencias. Memorizar tiene costo: no se pone por las dudas, sino ante un cálculo caro medido o un objeto que conviene no recrear. En clase se usó para el `value` del Provider del tema.",
+    "explicacion": [
+      "`useMemo` guarda el resultado de un cálculo y lo devuelve igual en los renders siguientes, salvo que cambie alguna de sus dependencias [U02.T01 p.26]. El material es tajante: no se pone por las dudas, porque memorizar también cuesta; va cuando hay un cálculo caro **medido**. Desde React Compiler, el compilador puede memorizar por vos en el build (se activa con `experiments.reactCompiler` en `app.json`) [U02.T01 p.27].",
+      "En clase apareció con el ThemeProvider: el objeto `value` del Provider se armaba de nuevo en cada render. El profe mostró dos salidas: un `useEffect` con otro `useState`, que funciona pero queda feo, y la elegida, `useMemo` con `[tema]`, que además ahorra un estado [U03-V5 1:10:07-1:14:25]. Importa porque los consumidores del contexto se vuelven a renderizar cuando el `value` cambia de identidad.",
+      "En el TP no hay ningún `useMemo`. El `value` de `AuthProvider` (y el de `NetworkProvider`) es un objeto nuevo en cada render, y el filtrado del catálogo se recalcula siempre, aunque con 11 canchas es barato. Un candidato concreto, hipotético, es el HTML del mapa: `generarLeafletHtml()` se vuelve a generar en cada render dentro de `source`. Siguiendo el orden del material, primero se mide (resaltado de renders, Profiler) y después se optimiza [U02.T04 p.13, 22]."
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Poner `useMemo` por las dudas, sin haber medido.",
+        "ref": "[U02.T01 p.26]"
+      },
+      {
+        "texto": "Usar `useEffect` + otro `useState` para un valor que se puede derivar o memorizar.",
+        "ref": "[U03-V5 1:10:07-1:14:25]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "// Opción 1 (descartada): useEffect + otro useState para armar el value\n// Opción 2: memorizar el objeto del Provider\nconst values = useMemo(\n  () => ({ tema, setTema, paleta: palettes[tema] }),\n  [tema]\n);",
+      "ref": "[U03-V5 1:10:07-1:14:25]"
+    },
+    "citasProfe": [
+      {
+        "texto": "se calcula solamente cuando cambia el tema",
+        "ref": "[U03-V5 1:13:24]"
+      }
+    ],
+    "referencias": [
+      "[U02.T01 p.26]; [U03-V5 1:10:07-1:14:25]",
+      "[U02.T01 p.27]",
+      "[U02.T04 p.13, 22]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado: el `value` de `AuthProvider` es un objeto nuevo en cada render (`AuthContext.tsx:65-76`) y el filtrado del catálogo se recalcula en cada render (`(tabs)/index.tsx:74-84`). Hipotético: memorizar el `value` con `useMemo` y, si una medición lo justifica, el HTML del mapa (`mapa.tsx:162`).",
+      "archivos": [
+        {
+          "ruta": "src/context/AuthContext.tsx",
+          "lineas": "65-76",
+          "nota": "`value` sin memorizar"
+        },
+        {
+          "ruta": "src/app/(tabs)/index.tsx",
+          "lineas": "74-84"
+        },
+        {
+          "ruta": "src/app/(tabs)/mapa.tsx",
+          "lineas": "162",
+          "nota": "`generarLeafletHtml()` en cada render"
+        }
+      ]
+    },
+    "desafio": [
+      "4.24",
+      "6.6.1",
+      "10.2.2"
+    ],
+    "preguntasRelacionadas": [
+      "6.6.3",
+      "6.6.4",
+      "1A.25",
+      "1A.34"
+    ],
+    "preguntasRapidas": [
+      "¿Dónde pondrías un `useMemo` y por qué?",
+      "¿Cómo medirías que hace falta antes de agregarlo?",
+      "¿Qué les pasa a los consumidores de `useAuth` cuando cambia el `value`?"
+    ]
+  },
+  {
+    "id": "u02-usecallback",
+    "unidad": "U02",
+    "titulo": "`useCallback`",
+    "prioridad": "complementaria",
+    "enfasisClase": 0,
+    "fuenteTipo": "pdf",
+    "resumen": "`useCallback` memoriza una función: devuelve la misma referencia entre renders mientras no cambien sus dependencias. Se justifica si la función es dependencia de un efecto, se pasa a un componente memorizado o va a `useFocusEffect`, donde es obligatorio.",
+    "explicacion": [
+      "En cada render, las funciones declaradas dentro del componente se crean de nuevo: hacen lo mismo, pero son otro objeto. Casi siempre da igual. `useCallback` memoriza la **función** (misma identidad entre renders) así como `useMemo` memoriza un **valor** [U02.T01 p.26].",
+      "El material marca cuándo tiene sentido: cuando la función es dependencia de un efecto (si cambia en cada render, el efecto se dispara en cada render), cuando se pasa a un componente memorizado con `React.memo`, o cuando va a `useFocusEffect`. En este último caso no es opcional: sin `useCallback` la función es nueva en cada render y el efecto se reinicia sin parar [U02.T01 p.26, 39]. Fuera de esos casos vale la misma regla que para `useMemo`: no por las dudas, y primero medir [U02.T04 p.13, 22]. React Compiler puede hacer esta memorización en el build [U02.T01 p.27].",
+      "En el TP no se usa. `actualizarUsuario`, `logout`, `cambiarRol` y `verificarBiometria` se recrean en cada render del `AuthProvider` y viajan en un `value` nuevo, así que los consumidores de `useAuth` se re-renderizan ante cualquier cambio; a esta escala es aceptable. Donde sí haría falta (hipotético) es si se agrega `useFocusEffect` en Mis Reservas: la función de carga tendría que ir envuelta en `useCallback`."
+    ],
+    "comparacion": {
+      "titulo": "Memorizar en React",
+      "columnas": [
+        "Herramienta",
+        "Qué memoriza",
+        "Cuándo"
+      ],
+      "filas": [
+        [
+          "`useMemo`",
+          "Un valor (resultado de un cálculo u objeto)",
+          "Cálculo caro medido; `value` de un Provider"
+        ],
+        [
+          "`useCallback`",
+          "Una función (su identidad)",
+          "Dependencia de un efecto, prop de un componente memorizado, `useFocusEffect`"
+        ],
+        [
+          "React Compiler",
+          "Lo hace el compilador en el build",
+          "Proyectos que respetan las reglas de React"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Pasarle a `useFocusEffect` una función sin `useCallback`: el efecto se reinicia en cada render.",
+        "ref": "[U02.T01 p.39]"
+      },
+      {
+        "texto": "Envolver todas las funciones en `useCallback` sin necesidad: memorizar tiene su propio costo.",
+        "ref": "[U02.T01 p.26]"
+      }
+    ],
+    "aclaraciones": [
+      "No se trató en las clases grabadas: el contenido sale de la diapositiva U02.T01 (p.26, 39)."
+    ],
+    "referencias": [
+      "[U02.T01 p.26, 39]",
+      "[U02.T01 p.27]",
+      "[U02.T04 p.13, 22]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado: `actualizarUsuario`, `logout`, `cambiarRol` y `verificarBiometria` se recrean en cada render (`AuthContext.tsx:42-63`) y van en un `value` nuevo (`:65-76`). Hipotético: envolverlas en `useCallback` junto con un `useMemo` del `value`, y usarlo de forma obligatoria si se agrega `useFocusEffect`.",
+      "archivos": [
+        {
+          "ruta": "src/context/AuthContext.tsx",
+          "lineas": "42-76"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.25",
+      "6.6.3",
+      "6.6.4"
+    ],
+    "preguntasRelacionadas": [
+      "3.17",
+      "5.2",
+      "1A.17"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué `useFocusEffect` exige `useCallback`?",
+      "¿Qué ganarías envolviendo `logout`?"
+    ]
+  },
+  {
+    "id": "u02-useref",
+    "unidad": "U02",
+    "titulo": "`useRef`",
+    "prioridad": "media",
+    "enfasisClase": 1,
+    "fuenteTipo": "mixto",
+    "resumen": "\"Una caja que persiste\": el valor de `ref.current` sobrevive entre renders y cambiarlo no redibuja. Sirve para guardar datos que no se muestran y, sobre todo, para referenciar un componente y llamar a sus métodos imperativos (`focus()`, `takePictureAsync()`, `injectJavaScript()`).",
+    "explicacion": [
+      "El material define `useRef` como una caja que persiste: lo que guardás en `.current` sobrevive entre renders, pero cambiarlo **no redibuja**. Por eso la regla: si el valor se muestra en pantalla, va en `useState`, no en `useRef` [U02.T01 p.25].",
+      "El uso más común es referenciar un componente para operaciones **imperativas**: `focus()`, `scrollTo()` o reproducir un video, con `useRef<TextInput>(null)` y `campo.current?.focus()` [U02.T01 p.25]. En clase se lo describió como el hook para poder acceder a algún elemento [U02-V2 52:58]. Apareció en dos prácticas: `returnKeyType=\"next\"` no salta solo al campo siguiente, hay que hacerle `focus` con su referencia [U03-V1 1:00:49-1:01:51]; y para sacar una foto se usó `useRef<CameraView>` y `cameraRef.current.takePictureAsync()`, comparado con las referencias de HTML o Angular [U04-V4 31:00-34:08]. En React 19, `ref` es una prop más y ya no hace falta `forwardRef` [U02.T01 p.30].",
+      "En el TP, el mapa guarda `webViewRef = useRef<WebView>(null)` y `centrarEnPredio` llama a `webViewRef.current.injectJavaScript(...)` para ejecutar `window.centrarEn` dentro del Leaflet. El `current` es `null` antes de que el WebView se monte y en web, donde no se renderiza; por eso el código lo chequea antes de usarlo. El escáner, en cambio, usa un `useState` (`escaneando`) como bandera; como el estado nuevo se ve recién en el render siguiente, una ref sería una mejora posible (hipotética) para cortar lecturas repetidas en el acto."
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Guardar en una ref algo que se muestra en pantalla: cambia, pero la interfaz no se entera.",
+        "ref": "[U02.T01 p.25]"
+      },
+      {
+        "texto": "Usar `ref.current` sin chequear `null` (antes del montaje o si el componente no se renderiza).",
+        "ref": "mapa.tsx:38"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "const campo = useRef<TextInput>(null);   // la caja arranca en null\n\n// en el JSX se engancha con la prop ref\n<TextInput ref={campo} />\n\n// y después se usa de forma imperativa\ncampo.current?.focus();",
+      "ref": "[U02.T01 p.25]",
+      "nota": "La línea del JSX completa el ejemplo de la diapositiva."
+    },
+    "citasProfe": [
+      {
+        "texto": "es para poder acceder a algún elemento",
+        "ref": "[U02-V2 52:58]"
+      }
+    ],
+    "referencias": [
+      "[U02.T01 p.25]; [U02-V2 51:53-54:00]",
+      "[U03-V1 1:00:49-1:01:51]",
+      "[U04-V4 31:00-34:08]",
+      "[U02.T01 p.30]"
+    ],
+    "aplicacionTP": {
+      "estado": "implementado",
+      "texto": "`const webViewRef = useRef<WebView>(null)` y `webViewRef.current.injectJavaScript(...)` en `centrarEnPredio` (`mapa.tsx:19, 36-42`), con chequeo de `null`; el WebView se engancha con `ref={webViewRef}` (`:160`). En el escáner la bandera de lectura es un `useState` (`escaneo.tsx:24, 121`), no una ref.",
+      "archivos": [
+        {
+          "ruta": "src/app/(tabs)/mapa.tsx",
+          "lineas": "19, 36-42, 160"
+        },
+        {
+          "ruta": "src/app/encargado/escaneo.tsx",
+          "lineas": "24, 44, 121",
+          "nota": "bandera `escaneando` con `useState`"
+        }
+      ]
+    },
+    "desafio": [
+      "4.19",
+      "10.3.4",
+      "2.14"
+    ],
+    "preguntasRelacionadas": [
+      "1B.11",
+      "6.8.3",
+      "1A.15"
+    ],
+    "preguntasRapidas": [
+      "¿Por qué `useRef` y no `useState` para el WebView?",
+      "¿Qué hace `injectJavaScript`?",
+      "¿Cuándo puede ser `null` el `current`?"
+    ]
+  },
+  {
+    "id": "u02-usefocuseffect",
+    "unidad": "U02",
+    "titulo": "`useFocusEffect`",
+    "prioridad": "alta",
+    "enfasisClase": 0,
+    "fuenteTipo": "pdf",
+    "resumen": "En una app, navegar no desmonta la pantalla anterior: queda montada para volver al instante. Por eso el `useEffect(..., [])` que refresca \"al entrar\" corre una sola vez. `useFocusEffect` corre cada vez que la pantalla toma el foco y limpia al perderlo; necesita `useCallback`.",
+    "explicacion": [
+      "El material habla de **tres relojes** que corren a la vez y son independientes: el del componente (montaje, actualización, desmontaje, con `useEffect`), el de la pantalla (foco y pérdida de foco, con `useFocusEffect`) y el de la app (primer y segundo plano, con `AppState`) [U02.T01 p.41]. Este tema es el segundo reloj.",
+      "En la web, al navegar de A a B, A se desmonta. En una app no: React Navigation, sobre la que está construido Expo Router, deja la pantalla montada para que volver sea instantáneo y conserve el scroll, el formulario y la posición. La consecuencia es que al salir no corre la limpieza y al volver no se re-ejecutan los efectos: el `useEffect(..., [])` que refresca datos al entrar corre una sola vez en toda la vida de la app [U02.T01 p.38].",
+      "Por eso hay que distinguir **desmontar** de **perder el foco**. Desmontar es salir del árbol: corre la limpieza del efecto y se pierde el estado. Perder el foco es quedar tapada por otra pantalla o pestaña: sigue montada y con su estado. Esperar que la pantalla se vuelva a montar es uno de los cuatro errores de siempre que lista el material [U02.T01 p.42].",
+      "`useFocusEffect` es un `useEffect` atado al ciclo de vida de la navegación: corre cuando la pantalla toma el foco y ejecuta la limpieza cuando lo pierde. Se importa de `expo-router`. El ejemplo del material refresca un saldo cada 5 segundos solo mientras la pantalla se ve. Y el `useCallback` no es opcional: sin él, la función es nueva en cada render y el efecto se reinicia sin parar [U02.T01 p.39].",
+      "Sirve para dos cosas: traer datos frescos cada vez que el usuario vuelve a una pantalla, y frenar trabajo (un intervalo, una suscripción) mientras la pantalla no se ve.",
+      "En el TP no se usa. Mis Reservas carga con un `useEffect` que depende de `[usuario, tabActiva]`: la primera visita a la pestaña carga bien, pero si ya estaba abierta y el usuario reserva en Turnos y vuelve, ninguna dependencia cambió y la lista queda vieja hasta que cambie entre Próximas y Pasadas o cambie la sesión. Esa pantalla tampoco tiene pull-to-refresh, que está solo en el catálogo. Con la grilla de Turnos pasa algo parecido: solo se recarga al cambiar de cancha o de fecha."
+    ],
+    "pasos": [
+      "Importar `useFocusEffect` desde `expo-router` y `useCallback` desde `react`.",
+      "Envolver la carga en `useCallback` con las mismas dependencias (`[usuario, tabActiva]`).",
+      "Reemplazar el `useEffect` de `mis-reservas.tsx:27-29` por `useFocusEffect(callback)`.",
+      "Probar el caso: abrir Mis Reservas, ir a Turnos, reservar y volver a la pestaña."
+    ],
+    "comparacion": {
+      "titulo": "`useEffect([])` frente a `useFocusEffect`",
+      "columnas": [
+        "",
+        "`useEffect(..., [])`",
+        "`useFocusEffect`"
+      ],
+      "filas": [
+        [
+          "Corre",
+          "Una vez, al montar",
+          "Cada vez que la pantalla toma el foco"
+        ],
+        [
+          "Limpia",
+          "Al desmontar",
+          "Al perder el foco"
+        ],
+        [
+          "Necesita `useCallback`",
+          "No",
+          "Sí"
+        ],
+        [
+          "Ejemplo",
+          "Inicializar algo una sola vez",
+          "Refrescar Mis Reservas al volver"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Esperar que la pantalla se remonte al volver a ella.",
+        "ref": "[U02.T01 p.42]"
+      },
+      {
+        "texto": "Pasar la función sin `useCallback`: el efecto se reinicia sin parar.",
+        "ref": "[U02.T01 p.39]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "import { useFocusEffect } from 'expo-router';\n\nuseFocusEffect(useCallback(() => {\n  const id = setInterval(refrescarSaldo, 5000);\n  return () => clearInterval(id);   // al perder el foco\n}, []));",
+      "ref": "[U02.T01 p.39]"
+    },
+    "aclaraciones": [
+      "No se trató en las clases grabadas: el contenido sale de U02.T01 (p.38-42).",
+      "Mis Reservas no tiene pull-to-refresh (`RefreshControl` está solo en el catálogo), así que tampoco hay un refresco manual que compense."
+    ],
+    "referencias": [
+      "[U02.T01 p.38-39, 41]",
+      "[U02.T01 p.42]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado: `mis-reservas.tsx:27-29` (`[usuario, tabActiva]`) y `disponibilidad.tsx:40-44` usan `useEffect`, así que al volver a una pestaña ya abierta después de reservar no se refresca. Hipotético: `useFocusEffect(useCallback(() => { cargarDatos(); }, [usuario, tabActiva]))`.",
+      "archivos": [
+        {
+          "ruta": "src/app/(tabs)/mis-reservas.tsx",
+          "lineas": "27-29"
+        },
+        {
+          "ruta": "src/app/(tabs)/disponibilidad.tsx",
+          "lineas": "40-44"
+        }
+      ]
+    },
+    "desafio": [
+      "10.2.4",
+      "3.17",
+      "5.2"
+    ],
+    "preguntasRelacionadas": [
+      "1A.17",
+      "1A.16",
+      "7.B7"
+    ],
+    "preguntasRapidas": [
+      "Reservo y voy a Mis Reservas: ¿por qué no aparece?",
+      "¿Cómo lo arreglarías?",
+      "¿Qué diferencia hay entre desmontar y perder el foco?"
+    ]
+  },
+  {
+    "id": "u02-appstate",
+    "unidad": "U02",
+    "titulo": "`AppState`",
+    "prioridad": "complementaria",
+    "enfasisClase": 0,
+    "fuenteTipo": "pdf",
+    "resumen": "El tercer reloj: la app entera pasa a primer o segundo plano. `AppState` informa `active`, `background` e `inactive` (solo iOS). Se usa para refrescar al volver a la app y, con TanStack Query, para conectar `focusManager`.",
+    "explicacion": [
+      "Además del componente y la pantalla, el material suma un tercer reloj: la **aplicación**. El usuario cambia a otra app, va al inicio o atiende una llamada, y la tuya sigue montada, con la misma pantalla enfocada. Ni `useEffect` ni `useFocusEffect` se enteran; para eso está `AppState` [U02.T01 p.40-41].",
+      "Tiene tres estados: `active` (primer plano), `background` (otra app o la pantalla de inicio) e `inactive`, que existe solo en iOS (transiciones o una llamada entrante). Se usa suscribiéndose al evento `change` dentro de un efecto y refrescando cuando el estado vuelve a `active`; la limpieza es `sub.remove()` [U02.T01 p.40].",
+      "Reaparece en U05: en React Native no hay foco de ventana, así que TanStack Query no sabe solo que volviste a la app; hay que conectar `AppState` con su `focusManager` [U05.T01 p.22].",
+      "En el TP no hay `AppState`. El estado de red depende de un `setInterval` de 10 segundos en `NetworkContext`. Una mejora posible (hipotética) es llamar a `comprobarConexion()` cuando la app vuelve a `active`, para que el banner offline se actualice al instante en lugar de esperar al próximo intervalo."
+    ],
+    "definiciones": [
+      {
+        "termino": "`active`",
+        "definicion": "La app está en primer plano.",
+        "ref": "[U02.T01 p.40]"
+      },
+      {
+        "termino": "`background`",
+        "definicion": "El usuario fue a otra app o a la pantalla de inicio.",
+        "ref": "[U02.T01 p.40]"
+      },
+      {
+        "termino": "`inactive`",
+        "definicion": "Solo iOS: transición o llamada entrante.",
+        "ref": "[U02.T01 p.40]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "useEffect(() => {\n  const sub = AppState.addEventListener('change', estado => {\n    if (estado === 'active') refrescar();\n  });\n  return () => sub.remove();\n}, []);",
+      "ref": "[U02.T01 p.40]",
+      "nota": "El `useEffect` que envuelve la suscripción completa el ejemplo de la diapositiva."
+    },
+    "aclaraciones": [
+      "No se trató en las clases grabadas: sale de U02.T01 (p.40-41) y U05.T01 (p.22)."
+    ],
+    "referencias": [
+      "[U02.T01 p.40-41]; [U05.T01 p.22]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado: no hay `AppState` en `src/`; el estado de red depende de un `setInterval` de 10 s (`NetworkContext.tsx:17-21`). Hipotético: suscribirse a `change` y llamar a `comprobarConexion()` al volver a `active`.",
+      "archivos": [
+        {
+          "ruta": "src/context/NetworkContext.tsx",
+          "lineas": "17-21"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.17",
+      "1B.22",
+      "5.8"
+    ],
+    "preguntasRelacionadas": [
+      "4.12",
+      "2.6"
+    ],
+    "preguntasRapidas": [
+      "¿Cuál de los tres relojes usarías para revisar la red al volver a la app?",
+      "¿Qué significa `inactive`?"
+    ]
+  },
+  {
+    "id": "u02-testing",
+    "unidad": "U02",
+    "titulo": "Testing",
+    "prioridad": "complementaria",
+    "enfasisClase": 1,
+    "fuenteTipo": "mixto",
+    "resumen": "Un test es una red para cambiar código con confianza y evita que un bug vuelva. Pirámide: muchos tests de unidad (Jest + Testing Library), algunos de integración (`expo-router/testing-library`) y pocos E2E (Maestro). Se testea la lógica propia y lo que el usuario percibe.",
+    "explicacion": [
+      "En clase el testing se presentó para saber que existe, aclarando que no necesariamente se pide para el TP [U01-V2 1:01:15]. La idea: probar las funciones de manera aislada y saber que siguen devolviendo lo mismo aunque alguien las modifique dentro de tres meses [U02-V2 55:01]. No es lo mismo que QA, manual o automatizado con herramientas como Selenium o Playwright [U01-V2 1:03:24-1:07:34].",
+      "El material ordena tres escalas en una **pirámide**: muchos tests de unidad, algunos de integración y pocos E2E, que dan más confianza pero son caros y se rompen al cambiar un texto [U02.T03 p.5]. El criterio de qué testear es testear lo que el usuario percibe, no cómo está hecho por dentro: lógica propia, componentes con condiciones (lista vacía, error) y lo que ya se rompió una vez [U02.T03 p.6]. `jest-expo` es un preset que simula la parte nativa del SDK, y dentro de `app/` no van tests porque todo ahí es una ruta [U02.T03 p.8, 10]. Cada test sigue tres pasos: preparar, actuar y verificar [U02.T03 p.12].",
+      "En el TP no hay tests. El orden que propone el material es: lint y TypeScript sin errores, después tests de la lógica propia [U02.T03 p.21]. Los candidatos naturales son `obtenerGrillaTurnos` y `crearReserva`, donde están los errores documentados de la grilla; ante un bug, primero se escribe el test que lo reproduce y se lo ve fallar [U02.T03 p.20]."
+    ],
+    "comparacion": {
+      "titulo": "La pirámide de tests",
+      "columnas": [
+        "Escala",
+        "Qué prueba",
+        "Con qué",
+        "Costo"
+      ],
+      "filas": [
+        [
+          "Unidad",
+          "Una función o componente aislado",
+          "Jest + Testing Library",
+          "Barato y rápido"
+        ],
+        [
+          "Integración",
+          "Pantalla con navegación y datos",
+          "`expo-router/testing-library`",
+          "Medio"
+        ],
+        [
+          "E2E",
+          "La app instalada, como la usa una persona",
+          "Maestro (YAML)",
+          "Caro y lento"
+        ]
+      ]
+    },
+    "erroresComunes": [
+      {
+        "texto": "Testear detalles de implementación o estilos exactos: el test se rompe al refactorizar.",
+        "ref": "[U02.T03 p.6]"
+      },
+      {
+        "texto": "Abusar de snapshots: fallan ante cualquier cambio legítimo y se actualizan sin mirar.",
+        "ref": "[U02.T03 p.13]"
+      },
+      {
+        "texto": "Usar `react-test-renderer`, deprecado: el reemplazo es `@testing-library/react-native`.",
+        "ref": "[U02.T03 p.15]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "tsx",
+      "fragmento": "import { render, screen } from '@testing-library/react-native';\nimport Inicio from '@/app/index';\n\ntest('saluda al abrir', () => {\n  render(<Inicio />);\n  expect(screen.getByText('¡Bienvenida!')).toBeVisible();\n});",
+      "ref": "[U02.T03 p.9]"
+    },
+    "citasProfe": [
+      {
+        "texto": "No necesariamente lo vamos a pedir para el desarrollo de la aplicación",
+        "ref": "[U01-V2 1:01:15]"
+      },
+      {
+        "texto": "probar sus funciones de manera aislada y saber que siempre va a ... retornar el mismo valor",
+        "ref": "[U02-V2 55:01]"
+      }
+    ],
+    "referencias": [
+      "[U02.T03 p.5-6, 21]; [U01-V2 1:01:15-1:04:27]; [U02-V2 54:00-55:01]",
+      "[U02.T03 p.8-13, 20]",
+      "[U01-V2 1:03:24-1:07:34]"
+    ],
+    "aplicacionTP": {
+      "estado": "no-implementado",
+      "texto": "No implementado: no hay jest, `__tests__` ni script `test` (`package.json:51-58`). Candidatos naturales: `obtenerGrillaTurnos` y `crearReserva` (`reservas.ts:57-201`), por ejemplo un test que fije una reserva y verifique que ocupa solo su turno, que es donde están los errores conocidos de la grilla.",
+      "archivos": [
+        {
+          "ruta": "package.json",
+          "lineas": "51-58",
+          "nota": "sin script `test`"
+        },
+        {
+          "ruta": "src/servicios/reservas.ts",
+          "lineas": "57-201"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.33",
+      "5.17",
+      "3.12"
+    ],
+    "preguntasRelacionadas": [
+      "5.18",
+      "9.1",
+      "3.17"
+    ],
+    "preguntasRapidas": [
+      "¿Qué testearías primero?",
+      "¿Un test hubiera detectado el error de precedencia en la grilla?",
+      "¿Por qué no van tests dentro de `app/`?"
+    ]
+  },
+  {
+    "id": "u02-depuracion-y-rendimiento",
+    "unidad": "U02",
+    "titulo": "Depuración y rendimiento",
+    "prioridad": "complementaria",
+    "enfasisClase": 0,
+    "fuenteTipo": "pdf",
+    "resumen": "React Native DevTools (tecla `j`) da consola, breakpoints, red, árbol de componentes y Profiler; el Perf Monitor muestra los FPS de los hilos de UI y de JS. El rendimiento se mide en release, nunca en debug, y primero se mide y después se optimiza. `expo lint` es \"el test que no escribís\".",
+    "explicacion": [
+      "Primero, el contexto: en **debug** la app trae menú de desarrollo, LogBox, DevTools y Fast Refresh, que suman trabajo; en **release** todo eso se apaga y el código va optimizado y minificado. De ahí la regla: el rendimiento se mide en release, nunca en debug [U02.T04 p.4].",
+      "Con la tecla `m` se abre el menú y con `j`, **React Native DevTools**, la herramienta oficial desde RN 0.76, montada sobre Chrome DevTools y que funciona con Hermes. Trae consola, breakpoints (también condicionales, o con `debugger;`), red, el panel Components con props y estado editables y el Profiler. Flipper, `chrome://inspect` y Remote JS Debugging ya no se usan [U02.T04 p.5-14].",
+      "Para rendimiento: un cuadro dura 16,67 ms a 60 fps, y hay dos hilos, el de JS y el de UI. Los re-renders de más son la causa número uno de lentitud, y se ven con el resaltado de renders. El orden es reproducir, medir, cambiar una sola cosa y volver a medir [U02.T04 p.13-22]. `npx expo lint` detecta, por ejemplo, dependencias faltantes en un efecto [U02.T03 p.19].",
+      "En el TP solo hay `console.*`, sin error boundary, y el script `lint` existe pero no hay configuración de ESLint. Para un turno mal marcado, un breakpoint condicional dentro del bucle de `obtenerGrillaTurnos` muestra qué reserva coincidió (hipotético)."
+    ],
+    "pasos": [
+      "Reproducir el problema en un dispositivo real y con build release.",
+      "Medir con Perf Monitor, Profiler o el resaltado de renders.",
+      "Cambiar una sola cosa por vez.",
+      "Volver a medir; si no mejoró, revertir."
+    ],
+    "erroresComunes": [
+      {
+        "texto": "Medir rendimiento en debug.",
+        "ref": "[U02.T04 p.19]"
+      },
+      {
+        "texto": "Dejar `console.log` en el código publicado (se puede quitar en release con `babel-plugin-transform-remove-console`).",
+        "ref": "[U02.T04 p.19]"
+      },
+      {
+        "texto": "Seguir un tutorial con Flipper o Remote JS Debugging: están fuera de uso.",
+        "ref": "[U02.T04 p.8]"
+      }
+    ],
+    "codigoClase": {
+      "lenguaje": "bash",
+      "fragmento": "npx expo start          # en la terminal: m abre el menú, j abre DevTools\nadb shell input keyevent 82   # Android: menú si sacudir no funciona\nnpx expo lint           # la primera vez crea eslint.config.js\n# quitar console.* de release:\nnpm i babel-plugin-transform-remove-console --save-dev",
+      "ref": "[U02.T04 p.5, 19]; [U02.T03 p.19]"
+    },
+    "aclaraciones": [
+      "En U02-V2 se anunció un repaso de depuración (DevTools, inspeccionar una vista) que finalmente no se dio y quedó para un video [U02-V2 0:00-2:08]; el contenido sale de U02.T04."
+    ],
+    "referencias": [
+      "[U02.T04 p.4-22]; [U02.T03 p.19]",
+      "[U02-V2 0:00-2:08]"
+    ],
+    "aplicacionTP": {
+      "estado": "parcial",
+      "texto": "Parcial: solo `console.error/warn/log` (p. ej. `espacio/[id].tsx:61`), sin error boundary ni plugin para quitar `console.*` en release; script `\"lint\": \"expo lint\"` sin archivo de configuración de ESLint (`package.json:57`). Hipotético: breakpoint condicional en la búsqueda de reservas de la grilla (`reservas.ts:122-127`).",
+      "archivos": [
+        {
+          "ruta": "package.json",
+          "lineas": "57",
+          "nota": "script `lint`"
+        },
+        {
+          "ruta": "src/app/espacio/[id].tsx",
+          "lineas": "61"
+        },
+        {
+          "ruta": "src/servicios/reservas.ts",
+          "lineas": "122-127",
+          "nota": "lugar para un breakpoint"
+        }
+      ]
+    },
+    "desafio": [
+      "1A.34",
+      "9.1",
+      "1A.7"
+    ],
+    "preguntasRelacionadas": [
+      "4.24",
+      "5.17",
+      "1A.25"
+    ],
+    "preguntasRapidas": [
+      "¿Cómo depurarías un turno mal marcado en la grilla?",
+      "¿Por qué se mide en release y no en debug?",
+      "¿Qué detecta `expo lint`?"
+    ]
+  }
+]

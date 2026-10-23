@@ -1,0 +1,110 @@
+[
+  {
+    "id": "U01",
+    "titulo": "Enfoques de desarrollo, Expo, entorno y Git",
+    "temas": [
+      "u01-enfoques-nativo-hibrido-y-web-pwa",
+      "u01-expo-go-vs-development-build",
+      "u01-eas-build-y-perfil-preview",
+      "u01-npx-expo-install-vs-npm-install",
+      "u01-git-commits-ramas-y-pull-requests"
+    ]
+  },
+  {
+    "id": "U02",
+    "titulo": "TypeScript, React, hooks, ciclo de vida, testing y depuración",
+    "temas": [
+      "u02-typescript-interfaces",
+      "u02-typescript-uniones-discriminadas",
+      "u02-typescript-genericos",
+      "u02-typescript-any",
+      "u02-props-vs-estado",
+      "u02-usestate",
+      "u02-useeffect",
+      "u02-usememo",
+      "u02-usecallback",
+      "u02-useref",
+      "u02-usefocuseffect",
+      "u02-appstate",
+      "u02-testing",
+      "u02-depuracion-y-rendimiento"
+    ]
+  },
+  {
+    "id": "U03",
+    "titulo": "Interfaz, estilos, navegación y Context",
+    "temas": [
+      "u03-componentes-base",
+      "u03-stylesheet-y-flexbox",
+      "u03-safe-area-y-edge-to-edge",
+      "u03-scrollview-vs-flatlist",
+      "u03-formularios-react-hook-form-zod",
+      "u03-imagenes-expo-image",
+      "u03-accesibilidad",
+      "u03-expo-router-basado-en-archivos-y-layout",
+      "u03-stack",
+      "u03-tabs",
+      "u03-grupos-de-rutas",
+      "u03-rutas-dinamicas-id-y-parametros",
+      "u03-router-push-vs-router-replace",
+      "u03-rutas-protegidas-stack-protected",
+      "u03-typedroutes",
+      "u03-context-y-provider"
+    ]
+  },
+  {
+    "id": "U04",
+    "titulo": "Librerías nativas, permisos y APIs del dispositivo",
+    "temas": [
+      "u04-modulos-nativos-y-eleccion-de-librerias",
+      "u04-cng-y-npx-expo-prebuild",
+      "u04-config-plugins-en-app-json",
+      "u04-permisos-declarar-vs-solicitar",
+      "u04-estados-del-permiso-y-canaskagain",
+      "u04-camara-cameraview-vs-expo-image-picker",
+      "u04-escaneo-de-qr",
+      "u04-sistema-de-archivos-expo-file-system",
+      "u04-ubicacion-expo-location",
+      "u04-mapas",
+      "u04-haptica-expo-haptics",
+      "u04-sensores-expo-sensors",
+      "u04-video-expo-video",
+      "u04-audio-expo-audio",
+      "u04-notificaciones-locales",
+      "u04-notificaciones-push"
+    ]
+  },
+  {
+    "id": "U05",
+    "titulo": "Redes, persistencia, estado global y conectividad",
+    "temas": [
+      "u05-capa-de-servicios-y-mocks",
+      "u05-fetch-vs-axios",
+      "u05-estados-de-carga-vacio-y-error",
+      "u05-tanstack-query",
+      "u05-clave-valor-expo-sqlite-kv-store",
+      "u05-sqlite-expo-sqlite",
+      "u05-offline-y-expo-network",
+      "u05-estado-global-zustand"
+    ]
+  },
+  {
+    "id": "U06",
+    "titulo": "Seguridad y computación ubicua",
+    "temas": [
+      "u06-owasp-mobile-top-10-2024",
+      "u06-securestore-y-tokens",
+      "u06-biometria-expo-local-authentication",
+      "u06-oauth-2-0-con-pkce",
+      "u06-webview-vs-navegador-del-sistema",
+      "u06-computacion-ubicua-iot-y-ble"
+    ]
+  },
+  {
+    "id": "U07",
+    "titulo": "Publicación e identidad de la aplicación",
+    "temas": [
+      "u07-identidad-de-la-app-icono-splash-y-nombre"
+    ]
+  }
+]
