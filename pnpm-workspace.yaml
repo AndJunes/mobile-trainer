@@ -1,0 +1,5 @@
+# Seguridad de la cadena de suministro
+# No instalar versiones publicadas hace menos de 14 días (en minutos).
+minimumReleaseAge: 20160
+# Fallar si una dependencia quiere ejecutar scripts de instalación no aprobados.
+strictDepBuilds: true
