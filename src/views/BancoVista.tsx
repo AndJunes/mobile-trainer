@@ -54,7 +54,7 @@ export function BancoVista({ soloRepasar = false }: { soloRepasar?: boolean }) {
     })
   }, [dato, estado.preguntas, soloRepasar, bloque, prioridad, marca, q, textos])
 
-  const selector = 'rounded-xl border border-line bg-panel px-3 py-2 text-sm text-ink'
+  const selector = 'w-full min-w-0 max-w-full rounded-xl border border-line bg-panel px-3 py-2 text-sm text-ink sm:w-auto'
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-5">

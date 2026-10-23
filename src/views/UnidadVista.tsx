@@ -28,7 +28,7 @@ export function UnidadVista({ unidadId }: { unidadId: string }) {
         {unidad.descripcion && <p className="mt-2 max-w-3xl text-muted">{unidad.descripcion}</p>}
 
         {cargando && <p className="mt-6 text-muted">Cargando los temas…</p>}
-        <ul className="mt-6 grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(250px,1fr))]">
+        <ul className="mt-6 grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr))]">
           {temas?.map((t, i) => {
             const hecho = temaHecho(t.id)
             return (
