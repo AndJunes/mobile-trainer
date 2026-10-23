@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ConexionTP } from '../components/ConexionTP'
 import { Desafio } from '../components/Desafio'
 import { PreguntaItem } from '../components/PreguntaItem'
@@ -10,6 +10,8 @@ import { hrefDe, ir } from '../hooks/useRuta'
 import { useProgreso } from '../hooks/useProgreso'
 import { cargarBanco, cargarTemasDeUnidad, unidadDeTema, unidades } from '../lib/contenido'
 
+type Fase = 'teoria' | 'desafio' | 'conexion'
+
 export function LeccionVista({ temaId }: { temaId: string }) {
   const unidad = unidadDeTema(temaId) ?? unidades[0]
   const { dato, cargando } = useCarga(
@@ -19,10 +21,21 @@ export function LeccionVista({ temaId }: { temaId: string }) {
     },
     temaId,
   )
-  const [fase, setFase] = useState<'teoria' | 'desafio' | 'conexion'>('teoria')
+  const [fase, setFase] = useState<Fase>('teoria')
   const { completarTema } = useProgreso()
   const aviso = useAviso()
+  const contenido = useRef<HTMLElement>(null)
   useEffect(() => setFase('teoria'), [temaId])
+
+  // Al cambiar de etapa, llevar la vista al principio del contenido: si no, el desafío
+  // arranca con la pantalla más abajo, en las preguntas relacionadas.
+  const cambiarFase = (f: Fase) => {
+    setFase(f)
+    setTimeout(() => {
+      const reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      contenido.current?.scrollIntoView({ block: 'start', behavior: reducido ? 'auto' : 'smooth' })
+    })
+  }
 
   if (cargando || !dato) return <p className="text-muted">Cargando la misión…</p>
   const tema = dato.temas.find((t) => t.id === temaId)
@@ -61,7 +74,7 @@ export function LeccionVista({ temaId }: { temaId: string }) {
 
         <nav aria-label="Etapas de la misión" className="flex flex-wrap gap-2 text-xs font-extrabold">
           {(['teoria', 'desafio', 'conexion'] as const).map((f, k) => (
-            <button key={f} onClick={() => setFase(f)} aria-current={fase === f ? 'step' : undefined}
+            <button key={f} onClick={() => cambiarFase(f)} aria-current={fase === f ? 'step' : undefined}
               className={`rounded-full px-3 py-1.5 ${fase === f ? 'bg-purple text-on-accent' : 'bg-white/5 text-muted hover:text-ink'}`}>
               {k + 1}. {f === 'teoria' ? 'Teoría' : f === 'desafio' ? 'Desafío' : 'Conexión con el TP'}
             </button>
@@ -69,11 +82,11 @@ export function LeccionVista({ temaId }: { temaId: string }) {
         </nav>
       </section>
 
-      <section aria-label="Contenido del tema" className="flex flex-col gap-5 rounded-3xl border border-line bg-sec-tema p-4 sm:p-6">
+      <section ref={contenido} aria-label="Contenido del tema" className="scroll-mt-20 flex flex-col gap-5 rounded-3xl border border-line bg-sec-tema p-4 sm:p-6">
         {fase === 'teoria' && (
           <>
             <Teoria key={tema.id} tema={tema} />
-            <button onClick={() => setFase('desafio')}
+            <button onClick={() => cambiarFase('desafio')}
               className="self-start rounded-2xl bg-gradient-to-r from-purple to-pink px-6 py-3.5 font-extrabold text-on-accent">
               Ya leí la teoría · Empezar el desafío →
             </button>
@@ -81,7 +94,7 @@ export function LeccionVista({ temaId }: { temaId: string }) {
         )}
 
         {fase === 'desafio' && desafio.length > 0 && (
-          <Desafio key={tema.id} preguntas={desafio} onTerminar={() => setFase('conexion')} />
+          <Desafio key={tema.id} preguntas={desafio} onTerminar={() => cambiarFase('conexion')} />
         )}
 
         {fase === 'conexion' && (
@@ -95,7 +108,7 @@ export function LeccionVista({ temaId }: { temaId: string }) {
               <button onClick={siguienteTema} className="rounded-2xl bg-gradient-to-r from-purple to-pink px-6 py-3.5 font-extrabold text-on-accent">
                 Entendí la conexión · Siguiente tema →
               </button>
-              <button onClick={() => setFase('desafio')} className="rounded-2xl border border-line px-5 py-3 font-bold text-muted hover:text-ink">
+              <button onClick={() => cambiarFase('desafio')} className="rounded-2xl border border-line px-5 py-3 font-bold text-muted hover:text-ink">
                 Repasar preguntas
               </button>
             </div>

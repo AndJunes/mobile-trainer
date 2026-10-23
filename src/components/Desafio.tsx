@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { useProgreso } from '../hooks/useProgreso'
 import type { Pregunta } from '../types/contenido'
 import { useAviso } from './Aviso'
@@ -12,17 +12,20 @@ export function Desafio({ preguntas, onTerminar }: { preguntas: Pregunta[]; onTe
   const { estado, guardarRespuesta, marcarPregunta } = useProgreso()
   const aviso = useAviso()
   const campoId = useId()
+  const tarjeta = useRef<HTMLElement>(null)
   const p = preguntas[i]
   const texto = estado.respuestas[p.id] ?? ''
 
   const siguiente = () => {
     setRevelada(false)
-    if (i + 1 < preguntas.length) setI(i + 1)
-    else onTerminar()
+    if (i + 1 < preguntas.length) {
+      setI(i + 1)
+      setTimeout(() => tarjeta.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }))
+    } else onTerminar()
   }
 
   return (
-    <section aria-labelledby={`${campoId}-t`} className="rounded-3xl border border-line bg-panel/70 p-5 sm:p-7">
+    <section ref={tarjeta} aria-labelledby={`${campoId}-t`} className="scroll-mt-20 rounded-3xl border border-line bg-panel/70 p-5 sm:p-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id={`${campoId}-t`} className="text-[11px] font-extrabold uppercase tracking-widest text-pink">Desafío de recuperación</h2>
         <div className="flex items-center gap-2" aria-label={`Pregunta ${i + 1} de ${preguntas.length}`}>
