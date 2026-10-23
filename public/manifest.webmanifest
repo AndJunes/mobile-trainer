@@ -1,0 +1,16 @@
+{
+  "name": "Modo Defensa · Entrenador de defensas orales",
+  "short_name": "Modo Defensa",
+  "description": "Teoría de clase, preguntas reales y práctica de recuperación para la defensa oral de Desarrollo Móvil.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#100f24",
+  "theme_color": "#15132b",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
