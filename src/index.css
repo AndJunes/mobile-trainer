@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/* Paleta de la app original (oscura) + variante clara opcional. Los colores se usan solo a través de tokens. */
+:root {
+  --bg: #100f24;
+  --panel: #1b1934;
+  --panel2: #242044;
+  --ink: #f8f7ff;
+  --muted: #b5b1d2;
+  --line: #3b365e;
+  --purple: #a78bfa;
+  --pink: #fb7185;
+  --lime: #c5f36a;
+  --cyan: #67e8f9;
+  --gold: #facc75;
+  --code: #2a2650;
+  --glow1: #302458;
+  --glow2: #0f3b4a;
+  --on-accent: #17142c;
+  /* fondos de las secciones de un tema: apenas distintos del fondo y de las tarjetas */
+  --sec-nav: #16152f;
+  --sec-tema: #181336;
+  --sec-rel: #111a2c;
+  color-scheme: dark;
+}
+:root[data-theme="claro"] {
+  --bg: #f6f5fb;
+  --panel: #ffffff;
+  --panel2: #eeebf9;
+  --ink: #1b1834;
+  --muted: #55507a;
+  --line: #d9d5ec;
+  --purple: #6d4fd8;
+  --pink: #c8325a;
+  --lime: #3f7d12;
+  --cyan: #0e6f85;
+  --gold: #8a5a00;
+  --code: #ece9fa;
+  --glow1: #e6e0ff;
+  --glow2: #d9f1f5;
+  --on-accent: #ffffff;
+  --sec-nav: #eceaf6;
+  --sec-tema: #ede7ff;
+  --sec-rel: #e3f2f5;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-panel2: var(--panel2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-purple: var(--purple);
+  --color-pink: var(--pink);
+  --color-lime: var(--lime);
+  --color-cyan: var(--cyan);
+  --color-gold: var(--gold);
+  --color-code: var(--code);
+  --color-on-accent: var(--on-accent);
+  --color-sec-nav: var(--sec-nav);
+  --color-sec-tema: var(--sec-tema);
+  --color-sec-rel: var(--sec-rel);
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --animate-aparecer: aparecer 0.25s ease-out both;
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 15% 0%, var(--glow1) 0, transparent 38%),
+    radial-gradient(ellipse at 90% 10%, var(--glow2) 0, transparent 32%),
+    var(--bg);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+:focus-visible { outline: 3px solid var(--lime); outline-offset: 2px; border-radius: 6px; }
+summary { cursor: pointer; }
+summary::-webkit-details-marker { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
