@@ -57,9 +57,16 @@ for (const u of unidades) {
 }
 
 for (const [id, temas] of usoDesafio) if (temas.length > 1) avisos.push(`La pregunta ${id} es desafío en ${temas.length} temas: ${temas.join(', ')}`)
+// Las cifras que muestran el inicio y "Acerca de" tienen que coincidir con los datos.
+const proyecto = leer('proyecto.json')
+const reales = { unidades: unidades.length, temas: idsTemas.size, preguntas: idsPreguntas.size, terminos: glosario.length }
+for (const [clave, valor] of Object.entries(reales)) {
+  if (proyecto.cifras?.[clave] !== valor) err(`proyecto.json: cifras.${clave} dice ${proyecto.cifras?.[clave]} y los datos tienen ${valor}`)
+}
+
 // El repo es público: el contenido no nombra al docente, a compañeros ni sus usuarios de GitHub.
 const NOMBRES_PROHIBIDOS = ['Franco', 'Germán', 'Sergio', 'Kevin', 'Juan Manuel', 'Luciano', 'Lucián', 'Leandro', 'Andrés', 'ferm11n']
-const archivosData = ['preguntas.json', 'glosario.json', 'unidades.json', ...archivos.map((f) => `temas/${f}`)]
+const archivosData = ['preguntas.json', 'glosario.json', 'unidades.json', 'proyecto.json', ...archivos.map((f) => `temas/${f}`)]
 for (const f of archivosData) {
   const texto = readFileSync(join(dir, f), 'utf8')
   for (const nombre of NOMBRES_PROHIBIDOS) {

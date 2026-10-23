@@ -2,10 +2,12 @@
 // la teoría de cada unidad y el banco de preguntas se cargan cuando se necesitan.
 import unidadesJson from '../data/unidades.json'
 import glosarioJson from '../data/glosario.json'
-import type { BancoPreguntas, Bloque, EntradaGlosario, Pregunta, Tema, Unidad } from '../types/contenido'
+import proyectoJson from '../data/proyecto.json'
+import type { BancoPreguntas, Bloque, EntradaGlosario, Pregunta, Proyecto, Tema, Unidad } from '../types/contenido'
 
 export const unidades = unidadesJson as Unidad[]
 export const glosario = glosarioJson as EntradaGlosario[]
+export const proyecto = proyectoJson as Proyecto
 
 export const totalTemas = unidades.reduce((n, u) => n + u.temas.length, 0)
 

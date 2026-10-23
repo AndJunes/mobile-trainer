@@ -99,3 +99,19 @@ export interface EntradaGlosario {
   distinguirMayusculas?: boolean
 }
 
+/** Presentación del proyecto (pantallas de inicio y "Acerca de"). */
+export interface Proyecto {
+  nombre: string
+  bajada: string
+  /** Una oración que se entiende sola, para el inicio. */
+  resumen: string
+  problema: string
+  solucion: string
+  metodo: { titulo: string; texto: string }[]
+  stack: { nombre: string; detalle: string }[]
+  comoSeHizo: string[]
+  terminos: { termino: string; definicion: string }[]
+  cifras: { unidades: number; temas: number; preguntas: number; terminos: number }
+  autora: { nombre: string; links: { etiqueta: string; url: string }[] }
+  repo: string
+}

@@ -7,24 +7,17 @@ import { RichText } from '../components/RichText'
 export function UnidadVista({ unidadId }: { unidadId: string }) {
   const unidad = unidades.find((u) => u.id === unidadId) ?? unidades[0]
   const { dato: temas, cargando } = useCarga(() => cargarTemasDeUnidad(unidad.id), unidad.id)
-  const { temaHecho, estado } = useProgreso()
-  const hechos = Object.keys(estado.temas).length
+  const { temaHecho } = useProgreso()
+  const hechos = unidad.temas.filter((t) => temaHecho(t)).length
 
   return (
-    <div className="flex flex-col gap-8">
-      <header className="relative overflow-hidden rounded-3xl border border-line bg-gradient-to-br from-purple/25 via-panel to-cyan/15 p-6 sm:p-9">
-        <p className="text-[11px] font-extrabold uppercase tracking-widest text-lime">Modo estudio</p>
-        <h1 className="mt-2 max-w-2xl text-3xl font-black tracking-tight text-balance sm:text-5xl">Entendé. Respondé. Defendé.</h1>
-        <p className="mt-3 max-w-2xl text-muted">Cada misión empieza con la teoría que se dio en clase, sigue con 3 preguntas reales de la guía y termina con la conexión con el código del TP.</p>
-        <div className="mt-5 flex flex-wrap gap-2 text-sm">
-          <span className="rounded-full bg-white/10 px-3 py-1 font-bold tabular-nums">{hechos} temas dominados</span>
-          <span className="rounded-full bg-white/10 px-3 py-1 font-bold">Teoría + 3 preguntas por tema</span>
-        </div>
-      </header>
+    <div className="flex flex-col gap-6">
+      <a href={hrefDe({ vista: 'inicio' })} className="self-start text-sm font-bold text-muted hover:text-ink">← Todas las unidades</a>
 
       <section aria-labelledby="unidad-t">
         <p className="text-[11px] font-extrabold uppercase tracking-widest text-purple">Unidad {unidad.id.slice(1)}</p>
-        <h2 id="unidad-t" className="mt-1 text-2xl font-black tracking-tight sm:text-3xl">{unidad.titulo.replace(/^U0\d\s*—\s*/, '')}</h2>
+        <h1 id="unidad-t" className="mt-1 text-3xl font-black tracking-tight text-balance sm:text-4xl">{unidad.titulo.replace(/^U0\d\s*—\s*/, '')}</h1>
+        <p className="mt-2 text-sm text-muted tabular-nums">{unidad.temas.length} misiones · {hechos} dominadas. Cada una tiene teoría, 3 preguntas y la conexión con el TP.</p>
         {unidad.descripcion && <p className="mt-2 max-w-3xl text-muted">{unidad.descripcion}</p>}
 
         {cargando && <p className="mt-6 text-muted">Cargando los temas…</p>}

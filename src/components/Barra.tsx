@@ -45,11 +45,13 @@ export function Barra({ ruta, unidadActiva, onAlternarTema, temaVisual, onReinic
       } ${oculto ? 'lg:hidden' : ''}`}
     >
       <div className="flex items-center gap-3">
-        <div aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-purple to-pink text-lg font-black text-on-accent">✦</div>
-        <div className="min-w-0 flex-1">
-          <div className="font-black tracking-tight">Modo Defensa</div>
-          <div className="text-xs text-muted">Reservas Deportivas · modo estudio</div>
-        </div>
+        <a href={hrefDe({ vista: 'inicio' })} className="flex min-w-0 flex-1 items-center gap-3 rounded-xl">
+          <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-purple to-pink text-lg font-black text-on-accent">✦</span>
+          <span className="min-w-0">
+            <span className="block font-black tracking-tight">Modo Defensa</span>
+            <span className="block text-xs text-muted">Entrenador de defensas orales</span>
+          </span>
+        </a>
         <button
           ref={cerrarBtn}
           type="button"
@@ -87,6 +89,9 @@ export function Barra({ ruta, unidadActiva, onAlternarTema, temaVisual, onReinic
 
       <nav aria-label="Herramientas" className="flex flex-col gap-1">
         <div className="px-1 pb-1 text-[11px] font-extrabold uppercase tracking-widest text-muted">Herramientas</div>
+        <a href={hrefDe({ vista: 'inicio' })} aria-current={vista === 'inicio' ? 'page' : undefined} className={enlace(vista === 'inicio')}>
+          Inicio
+        </a>
         <a href={hrefDe({ vista: 'banco' })} aria-current={vista === 'banco' ? 'page' : undefined} className={enlace(vista === 'banco')}>
           Banco de preguntas <span className="text-xs text-muted">298</span>
         </a>
@@ -95,6 +100,9 @@ export function Barra({ ruta, unidadActiva, onAlternarTema, temaVisual, onReinic
         </a>
         <a href={hrefDe({ vista: 'glosario' })} aria-current={vista === 'glosario' ? 'page' : undefined} className={enlace(vista === 'glosario')}>
           Glosario
+        </a>
+        <a href={hrefDe({ vista: 'acerca' })} aria-current={vista === 'acerca' ? 'page' : undefined} className={enlace(vista === 'acerca')}>
+          Acerca del proyecto
         </a>
       </nav>
 

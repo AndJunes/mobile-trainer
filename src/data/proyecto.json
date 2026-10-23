@@ -1,0 +1,95 @@
+{
+  "nombre": "Modo Defensa",
+  "bajada": "Entrenador para defensas orales de Desarrollo Móvil",
+  "resumen": "Una app para preparar la defensa oral del trabajo final de Desarrollo Móvil: **66 misiones** con la teoría que se dio en clase, tres preguntas reales para practicar cada tema y la conexión con el código del proyecto.",
+  "problema": "En el trabajo final de **Desarrollo para Móviles** (UNER, 2026) hay que defender en una videollamada la app que hizo el grupo: \"Reservas Deportivas\", con React Native y Expo. El profesor puede preguntar teoría de cualquier unidad, pedir que expliques una línea del código o repreguntar sobre una decisión. El material estaba disperso en 16 clases grabadas, 19 PDF y una guía de casi 300 preguntas.",
+  "solucion": "Modo Defensa ordena todo eso en **66 misiones**. Cada misión tiene la teoría del tema como se dio en clase, tres preguntas reales para practicar y la conexión con el código del proyecto. El progreso se guarda en el navegador.",
+  "metodo": [
+    {
+      "titulo": "Recordar antes de mirar",
+      "texto": "En el desafío escribís tu respuesta antes de ver la de la guía. Intentar recordar fija mejor que releer: es la práctica de recuperación."
+    },
+    {
+      "titulo": "Una versión para decir en voz alta",
+      "texto": "Cada pregunta trae una respuesta corta, de 30 a 60 segundos, pensada para decirla en la defensa, además de la respuesta completa."
+    },
+    {
+      "titulo": "Anticipar la repregunta",
+      "texto": "Junto a cada respuesta está la repregunta más probable del profesor y cómo contestarla."
+    },
+    {
+      "titulo": "Separar lo que sabés de lo que no",
+      "texto": "Marcás cada pregunta como respondida bien o para repasar, y las que te costaron quedan juntas en una lista."
+    }
+  ],
+  "stack": [
+    {
+      "nombre": "React 19",
+      "detalle": "componentes y hooks propios, sin librerías de rutas ni de estado"
+    },
+    {
+      "nombre": "TypeScript",
+      "detalle": "en modo estricto, con tipos para todo el contenido"
+    },
+    {
+      "nombre": "Tailwind CSS 4",
+      "detalle": "con tokens de color para el tema oscuro y el claro"
+    },
+    {
+      "nombre": "Vite 8",
+      "detalle": "build y servidor de desarrollo; la teoría y las preguntas se cargan a demanda"
+    },
+    {
+      "nombre": "pnpm",
+      "detalle": "versiones fijadas, sin paquetes publicados hace menos de 14 días y sin scripts de instalación"
+    }
+  ],
+  "comoSeHizo": [
+    "Las transcripciones de las clases y los PDF de la cátedra se procesaron con asistencia de IA (Claude) para armar notas con el minuto o la página de cada dato.",
+    "Las 298 preguntas se extrajeron de la guía de defensa con un script y se compararon palabra por palabra con el original.",
+    "La teoría de cada tema se redactó con IA a partir de esas notas, con la regla de citar la fuente de cada afirmación.",
+    "Todo el texto vive en archivos JSON y un script valida que los datos sean coherentes antes de cada publicación."
+  ],
+  "terminos": [
+    {
+      "termino": "La Meet",
+      "definicion": "La defensa oral, que se hace por videollamada."
+    },
+    {
+      "termino": "El profe",
+      "definicion": "El profesor de la materia. Algunas preguntas citan textual lo que dijo en clase, con el minuto del video."
+    },
+    {
+      "termino": "TP",
+      "definicion": "El trabajo práctico final: la app Reservas Deportivas que desarrolló el grupo."
+    },
+    {
+      "termino": "PRD",
+      "definicion": "El documento de requisitos del producto que la cátedra le dio a cada grupo."
+    }
+  ],
+  "cifras": {
+    "unidades": 7,
+    "temas": 66,
+    "preguntas": 298,
+    "terminos": 116
+  },
+  "autora": {
+    "nombre": "Andrea Junes",
+    "links": [
+      {
+        "etiqueta": "Portfolio",
+        "url": "https://www.andreajunes.com/"
+      },
+      {
+        "etiqueta": "GitHub",
+        "url": "https://github.com/AndJunes"
+      },
+      {
+        "etiqueta": "LinkedIn",
+        "url": "https://www.linkedin.com/in/andrea-junes/"
+      }
+    ]
+  },
+  "repo": "https://github.com/AndJunes/mobile-trainer"
+}

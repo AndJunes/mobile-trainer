@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { unidades } from '../lib/contenido'
 
 export type Ruta =
+  | { vista: 'inicio' }
+  | { vista: 'acerca' }
   | { vista: 'unidad'; unidadId: string }
   | { vista: 'tema'; temaId: string }
   | { vista: 'banco' }
@@ -14,12 +16,14 @@ function leerHash(): Ruta {
   if (vista === 'banco') return { vista: 'banco' }
   if (vista === 'repaso') return { vista: 'repaso' }
   if (vista === 'glosario') return { vista: 'glosario' }
-  const u = unidades.find((x) => x.id === id) ?? unidades[0]
-  return { vista: 'unidad', unidadId: u.id }
+  if (vista === 'acerca') return { vista: 'acerca' }
+  const u = vista === 'unidad' ? unidades.find((x) => x.id === id) : undefined
+  return u ? { vista: 'unidad', unidadId: u.id } : { vista: 'inicio' }
 }
 
 export function hrefDe(r: Ruta): string {
   switch (r.vista) {
+    case 'inicio': return '#/'
     case 'unidad': return `#/unidad/${r.unidadId}`
     case 'tema': return `#/tema/${encodeURIComponent(r.temaId)}`
     default: return `#/${r.vista}`

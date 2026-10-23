@@ -8,8 +8,10 @@ import { useRuta } from './hooks/useRuta'
 import { useTemaVisual } from './hooks/useTema'
 import { escribir, leer } from './lib/almacen'
 import { unidadDeTema } from './lib/contenido'
+import { AcercaVista } from './views/AcercaVista'
 import { BancoVista } from './views/BancoVista'
 import { GlosarioVista } from './views/GlosarioVista'
+import { InicioVista } from './views/InicioVista'
 import { LeccionVista } from './views/LeccionVista'
 import { UnidadVista } from './views/UnidadVista'
 
@@ -82,6 +84,8 @@ function Contenido() {
 
         <main className="min-w-0 px-[max(1rem,env(safe-area-inset-left))] py-6 sm:px-8 lg:py-10">
           <div className="mx-auto max-w-6xl">
+            {ruta.vista === 'inicio' && <InicioVista />}
+            {ruta.vista === 'acerca' && <AcercaVista />}
             {ruta.vista === 'unidad' && <UnidadVista unidadId={ruta.unidadId} />}
             {ruta.vista === 'tema' && <LeccionVista temaId={ruta.temaId} />}
             {ruta.vista === 'banco' && <BancoVista />}
